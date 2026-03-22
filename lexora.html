@@ -5,1357 +5,975 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lexora — Gestión Jurídica</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
-
-<!--
-╔══════════════════════════════════════════════════════════════╗
-║  LEXORA — CONFIGURACIÓN                                      ║
-║  Editá solo esta sección antes de deployar                   ║
-╚══════════════════════════════════════════════════════════════╝
-
-PASO 1: Creá tu proyecto en https://supabase.com
-PASO 2: Copiá tu URL y clave desde Settings → API
-PASO 3: Pegá abajo y subí el archivo
-
-SQL PARA EJECUTAR EN SUPABASE (SQL Editor → Run):
-──────────────────────────────────────────────────
-create table estudios (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) on delete cascade,
-  nombre text not null,
-  titular text,
-  plan text default 'basic',
-  activo boolean default true,
-  pais text default 'Argentina',
-  telefono text,
-  created_at timestamptz default now()
-);
-
-create table clientes (
-  id uuid default gen_random_uuid() primary key,
-  estudio_id uuid references estudios(id) on delete cascade,
-  nombre text not null,
-  tipo text default 'Persona física',
-  email text,
-  telefono text,
-  notas text,
-  created_at timestamptz default now()
-);
-
-create table expedientes (
-  id text primary key,
-  estudio_id uuid references estudios(id) on delete cascade,
-  cliente_id uuid references clientes(id),
-  titulo text not null,
-  tipo text,
-  estado text default 'activo',
-  juzgado text,
-  descripcion text,
-  fecha_apertura date default current_date,
-  created_at timestamptz default now()
-);
-
-create table recordatorios (
-  id uuid default gen_random_uuid() primary key,
-  estudio_id uuid references estudios(id) on delete cascade,
-  expediente_id text references expedientes(id),
-  titulo text not null,
-  fecha_limite date,
-  urgencia text default 'pendiente',
-  nota text,
-  created_at timestamptz default now()
-);
-
-create table facturas (
-  id uuid default gen_random_uuid() primary key,
-  estudio_id uuid references estudios(id) on delete cascade,
-  cliente_id uuid references clientes(id),
-  numero text,
-  concepto text,
-  monto numeric default 0,
-  estado text default 'pendiente',
-  vencimiento date,
-  created_at timestamptz default now()
-);
-
--- Row Level Security (ejecutar también):
-alter table estudios enable row level security;
-alter table clientes enable row level security;
-alter table expedientes enable row level security;
-alter table recordatorios enable row level security;
-alter table facturas enable row level security;
-
-create policy "users_own_estudio" on estudios for all using (auth.uid() = user_id);
-create policy "users_own_clientes" on clientes for all using (estudio_id in (select id from estudios where user_id = auth.uid()));
-create policy "users_own_expedientes" on expedientes for all using (estudio_id in (select id from estudios where user_id = auth.uid()));
-create policy "users_own_recordatorios" on recordatorios for all using (estudio_id in (select id from estudios where user_id = auth.uid()));
-create policy "users_own_facturas" on facturas for all using (estudio_id in (select id from estudios where user_id = auth.uid()));
-──────────────────────────────────────────────────
--->
-
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0c0c0e; --sf:#131316; --sf2:#1a1a1f; --bd:#252530; --bd2:#2e2e3a;
-  --gold:#c9a84c; --gdim:#8a6f2e; --gglow:rgba(201,168,76,.10);
-  --txt:#e8e4dc; --tdim:#8a8680; --tmut:#44424a;
-  --red:#c94c4c; --grn:#4cba84; --blu:#4c7bc9;
-  --r:6px;
-}
+:root{--bg:#0c0c0e;--surface:#131316;--surface2:#1a1a1f;--border:#252530;--border2:#2e2e3a;--gold:#c9a84c;--gold-dim:#8a6f2e;--gold-glow:rgba(201,168,76,.10);--text:#e8e4dc;--text-dim:#8a8680;--text-muted:#44424a;--red:#c94c4c;--green:#4cba84;--blue:#4c7bc9;--r:6px;}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--txt);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden;}
-body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
-
-/* SCREENS */
-.screen{display:none;min-height:100vh;animation:fadeUp .35s ease;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
+.screen{display:none;min-height:100vh;animation:fadeUp .3s ease;}
 .screen.active{display:flex;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+.shake{animation:shake .35s ease;}
 
-/* ── LOGIN ── */
-#sc-login,#sc-admin-login{
-  align-items:center;justify-content:center;flex-direction:column;
-  background:radial-gradient(ellipse 70% 60% at 50% -10%,rgba(201,168,76,.07) 0%,transparent 70%),var(--bg);
-}
-#sc-admin-login{background:radial-gradient(ellipse 60% 50% at 50% -5%,rgba(76,123,201,.06) 0%,transparent 70%),var(--bg);}
-.admin-link{position:fixed;top:18px;right:22px;font-size:10.5px;font-family:'DM Mono',monospace;color:var(--tmut);letter-spacing:.08em;cursor:pointer;padding:5px 10px;border:1px solid transparent;border-radius:var(--r);transition:all .2s;}
-.admin-link:hover{color:var(--tdim);border-color:var(--bd2);}
-.back-link{position:fixed;top:18px;left:22px;font-size:11px;font-family:'DM Mono',monospace;color:var(--tmut);cursor:pointer;padding:5px 10px;border-radius:var(--r);border:1px solid transparent;transition:all .2s;}
-.back-link:hover{color:var(--tdim);border-color:var(--bd2);}
-
+/* LOGIN */
+#screen-login{align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse 70% 55% at 50% -5%,rgba(201,168,76,.07),transparent 70%),var(--bg);}
+.login-admin-link{position:fixed;top:17px;right:20px;font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.08em;cursor:pointer;padding:5px 10px;border:1px solid transparent;border-radius:var(--r);transition:all .2s;}
+.login-admin-link:hover{color:var(--text-dim);border-color:var(--border2);}
 .login-box{width:400px;max-width:94vw;}
 .login-logo{text-align:center;margin-bottom:38px;}
-.logo-name{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--gold);letter-spacing:.06em;line-height:1;}
-.logo-sub{font-size:10px;letter-spacing:.25em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--tmut);margin-top:5px;}
-.login-card{background:var(--sf);border:1px solid var(--bd2);border-radius:10px;padding:34px;box-shadow:0 24px 64px rgba(0,0,0,.5);}
-.login-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:4px;}
-.login-sub{font-size:12.5px;color:var(--tdim);margin-bottom:26px;}
-.login-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--tmut);}
+.login-logo-name{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--gold);letter-spacing:.06em;line-height:1;}
+.login-logo-sub{font-size:10px;letter-spacing:.25em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:5px;}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:34px;box-shadow:0 24px 64px rgba(0,0,0,.5);}
+.login-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);margin-bottom:4px;}
+.login-sub{font-size:12.5px;color:var(--text-dim);margin-bottom:26px;}
+.demo-box{margin-top:20px;padding:13px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:var(--r);}
+.demo-box p{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);line-height:1.9;}
+.demo-box strong{color:var(--gold-dim);}
+.login-footer{text-align:center;margin-top:20px;font-size:11px;color:var(--text-muted);}
+#screen-admin-login{align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse 60% 50% at 50% -5%,rgba(76,123,201,.06),transparent 70%),var(--bg);}
+.back-link{position:fixed;top:17px;left:20px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:var(--r);border:1px solid transparent;transition:all .2s;}
+.back-link:hover{color:var(--text-dim);border-color:var(--border2);}
 
-/* FORMS */
-.fg{margin-bottom:17px;}
-.fl{display:block;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--tmut);margin-bottom:7px;}
-.fi{width:100%;background:var(--sf2);border:1px solid var(--bd2);border-radius:var(--r);padding:11px 14px;color:var(--txt);font-size:13.5px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;}
-.fi:focus{border-color:var(--gdim);box-shadow:0 0 0 3px rgba(201,168,76,.08);}
-.fi::placeholder{color:var(--tmut);}
-select.fi{cursor:pointer;}
-select.fi option{background:var(--sf2);}
-textarea.fi{resize:none;}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+/* COMPONENTS */
+.btn{padding:10px 18px;border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:var(--gold);color:var(--bg);}
+.btn-primary:hover{background:#d4b05a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.3);}
+.btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border2);}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);border-color:var(--gold-dim);}
+.btn-danger{background:rgba(201,76,76,.1);color:var(--red);border:1px solid rgba(201,76,76,.25);}
+.btn-danger:hover{background:rgba(201,76,76,.2);}
+.btn-full{width:100%;justify-content:center;padding:12px;}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-blue:hover{background:#5a8ed4;transform:translateY(-1px);}
+.form-group{margin-bottom:17px;}
+.form-label{display:block;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:7px;}
+.form-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:10px 13px;color:var(--text);font-size:13.5px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;}
+.form-input:focus{border-color:var(--gold-dim);box-shadow:0 0 0 3px rgba(201,168,76,.08);}
+.form-input::placeholder{color:var(--text-muted);}
+select.form-input{cursor:pointer;}
+select.form-input option{background:var(--surface2);}
+textarea.form-input{height:72px;resize:none;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.error-box{display:none;background:rgba(201,76,76,.1);border:1px solid rgba(201,76,76,.25);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:16px;}
 
-/* BUTTONS */
-.btn{padding:9px 17px;border-radius:var(--r);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;}
-.btn-p{background:var(--gold);color:var(--bg);}
-.btn-p:hover:not(:disabled){background:#d4b05a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.3);}
-.btn-g{background:transparent;color:var(--tdim);border:1px solid var(--bd2);}
-.btn-g:hover{background:var(--sf2);color:var(--txt);border-color:var(--gdim);}
-.btn-d{background:rgba(201,76,76,.1);color:var(--red);border:1px solid rgba(201,76,76,.22);}
-.btn-d:hover{background:rgba(201,76,76,.2);}
-.btn-bl{background:var(--blu);color:#fff;}
-.btn-bl:hover{background:#5a8ad4;transform:translateY(-1px);}
-.btn-fw{width:100%;justify-content:center;padding:12px;}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none !important;}
-
-/* ERROR BOX */
-.err-box{display:none;background:rgba(201,76,76,.1);border:1px solid rgba(201,76,76,.25);border-radius:var(--r);padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:15px;}
-
-/* ── SIDEBAR ── */
-.sidebar{width:232px;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
-.s-logo{padding:24px 22px 20px;border-bottom:1px solid var(--bd);}
-.s-logo-name{font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:600;color:var(--gold);letter-spacing:.04em;}
-.s-logo-tag{font-size:10px;color:var(--tmut);letter-spacing:.16em;text-transform:uppercase;margin-top:2px;font-family:'DM Mono',monospace;}
-nav.snav{padding:14px 10px;flex:1;overflow-y:auto;}
-.nav-sec{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--tmut);font-family:'DM Mono',monospace;padding:13px 12px 6px;}
-.nav-i{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;color:var(--tdim);font-size:13.5px;font-weight:400;transition:all .18s;margin-bottom:2px;border:1px solid transparent;}
-.nav-i:hover{background:var(--sf2);color:var(--txt);}
-.nav-i.active{background:var(--gglow);color:var(--gold);border-color:rgba(201,168,76,.18);}
+/* APP */
+#screen-app{flex-direction:row;}
+.sidebar{width:232px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.logo{padding:26px 22px 22px;border-bottom:1px solid var(--border);}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--gold);letter-spacing:.04em;}
+.logo-tagline{font-size:10px;color:var(--text-muted);letter-spacing:.16em;text-transform:uppercase;margin-top:2px;font-family:'DM Mono',monospace;}
+nav{padding:14px 10px;flex:1;overflow-y:auto;}
+.nav-section{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);font-family:'DM Mono',monospace;padding:14px 12px 7px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;color:var(--text-dim);font-size:13.5px;transition:all .18s;margin-bottom:2px;border:1px solid transparent;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--gold-glow);color:var(--gold);border-color:rgba(201,168,76,.18);}
 .nav-icon{width:17px;text-align:center;font-size:13px;flex-shrink:0;}
-.nbadge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:20px;}
-.s-footer{padding:14px;border-top:1px solid var(--bd);}
-.user-chip{display:flex;align-items:center;gap:10px;padding:10px;background:var(--sf2);border-radius:var(--r);cursor:pointer;transition:background .2s;}
-.user-chip:hover{background:var(--bd);}
-.ava{width:30px;height:30px;background:var(--gdim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'Cormorant Garamond',serif;color:var(--bg);font-weight:600;flex-shrink:0;}
-
-/* ── APP MAIN ── */
-#sc-app{flex-direction:row;}
+.badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-family:'DM Mono',monospace;padding:2px 6px;border-radius:20px;}
+.sidebar-footer{padding:14px;border-top:1px solid var(--border);}
+.user-chip{display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface2);border-radius:var(--r);cursor:pointer;transition:background .2s;}
+.user-chip:hover{background:var(--border);}
+.avatar{width:30px;height:30px;background:var(--gold-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:'Cormorant Garamond',serif;color:var(--bg);font-weight:600;flex-shrink:0;}
+.user-name{font-size:12px;font-weight:500;color:var(--text);}
+.user-plan{font-size:10px;color:var(--text-muted);font-family:'DM Mono',monospace;}
 .main{margin-left:232px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
-.topbar{height:58px;border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 28px;gap:14px;position:sticky;top:0;background:rgba(12,12,14,.92);backdrop-filter:blur(14px);z-index:50;}
-.page-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;flex:1;}
-.search-bar{display:flex;align-items:center;gap:8px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:7px 12px;width:210px;transition:border-color .2s;}
-.search-bar:focus-within{border-color:var(--gdim);}
-.search-bar input{background:none;border:none;outline:none;color:var(--txt);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;}
-.search-bar input::placeholder{color:var(--tmut);}
-.notif-btn{width:34px;height:34px;background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tdim);font-size:14px;position:relative;transition:all .2s;}
-.notif-btn:hover{border-color:var(--gdim);}
-.nbadge2{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--red);border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;color:#fff;border:2px solid var(--bg);}
-
-/* PAGES */
-.page{padding:26px 30px;display:none;animation:fadeUp .25s ease;}
+.topbar{height:58px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;position:sticky;top:0;background:rgba(12,12,14,.92);backdrop-filter:blur(14px);z-index:50;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text);flex:1;}
+.topbar-actions{display:flex;align-items:center;gap:9px;}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;width:210px;transition:border-color .2s;}
+.search-bar:focus-within{border-color:var(--gold-dim);}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;}
+.search-bar input::placeholder{color:var(--text-muted);}
+.notif-btn{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dim);font-size:14px;position:relative;transition:all .2s;}
+.notif-btn:hover{border-color:var(--gold-dim);color:var(--text);}
+.notif-badge{position:absolute;top:-4px;right:-4px;width:14px;height:14px;background:var(--red);border-radius:50%;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;color:#fff;border:2px solid var(--bg);}
+.page{padding:28px 32px;display:none;animation:fadeUp .28s ease;}
 .page.active{display:block;}
 
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
-.stat-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:border-color .2s;}
-.stat-card:hover{border-color:var(--gdim);}
+/* STATS & CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:border-color .2s;}
+.stat-card:hover{border-color:var(--gold-dim);}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .2s;}
 .stat-card:hover::before{opacity:1;}
-.stat-lbl{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--tmut);font-family:'DM Mono',monospace;margin-bottom:9px;}
-.stat-val{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;line-height:1;margin-bottom:5px;}
-.stat-ch{font-size:11px;font-family:'DM Mono',monospace;}
-.stat-ch.up{color:var(--grn);} .stat-ch.dn{color:var(--red);} .stat-ch.wn{color:var(--gold);}
-.stat-ico{position:absolute;top:16px;right:16px;font-size:18px;opacity:.15;}
-
-/* CARDS */
-.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
-.card-hdr{padding:15px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
-.card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;}
+.stat-label{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);font-family:'DM Mono',monospace;margin-bottom:10px;}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;color:var(--text);line-height:1;margin-bottom:5px;}
+.stat-change{font-size:11px;font-family:'DM Mono',monospace;}
+.stat-change.up{color:var(--green);}.stat-change.down{color:var(--red);}.stat-change.warn{color:var(--gold);}
+.stat-icon{position:absolute;top:18px;right:18px;font-size:18px;opacity:.18;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--text);}
 
 /* TABLES */
-.t-head{display:grid;padding:9px 20px;border-bottom:1px solid var(--bd);background:rgba(26,26,31,.7);}
-.th{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--tmut);font-family:'DM Mono',monospace;}
-.t-row{display:grid;padding:13px 20px;border-bottom:1px solid rgba(37,37,48,.7);align-items:center;transition:background .15s;cursor:pointer;}
-.t-row:hover{background:var(--sf2);}
-.t-row:last-child{border-bottom:none;}
-.cp{font-size:13px;color:var(--txt);}
-.cs{font-size:11px;color:var(--tdim);margin-top:2px;}
-.cm{font-size:11.5px;font-family:'DM Mono',monospace;color:var(--tdim);}
-.exp-row{grid-template-columns:1fr 160px 100px 90px 80px;}
-.alert-row{grid-template-columns:18px 1fr 100px;gap:10px;}
-.inv-row{grid-template-columns:80px 1fr 160px 110px 90px 60px;}
-.cli-row{grid-template-columns:1fr 120px 100px 80px;}
-.rec-row{grid-template-columns:1fr 120px 100px 90px 60px;}
+.table-header{display:grid;padding:9px 20px;border-bottom:1px solid var(--border);background:rgba(26,26,31,.7);}
+.th{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);font-family:'DM Mono',monospace;}
+.table-row{display:grid;padding:13px 20px;border-bottom:1px solid rgba(37,37,48,.7);align-items:center;transition:background .15s;}
+.table-row:hover{background:var(--surface2);}
+.table-row:last-child{border-bottom:none;}
+.cell-primary{font-size:13px;color:var(--text);font-weight:400;}
+.cell-secondary{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.cell-mono{font-size:11.5px;font-family:'DM Mono',monospace;color:var(--text-dim);}
+.exp-row{grid-template-columns:1fr 150px 90px 100px 80px;}
+.alert-row{grid-template-columns:20px 1fr 100px;gap:10px;}
+.inv-row{grid-template-columns:90px 1fr 150px 110px 90px 70px;}
+.rec-row{grid-template-columns:1fr 130px 100px 90px 70px;}
 
 /* STATUS */
-.st{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;}
-.st::before{content:'';width:5px;height:5px;border-radius:50%;}
-.st.activo{background:rgba(76,186,132,.1);color:var(--grn);}
-.st.activo::before{background:var(--grn);}
-.st.pendiente{background:rgba(201,168,76,.1);color:var(--gold);}
-.st.pendiente::before{background:var(--gold);}
-.st.cerrado{background:rgba(68,66,74,.3);color:var(--tmut);}
-.st.cerrado::before{background:var(--tmut);}
-.st.urgente{background:rgba(201,76,76,.1);color:var(--red);}
-.st.urgente::before{background:var(--red);}
-.st.cobrado{background:rgba(76,186,132,.1);color:var(--grn);}
-.st.cobrado::before{background:var(--grn);}
-.st.vencido{background:rgba(201,76,76,.1);color:var(--red);}
-.st.vencido::before{background:var(--red);}
+.status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;}
+.status::before{content:'';width:5px;height:5px;border-radius:50%;}
+.status.activo{background:rgba(76,186,132,.1);color:var(--green);}
+.status.activo::before{background:var(--green);}
+.status.pendiente{background:rgba(201,168,76,.1);color:var(--gold);}
+.status.pendiente::before{background:var(--gold);}
+.status.cerrado{background:rgba(68,66,74,.3);color:var(--text-muted);}
+.status.cerrado::before{background:var(--text-muted);}
+.status.urgente{background:rgba(201,76,76,.1);color:var(--red);}
+.status.urgente::before{background:var(--red);}
+.status.cobrado{background:rgba(76,186,132,.1);color:var(--green);}
+.status.cobrado::before{background:var(--green);}
+.status.vencido{background:rgba(201,76,76,.1);color:var(--red);}
+.status.vencido::before{background:var(--red);}
+.alert-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.alert-dot.red{background:var(--red);box-shadow:0 0 6px rgba(201,76,76,.6);}
+.alert-dot.gold{background:var(--gold);box-shadow:0 0 6px rgba(201,168,76,.5);}
+.alert-dot.blue{background:var(--blue);box-shadow:0 0 6px rgba(76,123,201,.5);}
 
-.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;}
-.adot.red{background:var(--red);box-shadow:0 0 6px rgba(201,76,76,.5);}
-.adot.gold{background:var(--gold);box-shadow:0 0 6px rgba(201,168,76,.4);}
-.adot.blue{background:var(--blu);box-shadow:0 0 6px rgba(76,123,201,.4);}
-
-/* CLIENTS GRID */
+/* CLIENTS */
 .clients-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.cl-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;}
-.cl-card:hover{border-color:var(--gdim);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3);}
-.cl-ava{width:40px;height:40px;background:linear-gradient(135deg,var(--gdim),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--bg);margin-bottom:12px;}
-.cl-name{font-size:14px;font-weight:500;margin-bottom:2px;}
-.cl-meta{font-size:11px;color:var(--tdim);margin-bottom:12px;}
-.cl-stats{display:flex;gap:14px;padding-top:12px;border-top:1px solid var(--bd);}
-.csi-val{font-family:'DM Mono',monospace;font-size:15px;}
-.csi-lbl{font-size:9px;color:var(--tmut);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
-
-/* DASH LAYOUT */
-.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;}
-
-/* BILLING */
-.amt{font-family:'DM Mono',monospace;font-size:13px;}
-.amt.pos{color:var(--grn);} .amt.neg{color:var(--red);} .amt.neu{color:var(--txt);}
+.client-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;cursor:default;transition:all .2s;}
+.client-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.3);}
+.client-avatar-big{width:40px;height:40px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--bg);margin-bottom:12px;}
+.client-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.client-meta{font-size:11px;color:var(--text-dim);margin-bottom:12px;}
+.client-stats{display:flex;gap:14px;padding-top:12px;border-top:1px solid var(--border);}
+.cs-val{font-family:'DM Mono',monospace;font-size:15px;color:var(--text);}
+.cs-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px;}
+.amount{font-family:'DM Mono',monospace;font-size:13px;}
+.amount.pos{color:var(--green);}.amount.neg{color:var(--red);}.amount.neu{color:var(--text);}
+.tbl-action{background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text-muted);font-size:10px;font-family:'DM Mono',monospace;padding:3px 8px;cursor:pointer;transition:all .15s;margin-right:3px;}
+.tbl-action:hover{background:var(--surface2);color:var(--text);}
+.tbl-action.del:hover{border-color:rgba(201,76,76,.4);color:var(--red);}
 
 /* MODAL */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;}
-.modal-ov.open{display:flex;animation:fadeUp .2s ease;}
-.modal{background:var(--sf);border:1px solid var(--bd2);border-radius:10px;width:490px;max-width:95vw;box-shadow:0 28px 70px rgba(0,0,0,.55);}
-.modal-hdr{padding:20px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(5px);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;animation:fadeUp .2s ease;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:10px;width:490px;max-width:95vw;box-shadow:0 28px 70px rgba(0,0,0,.55);}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .modal-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;}
-.modal-x{width:28px;height:28px;background:var(--sf2);border:1px solid var(--bd);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--tdim);font-size:13px;transition:all .15s;}
-.modal-x:hover{background:var(--bd);color:var(--txt);}
-.modal-body{padding:22px 24px;max-height:70vh;overflow-y:auto;}
-.modal-ft{padding:14px 24px;border-top:1px solid var(--bd);display:flex;gap:9px;justify-content:flex-end;}
+.modal-close{width:28px;height:28px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;transition:all .15s;}
+.modal-close:hover{background:var(--border);color:var(--text);}
+.modal-body{padding:22px 24px;max-height:68vh;overflow-y:auto;}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:9px;justify-content:flex-end;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);}
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;}
+.loading{display:flex;align-items:center;justify-content:center;padding:36px;color:var(--text-muted);font-size:13px;font-family:'DM Mono',monospace;gap:10px;}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty-state{text-align:center;padding:42px;color:var(--text-muted);}
+.empty-state .ei{font-size:30px;margin-bottom:12px;opacity:.35;}
+.empty-state p{font-size:13px;}
 
-/* SECTION HDR */
-.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.sec-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;}
-
-/* ── ADMIN SCREEN ── */
-#sc-admin{flex-direction:row;}
-.admin-sb{width:220px;background:#0e0e12;border-right:1px solid #1e1e28;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
-.admin-logo{padding:22px 20px 18px;border-bottom:1px solid #1e1e28;}
-.admin-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(76,123,201,.12);border:1px solid rgba(76,123,201,.2);padding:3px 9px;border-radius:20px;margin-bottom:9px;}
-.admin-badge span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--blu);}
-.admin-logo-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--txt);letter-spacing:.04em;}
-.admin-logo-sub{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--tmut);margin-top:2px;}
+/* ADMIN */
+#screen-admin{flex-direction:row;}
+.admin-sidebar{width:220px;background:#0e0e12;border-right:1px solid #1e1e28;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;}
+.admin-logo{padding:24px 20px 20px;border-bottom:1px solid #1e1e28;}
+.admin-badge{display:inline-flex;align-items:center;background:rgba(76,123,201,.12);border:1px solid rgba(76,123,201,.2);padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.admin-badge span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--blue);}
+.admin-logo-name{font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;color:var(--text);letter-spacing:.04em;}
+.admin-logo-sub{font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:2px;}
 .admin-nav{padding:14px 10px;flex:1;}
-.an-i{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;color:var(--tdim);font-size:13px;transition:all .18s;margin-bottom:2px;border:1px solid transparent;}
-.an-i:hover{background:#16161e;color:var(--txt);}
-.an-i.active{background:rgba(76,123,201,.1);color:var(--blu);border-color:rgba(76,123,201,.18);}
+.admin-nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r);cursor:pointer;color:var(--text-dim);font-size:13px;transition:all .18s;margin-bottom:2px;border:1px solid transparent;}
+.admin-nav-item:hover{background:#16161e;color:var(--text);}
+.admin-nav-item.active{background:rgba(76,123,201,.1);color:var(--blue);border-color:rgba(76,123,201,.18);}
 .admin-main{margin-left:220px;flex:1;min-height:100vh;}
-.admin-topbar{height:56px;border-bottom:1px solid #1e1e28;display:flex;align-items:center;padding:0 28px;background:rgba(14,14,18,.94);backdrop-filter:blur(14px);position:sticky;top:0;z-index:50;}
-.apage{padding:26px 30px;display:none;animation:fadeUp .25s ease;}
-.apage.active{display:block;}
-
-.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.a-stat{background:#13131a;border:1px solid #1e1e28;border-radius:var(--r);padding:18px;transition:border-color .2s;}
-.a-stat:hover{border-color:rgba(76,123,201,.3);}
-.a-stat-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--tmut);font-family:'DM Mono',monospace;margin-bottom:7px;}
-.a-stat-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;line-height:1;margin-bottom:4px;}
-.a-stat-sub{font-size:10.5px;font-family:'DM Mono',monospace;color:var(--tdim);}
-
-.a-card{background:#13131a;border:1px solid #1e1e28;border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
-.a-card-hdr{padding:14px 20px;border-bottom:1px solid #1e1e28;display:flex;align-items:center;justify-content:space-between;}
-.a-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;}
-
-.firm-cols{grid-template-columns:1fr 100px 90px 70px 100px 110px;}
-.firm-row{display:grid;padding:12px 20px;border-bottom:1px solid rgba(30,30,40,.8);align-items:center;transition:background .15s;}
+.admin-topbar{height:56px;border-bottom:1px solid #1e1e28;display:flex;align-items:center;padding:0 28px;gap:14px;background:rgba(14,14,18,.94);backdrop-filter:blur(14px);position:sticky;top:0;z-index:50;}
+.admin-page-title{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--text);flex:1;}
+.admin-page{padding:26px 30px;display:none;animation:fadeUp .28s ease;}
+.admin-page.active{display:block;}
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+.admin-stat{background:#13131a;border:1px solid #1e1e28;border-radius:var(--r);padding:18px;transition:border-color .2s;}
+.admin-stat:hover{border-color:rgba(76,123,201,.3);}
+.admin-stat-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);font-family:'DM Mono',monospace;margin-bottom:8px;}
+.admin-stat-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--text);line-height:1;margin-bottom:4px;}
+.admin-stat-sub{font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-dim);}
+.admin-card{background:#13131a;border:1px solid #1e1e28;border-radius:var(--r);overflow:hidden;margin-bottom:16px;}
+.admin-card-header{padding:15px 20px;border-bottom:1px solid #1e1e28;display:flex;align-items:center;justify-content:space-between;}
+.admin-card-title{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:var(--text);}
+.firm-row{display:grid;grid-template-columns:1fr 90px 90px 70px 110px 120px;padding:13px 20px;border-bottom:1px solid rgba(30,30,40,.8);align-items:center;transition:background .15s;}
 .firm-row:hover{background:#16161e;}
 .firm-row:last-child{border-bottom:none;}
-
-.plan-b{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;}
-.plan-basic{background:rgba(74,72,80,.3);color:var(--tdim);}
+.plan-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;}
 .plan-pro{background:rgba(201,168,76,.1);color:var(--gold);}
-.plan-ent{background:rgba(76,123,201,.1);color:var(--blu);}
-
-.act-b{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;}
-.act-b::before{content:'';width:5px;height:5px;border-radius:50%;}
-.act-on{background:rgba(76,186,132,.1);color:var(--grn);}
-.act-on::before{background:var(--grn);}
-.act-off{background:rgba(68,66,74,.3);color:var(--tmut);}
-.act-off::before{background:var(--tmut);}
-
-.abtn{background:transparent;border:1px solid #2a2a36;border-radius:4px;color:var(--tdim);font-size:10px;font-family:'DM Mono',monospace;padding:4px 8px;cursor:pointer;transition:all .15s;margin-right:3px;}
-.abtn:hover{background:#1e1e28;color:var(--txt);}
-.abtn.danger:hover{border-color:rgba(201,76,76,.4);color:var(--red);background:rgba(201,76,76,.06);}
-
-/* TOGGLE */
-.toggle{position:relative;display:inline-block;width:36px;height:20px;}
+.plan-basic{background:rgba(74,72,80,.3);color:var(--text-dim);}
+.plan-ent{background:rgba(76,123,201,.1);color:var(--blue);}
+.act-on{background:rgba(76,186,132,.1);color:var(--green);}
+.act-off{background:rgba(68,66,74,.3);color:var(--text-muted);}
+.toggle{position:relative;display:inline-block;width:34px;height:18px;}
 .toggle input{opacity:0;width:0;height:0;}
-.tsl{position:absolute;cursor:pointer;inset:0;background:#2a2a36;border-radius:20px;transition:.25s;}
-.tsl::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:#555;border-radius:50%;transition:.25s;}
-.toggle input:checked+.tsl{background:rgba(76,186,132,.3);}
-.toggle input:checked+.tsl::before{transform:translateX(16px);background:var(--grn);}
-
-/* LOADING SPINNER */
-.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(201,168,76,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-row{padding:32px;text-align:center;color:var(--tmut);font-size:12px;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;gap:10px;}
-
-/* EMPTY STATE */
-.empty{padding:40px 24px;text-align:center;color:var(--tmut);}
-.empty-ico{font-size:32px;margin-bottom:12px;opacity:.35;}
-.empty p{font-size:12.5px;}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:#2a2a36;border-radius:20px;transition:.25s;}
+.toggle-slider::before{content:'';position:absolute;height:12px;width:12px;left:3px;bottom:3px;background:#555;border-radius:50%;transition:.25s;}
+.toggle input:checked+.toggle-slider{background:rgba(76,186,132,.25);}
+.toggle input:checked+.toggle-slider::before{transform:translateX(16px);background:var(--green);}
 
 /* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--sf);border:1px solid var(--gdim);border-radius:var(--r);padding:13px 17px;font-size:13px;color:var(--txt);z-index:9000;box-shadow:0 8px 28px rgba(0,0,0,.4);animation:slideR .28s ease;max-width:310px;}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--surface);border:1px solid var(--gold-dim);border-radius:var(--r);padding:13px 17px;font-size:13px;color:var(--text);z-index:9000;box-shadow:0 8px 28px rgba(0,0,0,.4);animation:slideR .28s ease;max-width:320px;}
 @keyframes slideR{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}
-
-/* MISC */
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:var(--tmut);}
-@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-5px);}40%,80%{transform:translateX(5px);}}
-.shake{animation:shake .35s ease;}
+::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 </style>
 </head>
 <body>
 
-<!-- ══ SCREEN: LOGIN ESTUDIO ══ -->
-<div id="sc-login" class="screen active">
-  <span class="admin-link" onclick="goTo('admin-login')">acceso administrador ↗</span>
+<!-- ═══════════════ LOGIN ESTUDIO ═══════════════ -->
+<div id="screen-login" class="screen active">
+  <span class="login-admin-link" onclick="goTo('admin-login')">acceso administrador ↗</span>
   <div class="login-box">
     <div class="login-logo">
-      <div class="logo-name">Lexora</div>
-      <div class="logo-sub">Plataforma de Gestión Jurídica</div>
+      <div class="login-logo-name">Lexora</div>
+      <div class="login-logo-sub">Plataforma de Gestión Jurídica</div>
     </div>
     <div class="login-card">
       <div class="login-title">Ingresá a tu estudio</div>
-      <div class="login-sub">Gestioná clientes, causas y facturación desde un solo lugar.</div>
-      <div id="login-err" class="err-box">Email o contraseña incorrectos. Verificá e intentá de nuevo.</div>
-      <div class="fg"><label class="fl">Email</label><input id="li-email" class="fi" type="email" placeholder="estudio@ejemplo.com"></div>
-      <div class="fg" style="margin-bottom:22px;"><label class="fl">Contraseña</label><input id="li-pass" class="fi" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
-      <button id="login-btn" class="btn btn-p btn-fw" onclick="doLogin()">Ingresar al panel</button>
+      <div class="login-sub">Gestioná clientes, causas y facturación en un solo lugar.</div>
+      <div id="login-err" class="error-box"></div>
+      <div class="form-group"><label class="form-label">Email</label><input id="l-email" class="form-input" type="email" placeholder="estudio@ejemplo.com"></div>
+      <div class="form-group" style="margin-bottom:22px;"><label class="form-label">Contraseña</label><input id="l-pass" class="form-input" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button id="login-btn" class="btn btn-primary btn-full" onclick="doLogin()">Ingresar al panel</button>
+      <div class="demo-box" id="demo-hint">
+        <p>⚡ <strong>Modo demo</strong> — Supabase no configurado<br>
+        Email: <strong>demo@lexora.com</strong> · Clave: <strong>demo123</strong></p>
+      </div>
     </div>
-    <div class="login-footer">Lexora © 2024 · Gestión jurídica profesional</div>
+    <div class="login-footer">Lexora © 2024 · Todos los derechos reservados</div>
   </div>
 </div>
 
-<!-- ══ SCREEN: ADMIN LOGIN ══ -->
-<div id="sc-admin-login" class="screen">
+<!-- ═══════════════ ADMIN LOGIN ═══════════════ -->
+<div id="screen-admin-login" class="screen">
   <span class="back-link" onclick="goTo('login')">← Volver</span>
   <div class="login-box">
     <div class="login-logo">
-      <div class="logo-name" style="color:var(--blu);">Lexora</div>
-      <div class="logo-sub">Panel de Administración</div>
+      <div class="login-logo-name" style="color:var(--blue);">Lexora</div>
+      <div class="login-logo-sub">Panel de Administración</div>
     </div>
     <div class="login-card" style="border-color:rgba(76,123,201,.2);">
       <div class="login-title">Acceso Super Admin</div>
-      <div class="login-sub">Área restringida. Solo personal autorizado de Lexora.</div>
-      <div id="admin-err" class="err-box">Credenciales incorrectas.</div>
-      <div class="fg"><label class="fl">Email administrador</label><input id="ai-email" class="fi" type="email" placeholder="admin@lexora.com" style="border-color:rgba(76,123,201,.15);"></div>
-      <div class="fg" style="margin-bottom:22px;"><label class="fl">Contraseña</label><input id="ai-pass" class="fi" type="password" placeholder="••••••••" style="border-color:rgba(76,123,201,.15);" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
-      <button class="btn btn-bl btn-fw" onclick="doAdminLogin()">Entrar al panel admin</button>
+      <div class="login-sub">Área restringida — solo personal autorizado.</div>
+      <div id="admin-err" class="error-box"></div>
+      <div class="form-group"><label class="form-label">Email administrador</label><input id="al-email" class="form-input" type="email" placeholder="admin@lexora.com" style="border-color:rgba(76,123,201,.2);"></div>
+      <div class="form-group" style="margin-bottom:22px;"><label class="form-label">Contraseña</label><input id="al-pass" class="form-input" type="password" placeholder="••••••••" style="border-color:rgba(76,123,201,.2);" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
+      <button class="btn btn-blue btn-full" onclick="doAdminLogin()">Entrar al panel admin</button>
+      <div class="demo-box" style="border-color:rgba(76,123,201,.15);background:rgba(76,123,201,.04);margin-top:18px;">
+        <p>🔑 <strong style="color:rgba(76,123,201,.8);">Demo:</strong> admin@lexora.com · <strong style="color:rgba(76,123,201,.8);">admin123</strong></p>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- ══ SCREEN: APP ESTUDIO ══ -->
-<div id="sc-app" class="screen">
+<!-- ═══════════════ APP ESTUDIO ═══════════════ -->
+<div id="screen-app" class="screen">
   <aside class="sidebar">
-    <div class="s-logo">
-      <div class="s-logo-name">Lexora</div>
-      <div class="s-logo-tag">Gestión Jurídica</div>
-    </div>
-    <nav class="snav">
-      <div class="nav-sec">Principal</div>
-      <div class="nav-i active" onclick="showPage('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</div>
-      <div class="nav-i" onclick="showPage('clientes',this)"><span class="nav-icon">◎</span>Clientes</div>
-      <div class="nav-i" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Expedientes</div>
-      <div class="nav-sec">Operaciones</div>
-      <div class="nav-i" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Recordatorios<span class="nbadge" id="rec-badge" style="display:none;">0</span></div>
-      <div class="nav-i" onclick="showPage('facturacion',this)"><span class="nav-icon">◈</span>Facturación</div>
+    <div class="logo"><div class="logo-name">Lexora</div><div class="logo-tagline">Gestión Jurídica</div></div>
+    <nav>
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</div>
+      <div class="nav-item" onclick="showPage('clientes',this)"><span class="nav-icon">◎</span>Clientes</div>
+      <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Expedientes</div>
+      <div class="nav-section">Operaciones</div>
+      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Recordatorios<span class="badge" id="rec-badge">0</span></div>
+      <div class="nav-item" onclick="showPage('facturacion',this)"><span class="nav-icon">◈</span>Facturación</div>
     </nav>
-    <div class="s-footer">
+    <div class="sidebar-footer">
       <div class="user-chip" onclick="doLogout()">
-        <div class="ava" id="sidebar-ava">?</div>
-        <div>
-          <div style="font-size:12px;font-weight:500;color:var(--txt);" id="sidebar-name">Cargando...</div>
-          <div style="font-size:10px;color:var(--tmut);font-family:'DM Mono',monospace;" id="sidebar-plan">Cerrar sesión</div>
-        </div>
+        <div class="avatar" id="sb-avatar">--</div>
+        <div><div class="user-name" id="sb-name">Cargando...</div><div class="user-plan" id="sb-plan">Cerrar sesión</div></div>
       </div>
     </div>
   </aside>
   <main class="main">
     <div class="topbar">
-      <div class="page-title" id="page-title">Dashboard</div>
-      <div style="display:flex;align-items:center;gap:9px;">
-        <div class="search-bar">
-          <span style="color:var(--tmut);font-size:13px;">⌕</span>
-          <input type="text" placeholder="Buscar cliente o expediente..." id="search-input" oninput="handleSearch(this.value)">
-        </div>
-        <div class="notif-btn" id="notif-btn"><span>🔔</span><div class="nbadge2" id="notif-count" style="display:none;">0</div></div>
-        <button class="btn btn-p" onclick="openModal()">+ Nuevo</button>
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <div class="search-bar"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" placeholder="Buscar..." oninput="handleSearch(this.value)"></div>
+        <div class="notif-btn">🔔<div class="notif-badge" id="notif-count">0</div></div>
+        <button class="btn btn-primary" onclick="openModal()">+ Nuevo</button>
       </div>
     </div>
 
     <!-- DASHBOARD -->
-    <div id="p-dashboard" class="page active">
+    <div id="page-dashboard" class="page active">
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-lbl">Clientes</div><div class="stat-val" id="s-clientes">—</div><div class="stat-ch" id="s-clientes-ch"></div><div class="stat-ico">◎</div></div>
-        <div class="stat-card"><div class="stat-lbl">Expedientes abiertos</div><div class="stat-val" id="s-exp">—</div><div class="stat-ch" id="s-exp-ch"></div><div class="stat-ico">▤</div></div>
-        <div class="stat-card"><div class="stat-lbl">Facturado (total)</div><div class="stat-val" id="s-fact">—</div><div class="stat-ch up">↑ cobrado</div><div class="stat-ico">◈</div></div>
-        <div class="stat-card"><div class="stat-lbl">Vencimientos urgentes</div><div class="stat-val" id="s-rec">—</div><div class="stat-ch dn" id="s-rec-ch"></div><div class="stat-ico">◷</div></div>
+        <div class="stat-card"><div class="stat-label">Clientes</div><div class="stat-value" id="st-cli">—</div><div class="stat-change up">registrados</div><div class="stat-icon">◎</div></div>
+        <div class="stat-card"><div class="stat-label">Expedientes activos</div><div class="stat-value" id="st-exp">—</div><div class="stat-change up">en curso</div><div class="stat-icon">▤</div></div>
+        <div class="stat-card"><div class="stat-label">Facturado (cobrado)</div><div class="stat-value" id="st-fact">—</div><div class="stat-change up">total</div><div class="stat-icon">◈</div></div>
+        <div class="stat-card"><div class="stat-label">Alertas urgentes</div><div class="stat-value" id="st-venc">—</div><div class="stat-change down" id="st-venc-sub">vencimientos</div><div class="stat-icon">◷</div></div>
       </div>
       <div class="dash-grid">
         <div class="card">
-          <div class="card-hdr"><div class="card-title">Expedientes recientes</div><button class="btn btn-g" onclick="showPage('expedientes',null)" style="font-size:11px;padding:5px 10px;">Ver todos →</button></div>
-          <div class="t-head exp-row"><div class="th">Expediente</div><div class="th">Cliente</div><div class="th">Estado</div><div class="th">Apertura</div><div class="th"></div></div>
-          <div id="dash-exp"></div>
+          <div class="card-header"><div class="card-title">Expedientes recientes</div><button class="btn btn-ghost" onclick="showPage('expedientes',null)" style="font-size:11px;padding:5px 10px;">Ver todos →</button></div>
+          <div class="table-header exp-row"><div class="th">Expediente</div><div class="th">Cliente</div><div class="th">Tipo</div><div class="th">Estado</div><div class="th"></div></div>
+          <div id="dash-exp"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
         </div>
         <div class="card">
-          <div class="card-hdr"><div class="card-title">Alertas</div><span id="alerts-count" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--tmut);"></span></div>
-          <div id="dash-alerts"></div>
+          <div class="card-header"><div class="card-title">Alertas</div><span id="alert-count" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);"></span></div>
+          <div id="dash-alerts"><div class="loading"><div class="spinner"></div></div></div>
         </div>
       </div>
     </div>
 
     <!-- CLIENTES -->
-    <div id="p-clientes" class="page">
-      <div class="sec-hdr"><div class="sec-title">Clientes</div><button class="btn btn-p" onclick="openModal('cliente')">+ Nuevo cliente</button></div>
-      <div class="clients-grid" id="cl-grid"></div>
+    <div id="page-clientes" class="page">
+      <div class="section-hdr"><div class="section-title">Clientes</div><button class="btn btn-primary" onclick="openModal('cliente')">+ Nuevo cliente</button></div>
+      <div class="clients-grid" id="cli-grid"><div class="loading" style="grid-column:1/-1;"><div class="spinner"></div>Cargando...</div></div>
     </div>
 
     <!-- EXPEDIENTES -->
-    <div id="p-expedientes" class="page">
-      <div class="sec-hdr"><div class="sec-title">Expedientes</div><button class="btn btn-p" onclick="openModal('expediente')">+ Nuevo expediente</button></div>
+    <div id="page-expedientes" class="page">
+      <div class="section-hdr"><div class="section-title">Expedientes</div><button class="btn btn-primary" onclick="openModal('expediente')">+ Nuevo expediente</button></div>
       <div class="card">
-        <div class="t-head exp-row"><div class="th">Expediente</div><div class="th">Cliente</div><div class="th">Estado</div><div class="th">Apertura</div><div class="th">Acciones</div></div>
-        <div id="exp-list"></div>
+        <div class="table-header exp-row"><div class="th">Expediente</div><div class="th">Cliente</div><div class="th">Tipo</div><div class="th">Estado</div><div class="th">Acciones</div></div>
+        <div id="exp-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
       </div>
     </div>
 
     <!-- RECORDATORIOS -->
-    <div id="p-recordatorios" class="page">
-      <div class="sec-hdr"><div class="sec-title">Recordatorios</div><button class="btn btn-p" onclick="openModal('recordatorio')">+ Nuevo recordatorio</button></div>
-      <div id="rec-list"></div>
+    <div id="page-recordatorios" class="page">
+      <div class="section-hdr"><div class="section-title">Recordatorios</div><button class="btn btn-primary" onclick="openModal('recordatorio')">+ Nuevo recordatorio</button></div>
+      <div id="rec-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
     </div>
 
-    <!-- FACTURACION -->
-    <div id="p-facturacion" class="page">
-      <div class="sec-hdr"><div class="sec-title">Facturación</div><button class="btn btn-p" onclick="openModal('factura')">+ Nueva factura</button></div>
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px;">
-        <div class="stat-card"><div class="stat-lbl">Total cobrado</div><div class="stat-val" style="font-size:26px;" id="f-cobrado">$0</div><div class="stat-ch up">cobrado</div></div>
-        <div class="stat-card"><div class="stat-lbl">Pendiente de cobro</div><div class="stat-val" style="font-size:26px;" id="f-pendiente">$0</div><div class="stat-ch wn" id="f-pend-cnt"></div></div>
-        <div class="stat-card"><div class="stat-lbl">Vencidas</div><div class="stat-val" style="font-size:26px;" id="f-vencido">$0</div><div class="stat-ch dn" id="f-venc-cnt"></div></div>
+    <!-- FACTURACIÓN -->
+    <div id="page-facturacion" class="page">
+      <div class="section-hdr"><div class="section-title">Facturación</div><button class="btn btn-primary" onclick="openModal('factura')">+ Nueva factura</button></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-label">Total cobrado</div><div class="stat-value" style="font-size:28px;" id="f-cob">—</div><div class="stat-change up">facturas pagas</div></div>
+        <div class="stat-card"><div class="stat-label">Pendiente</div><div class="stat-value" style="font-size:28px;" id="f-pen">—</div><div class="stat-change warn">por cobrar</div></div>
+        <div class="stat-card"><div class="stat-label">Vencidas</div><div class="stat-value" style="font-size:28px;" id="f-vec">—</div><div class="stat-change down">requieren atención</div></div>
       </div>
       <div class="card">
-        <div class="card-hdr"><div class="card-title">Historial de facturas</div></div>
-        <div class="t-head inv-row"><div class="th">Nº</div><div class="th">Cliente</div><div class="th">Concepto</div><div class="th">Monto</div><div class="th">Estado</div><div class="th"></div></div>
-        <div id="inv-list"></div>
+        <div class="card-header"><div class="card-title">Historial de facturas</div></div>
+        <div class="table-header inv-row"><div class="th">Nº</div><div class="th">Cliente</div><div class="th">Concepto</div><div class="th">Monto</div><div class="th">Estado</div><div class="th">Acc.</div></div>
+        <div id="inv-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
       </div>
     </div>
   </main>
 </div>
 
-<!-- MODAL APP -->
-<div class="modal-ov" id="modal-ov" onclick="closeModal(event)">
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
   <div class="modal">
-    <div class="modal-hdr"><div class="modal-title" id="modal-title">Nuevo</div><div class="modal-x" onclick="closeModal()">✕</div></div>
+    <div class="modal-header"><div class="modal-title" id="modal-title">Nuevo</div><div class="modal-close" onclick="closeModal()">✕</div></div>
     <div class="modal-body" id="modal-body"></div>
-    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal()">Cancelar</button><button class="btn btn-p" id="modal-save-btn" onclick="saveModal()">Guardar</button></div>
+    <div class="modal-footer" id="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" id="modal-save" onclick="saveModal()">Guardar</button></div>
   </div>
 </div>
 
-<!-- ══ SCREEN: SUPER ADMIN ══ -->
-<div id="sc-admin" class="screen">
-  <aside class="admin-sb">
-    <div class="admin-logo">
-      <div class="admin-badge"><span>Super Admin</span></div>
-      <div class="admin-logo-name">Lexora</div>
-      <div class="admin-logo-sub">Panel de Control</div>
-    </div>
+<!-- ═══════════════ SUPER ADMIN ═══════════════ -->
+<div id="screen-admin" class="screen">
+  <aside class="admin-sidebar">
+    <div class="admin-logo"><div class="admin-badge"><span>Super Admin</span></div><div class="admin-logo-name">Lexora</div><div class="admin-logo-sub">Panel de Control</div></div>
     <div class="admin-nav">
-      <div class="an-i active" onclick="showAPage('overview',this)">⊞ &nbsp;Resumen</div>
-      <div class="an-i" onclick="showAPage('estudios',this)">◎ &nbsp;Estudios</div>
-      <div class="an-i" onclick="showAPage('suscripciones',this)">◈ &nbsp;Suscripciones</div>
-      <div class="an-i" onclick="showAPage('nuevo',this)">＋ &nbsp;Nuevo estudio</div>
+      <div class="admin-nav-item active" onclick="showAdminPage('overview',this)">⊞ Resumen general</div>
+      <div class="admin-nav-item" onclick="showAdminPage('estudios',this)">◎ Estudios / Cuentas</div>
+      <div class="admin-nav-item" onclick="showAdminPage('suscripciones',this)">◈ Suscripciones</div>
+      <div class="admin-nav-item" onclick="showAdminPage('nuevo-estudio',this)">+ Nuevo estudio</div>
     </div>
-    <div style="padding:14px;border-top:1px solid #1e1e28;">
-      <button class="btn btn-g btn-fw" style="font-size:12px;border-color:#1e1e28;" onclick="doAdminLogout()">← Cerrar sesión</button>
-    </div>
+    <div style="padding:14px;border-top:1px solid #1e1e28;"><button class="btn btn-ghost btn-full" style="font-size:12px;border-color:#1e1e28;" onclick="doAdminLogout()">← Cerrar sesión</button></div>
   </aside>
   <main class="admin-main">
     <div class="admin-topbar">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;flex:1;" id="a-page-title">Resumen</div>
-      <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--tmut);" id="admin-user-email"></span>
+      <div class="admin-page-title" id="admin-ptitle">Resumen general</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);" id="admin-user-label">admin@lexora.com</span>
+        <div style="width:28px;height:28px;background:rgba(76,123,201,.15);border:1px solid rgba(76,123,201,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--blue);">A</div>
+      </div>
     </div>
 
     <!-- OVERVIEW -->
-    <div id="ap-overview" class="apage active">
-      <div class="admin-stats">
-        <div class="a-stat"><div class="a-stat-lbl">Estudios activos</div><div class="a-stat-val" id="a-activos">—</div><div class="a-stat-sub" style="color:var(--grn);">cuentas operativas</div></div>
-        <div class="a-stat"><div class="a-stat-lbl">MRR estimado</div><div class="a-stat-val" id="a-mrr">—</div><div class="a-stat-sub" style="color:var(--grn);">USD / mes</div></div>
-        <div class="a-stat"><div class="a-stat-lbl">Suspendidas</div><div class="a-stat-val" id="a-susp">—</div><div class="a-stat-sub" style="color:var(--red);">inactivas</div></div>
-        <div class="a-stat"><div class="a-stat-lbl">Total registrados</div><div class="a-stat-val" id="a-total">—</div><div class="a-stat-sub">estudios</div></div>
-      </div>
-      <div class="a-card">
-        <div class="a-card-hdr"><div class="a-card-title">Distribución de planes</div></div>
-        <div style="padding:20px;" id="a-plan-dist"></div>
+    <div id="admin-page-overview" class="admin-page active">
+      <div class="admin-stats" id="a-stats"></div>
+      <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title">Estudios registrados</div></div><div id="a-recent"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title">Distribución de planes</div></div><div style="padding:20px;" id="a-plans"></div></div>
+        <div class="admin-card"><div class="admin-card-header"><div class="admin-card-title">MRR & ARR estimado</div></div><div style="padding:22px;" id="a-mrr"></div></div>
       </div>
     </div>
 
     <!-- ESTUDIOS -->
-    <div id="ap-estudios" class="apage">
-      <div class="sec-hdr" style="margin-bottom:16px;">
-        <div class="sec-title">Estudios registrados</div>
-        <button class="btn btn-p" style="font-size:12px;" onclick="showAPage('nuevo',null)">+ Nuevo estudio</button>
-      </div>
-      <div class="a-card">
-        <div style="display:grid;grid-template-columns:1fr 100px 90px 70px 100px 110px;padding:9px 20px;background:rgba(20,20,26,.8);border-bottom:1px solid #1e1e28;">
-          <div class="th">Estudio</div><div class="th">Plan</div><div class="th">Estado</div><div class="th">Usuarios</div><div class="th">Próx. cobro</div><div class="th">Acciones</div>
+    <div id="admin-page-estudios" class="admin-page">
+      <div class="section-hdr" style="margin-bottom:16px;"><div class="section-title">Estudios / Cuentas</div><button class="btn btn-primary" style="font-size:12px;" onclick="showAdminPage('nuevo-estudio',null)">+ Nuevo estudio</button></div>
+      <div class="admin-card">
+        <div style="display:grid;grid-template-columns:1fr 90px 90px 70px 110px 120px;padding:9px 20px;background:rgba(20,20,26,.8);border-bottom:1px solid #1e1e28;">
+          <div class="th">Estudio</div><div class="th">Plan</div><div class="th">Estado</div><div class="th">Exptes.</div><div class="th">Creado</div><div class="th">Acciones</div>
         </div>
-        <div id="a-firms-list"></div>
+        <div id="a-firms"></div>
       </div>
     </div>
 
     <!-- SUSCRIPCIONES -->
-    <div id="ap-suscripciones" class="apage">
-      <div class="sec-hdr" style="margin-bottom:16px;"><div class="sec-title">Suscripciones & Ingresos</div></div>
-      <div class="admin-stats" style="grid-template-columns:repeat(3,1fr);">
-        <div class="a-stat"><div class="a-stat-lbl">Plan Basic ($29/mes)</div><div class="a-stat-val" id="a-basic-cnt">—</div><div class="a-stat-sub" id="a-basic-mrr"></div></div>
-        <div class="a-stat"><div class="a-stat-lbl">Plan Pro ($79/mes)</div><div class="a-stat-val" id="a-pro-cnt">—</div><div class="a-stat-sub" id="a-pro-mrr"></div></div>
-        <div class="a-stat"><div class="a-stat-lbl">Plan Enterprise ($199/mes)</div><div class="a-stat-val" id="a-ent-cnt">—</div><div class="a-stat-sub" id="a-ent-mrr"></div></div>
-      </div>
-      <div class="a-card">
-        <div class="a-card-hdr"><div class="a-card-title">Detalle por estudio</div></div>
-        <div style="display:grid;grid-template-columns:1fr 100px 100px 90px;padding:9px 20px;background:rgba(20,20,26,.8);border-bottom:1px solid #1e1e28;">
-          <div class="th">Estudio</div><div class="th">Plan</div><div class="th">Monto/mes</div><div class="th">Estado</div>
-        </div>
-        <div id="a-subs-list"></div>
+    <div id="admin-page-suscripciones" class="admin-page">
+      <div class="section-hdr" style="margin-bottom:16px;"><div class="section-title">Suscripciones & Ingresos</div></div>
+      <div class="admin-stats" style="grid-template-columns:repeat(3,1fr);" id="a-plan-stats"></div>
+      <div class="admin-card">
+        <div class="admin-card-header"><div class="admin-card-title">Detalle por estudio</div></div>
+        <div style="display:grid;grid-template-columns:1fr 100px 90px 90px;padding:9px 20px;background:rgba(20,20,26,.8);border-bottom:1px solid #1e1e28;"><div class="th">Estudio</div><div class="th">Plan</div><div class="th">Monto/mes</div><div class="th">Estado</div></div>
+        <div id="a-sub-list"></div>
       </div>
     </div>
 
     <!-- NUEVO ESTUDIO -->
-    <div id="ap-nuevo" class="apage">
-      <div class="sec-hdr" style="margin-bottom:16px;"><div class="sec-title">Alta de nuevo estudio</div></div>
-      <div class="a-card" style="max-width:560px;">
-        <div class="a-card-hdr"><div class="a-card-title">Datos de la cuenta</div></div>
-        <div style="padding:22px;">
-          <div id="new-firm-err" class="err-box"></div>
-          <div class="fr" style="margin-bottom:16px;">
-            <div class="fg"><label class="fl">Nombre del estudio</label><input id="nf-nombre" class="fi" placeholder="Estudio Jurídico García" style="background:#0e0e14;border-color:#1e1e28;"></div>
-            <div class="fg"><label class="fl">Titular / Dr.</label><input id="nf-titular" class="fi" placeholder="Dr. Juan García" style="background:#0e0e14;border-color:#1e1e28;"></div>
+    <div id="admin-page-nuevo-estudio" class="admin-page">
+      <div class="section-hdr" style="margin-bottom:16px;"><div class="section-title">Alta de nuevo estudio</div></div>
+      <div class="admin-card" style="max-width:580px;">
+        <div class="admin-card-header"><div class="admin-card-title">Datos del estudio</div></div>
+        <div style="padding:24px;">
+          <div class="form-row" style="margin-bottom:0;">
+            <div class="form-group"><label class="form-label">Nombre del estudio</label><input id="nf-nombre" class="form-input" placeholder="Estudio Jurídico..." style="background:#0e0e14;border-color:#1e1e28;"></div>
+            <div class="form-group"><label class="form-label">Titular</label><input id="nf-titular" class="form-input" placeholder="Dr. Juan García" style="background:#0e0e14;border-color:#1e1e28;"></div>
           </div>
-          <div class="fr" style="margin-bottom:16px;">
-            <div class="fg"><label class="fl">Email de acceso</label><input id="nf-email" class="fi" type="email" placeholder="estudio@ejemplo.com" style="background:#0e0e14;border-color:#1e1e28;"></div>
-            <div class="fg"><label class="fl">Contraseña inicial</label><input id="nf-pass" class="fi" type="password" placeholder="Mínimo 6 caracteres" style="background:#0e0e14;border-color:#1e1e28;"></div>
+          <div class="form-row" style="margin-bottom:0;">
+            <div class="form-group"><label class="form-label">Email de acceso</label><input id="nf-email" class="form-input" type="email" placeholder="estudio@ejemplo.com" style="background:#0e0e14;border-color:#1e1e28;"></div>
+            <div class="form-group"><label class="form-label">Contraseña inicial</label><input id="nf-pass" class="form-input" type="password" placeholder="Mínimo 8 caracteres" style="background:#0e0e14;border-color:#1e1e28;"></div>
           </div>
-          <div class="fr" style="margin-bottom:16px;">
-            <div class="fg"><label class="fl">Plan</label>
-              <select id="nf-plan" class="fi" style="background:#0e0e14;border-color:#1e1e28;">
-                <option value="basic">Basic — $29/mes</option>
-                <option value="pro" selected>Pro — $79/mes</option>
-                <option value="enterprise">Enterprise — $199/mes</option>
-                <option value="trial">Trial 14 días (gratis)</option>
+          <div class="form-row" style="margin-bottom:0;">
+            <div class="form-group"><label class="form-label">Plan</label>
+              <select id="nf-plan" class="form-input" style="background:#0e0e14;border-color:#1e1e28;">
+                <option value="basic">Basic — $29/mes</option><option value="pro" selected>Pro — $79/mes</option><option value="enterprise">Enterprise — $199/mes</option><option value="trial">Trial 14 días (gratis)</option>
               </select>
             </div>
-            <div class="fg"><label class="fl">País</label>
-              <select id="nf-pais" class="fi" style="background:#0e0e14;border-color:#1e1e28;">
-                <option>Argentina</option><option>Uruguay</option><option>Chile</option><option>Colombia</option><option>México</option>
+            <div class="form-group"><label class="form-label">País</label>
+              <select id="nf-pais" class="form-input" style="background:#0e0e14;border-color:#1e1e28;">
+                <option selected>Argentina</option><option>Uruguay</option><option>Chile</option><option>Colombia</option><option>México</option>
               </select>
             </div>
           </div>
-          <div class="fg" style="margin-bottom:22px;"><label class="fl">Teléfono (opcional)</label><input id="nf-tel" class="fi" placeholder="+54 11 xxxx-xxxx" style="background:#0e0e14;border-color:#1e1e28;"></div>
-          <button id="create-firm-btn" class="btn btn-p btn-fw" onclick="createFirm()">Crear cuenta del estudio</button>
+          <div id="nf-err" class="error-box" style="margin-top:4px;"></div>
+          <button id="nf-btn" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;margin-top:8px;" onclick="adminCreateFirm()">Crear cuenta del estudio</button>
         </div>
       </div>
     </div>
-
   </main>
 </div>
 
-<!-- MODAL ADMIN (editar estudio) -->
-<div class="modal-ov" id="admin-modal-ov" onclick="closeAdminModal(event)">
-  <div class="modal">
-    <div class="modal-hdr"><div class="modal-title" id="admin-modal-title">Editar estudio</div><div class="modal-x" onclick="closeAdminModal()">✕</div></div>
-    <div class="modal-body" id="admin-modal-body"></div>
-    <div class="modal-ft"><button class="btn btn-g" onclick="closeAdminModal()">Cancelar</button><button class="btn btn-p" id="admin-modal-save" onclick="saveAdminModal()">Guardar</button></div>
-  </div>
-</div>
-
 <script>
-// ═══════════════════════════════════════════════════════════
-//  ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
-//  ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
-//  ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
-//  ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
-//  ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
-//   ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
-// ═══════════════════════════════════════════════════════════
+'use strict';
 
-// ────────────────────────────────────────────────────────
-//  ▶ CONFIGURACIÓN — EDITÁ ESTOS VALORES
-// ────────────────────────────────────────────────────────
-const CONFIG = {
-  SUPABASE_URL:  'https://TU_PROYECTO.supabase.co',   // ← Pegá tu URL
-  SUPABASE_KEY:  'TU_ANON_KEY_AQUI',                  // ← Pegá tu clave anon
-  ADMIN_EMAIL:   'admin@lexora.com',                   // ← Tu email de admin
-  ADMIN_PASSWORD:'lexora_admin_2024',                  // ← Cambiá esto
+/* ╔══════════════════════════════════════════════╗
+   ║  ⚙️  CONFIGURACIÓN — EDITÁ AQUÍ              ║
+   ║  Pegá tus claves de Supabase                 ║
+   ║  Si están vacías → modo demo con data local  ║
+   ╚══════════════════════════════════════════════╝ */
+const CFG = {
+  SUPABASE_URL : '',        // 'https://xxxxxxxx.supabase.co'
+  SUPABASE_KEY : '',        // 'eyJhbGci...'
+  ADMIN_EMAIL  : 'admin@lexora.com',
+  ADMIN_PASS   : 'admin123',
 };
 
-// Precios por plan (USD)
-const PLAN_PRICE = { basic:29, pro:79, enterprise:199, trial:0 };
+/* ══ SUPABASE INIT ══ */
+const LIVE = !!(CFG.SUPABASE_URL && CFG.SUPABASE_URL.length > 10);
+let sb = null;
+if (LIVE) { try { sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY); } catch(e){} }
+if (!LIVE) { document.getElementById('demo-hint').style.display = 'block'; }
+else       { document.getElementById('demo-hint').style.display = 'none';  }
 
-// ────────────────────────────────────────────────────────
-//  INIT SUPABASE
-// ────────────────────────────────────────────────────────
-const { createClient } = supabase;
-const sb = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
-
-// ────────────────────────────────────────────────────────
-//  STATE
-// ────────────────────────────────────────────────────────
-let state = {
-  user: null,
-  estudio: null,
-  isAdmin: false,
-  clientes: [],
-  expedientes: [],
-  recordatorios: [],
-  facturas: [],
-  adminFirms: [],
-  curModal: null,
-  editingId: null,
-  adminEditingId: null,
+/* ══ DEMO DATA ══ */
+let DD = {
+  clientes:[
+    {id:'c1',nombre:'María Rodríguez',tipo:'Persona física',email:'mrodriguez@gmail.com',telefono:'011-4523-1234',notas:'',created_at:'2024-01-10'},
+    {id:'c2',nombre:'Construcciones Norte SA',tipo:'Empresa',email:'legal@cnorte.com',telefono:'011-5500-8800',notas:'',created_at:'2024-02-01'},
+    {id:'c3',nombre:'Juan Pablo Ferreira',tipo:'Persona física',email:'jp@hotmail.com',telefono:'011-4891-5521',notas:'',created_at:'2024-02-14'},
+    {id:'c4',nombre:'Industrias Del Sur SRL',tipo:'Empresa',email:'adm@delsur.com',telefono:'0291-445-2200',notas:'',created_at:'2024-03-01'},
+    {id:'c5',nombre:'Claudia Méndez',tipo:'Persona física',email:'cmendez@gmail.com',telefono:'011-3310-7742',notas:'',created_at:'2024-03-10'},
+    {id:'c6',nombre:'Grupo Inversiones RP',tipo:'Empresa',email:'legal@gruporp.com',telefono:'011-5560-3300',notas:'',created_at:'2024-03-20'},
+  ],
+  expedientes:[
+    {id:'e1',titulo:'Divorcio contencioso',cliente_id:'c1',tipo:'Familia',estado:'activo',juzgado:'Juzgado Familia Nº3',descripcion:'',created_at:'2024-01-15'},
+    {id:'e2',titulo:'Contrato de sociedad',cliente_id:'c2',tipo:'Comercial',estado:'pendiente',juzgado:'',descripcion:'',created_at:'2024-02-01'},
+    {id:'e3',titulo:'Demanda laboral',cliente_id:'c3',tipo:'Laboral',estado:'activo',juzgado:'Juzgado Laboral Nº7',descripcion:'',created_at:'2024-02-14'},
+    {id:'e4',titulo:'Due diligence adquisición',cliente_id:'c4',tipo:'Comercial',estado:'activo',juzgado:'',descripcion:'',created_at:'2024-03-01'},
+    {id:'e5',titulo:'Sucesión intestada',cliente_id:'c5',tipo:'Civil',estado:'pendiente',juzgado:'Juzgado Civil Nº12',descripcion:'',created_at:'2024-03-10'},
+    {id:'e6',titulo:'Fusión empresarial',cliente_id:'c6',tipo:'Comercial',estado:'activo',juzgado:'',descripcion:'',created_at:'2024-03-20'},
+  ],
+  recordatorios:[
+    {id:'r1',titulo:'Vencimiento contestación demanda',expediente_id:'e3',fecha_limite:'2024-04-02',urgencia:'urgente',nota:'Presentar escrito antes de las 18hs',created_at:'2024-03-20'},
+    {id:'r2',titulo:'Audiencia de mediación',expediente_id:'e1',fecha_limite:'2024-04-08',urgencia:'activo',nota:'Sala 4 del Centro de Mediación',created_at:'2024-03-21'},
+    {id:'r3',titulo:'Renovación poder notarial',expediente_id:'e2',fecha_limite:'2024-04-15',urgencia:'pendiente',nota:'Coordinar firma con el cliente',created_at:'2024-03-22'},
+    {id:'r4',titulo:'Presentación pericial contable',expediente_id:'e4',fecha_limite:'2024-04-22',urgencia:'activo',nota:'Revisar datos con el perito',created_at:'2024-03-25'},
+  ],
+  facturas:[
+    {id:'f1',numero:'0001-00042',cliente_id:'c6',concepto:'Honorarios fusión — Marzo',monto:45000,estado:'cobrado',vencimiento:'2024-03-31',created_at:'2024-03-01'},
+    {id:'f2',numero:'0001-00043',cliente_id:'c2',concepto:'Revisión contratos',monto:18000,estado:'cobrado',vencimiento:'2024-03-15',created_at:'2024-03-05'},
+    {id:'f3',numero:'0001-00044',cliente_id:'c5',concepto:'Gestión sucesión',monto:8000,estado:'pendiente',vencimiento:'2024-04-15',created_at:'2024-03-10'},
+    {id:'f4',numero:'0001-00045',cliente_id:'c1',concepto:'Honorarios Feb/Mar',monto:12000,estado:'pendiente',vencimiento:'2024-04-20',created_at:'2024-03-12'},
+    {id:'f5',numero:'0001-00046',cliente_id:'c3',concepto:'Demanda laboral',monto:5500,estado:'vencido',vencimiento:'2024-03-01',created_at:'2024-02-28'},
+    {id:'f6',numero:'0001-00047',cliente_id:'c4',concepto:'Due diligence',monto:32000,estado:'cobrado',vencimiento:'2024-03-20',created_at:'2024-03-15'},
+  ],
 };
+let FIRMS = [
+  {id:'fi1',nombre:'Estudio Soria & Asoc.',email:'soria@estudio.com',plan:'pro',activo:true,created_at:'2024-01-05'},
+  {id:'fi2',nombre:'García Abogados',email:'garcia@abogados.com',plan:'basic',activo:true,created_at:'2024-01-20'},
+  {id:'fi3',nombre:'Pérez & Ramos',email:'perez@prlaw.com',plan:'pro',activo:true,created_at:'2024-02-01'},
+  {id:'fi4',nombre:'Fernández Legal',email:'tfernandez@legal.com',plan:'enterprise',activo:true,created_at:'2024-02-15'},
+  {id:'fi5',nombre:'Consultora Jurídica Sur',email:'acoto@cjsur.com',plan:'basic',activo:false,created_at:'2024-03-01'},
+  {id:'fi6',nombre:'Estudio Norte',email:'pnorte@enorte.com',plan:'basic',activo:true,created_at:'2024-03-20'},
+];
 
-// ════════════════════════════════════════════════════════
-//  AUTH
-// ════════════════════════════════════════════════════════
+/* ══ STATE ══ */
+let CU = null; // current user
+let C = { clientes:[], expedientes:[], recordatorios:[], facturas:[] }; // cache
+let editId = null, curModal = 'default';
 
-async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    state.user = session.user;
-    if (state.user.email === CONFIG.ADMIN_EMAIL) {
-      state.isAdmin = true;
-      document.getElementById('admin-user-email').textContent = state.user.email;
-      goTo('admin');
-      await loadAdminData();
-    } else {
-      await loadEstudio();
-      goTo('app');
-      await loadAllAppData();
-    }
+/* ══ NAV ══ */
+function goTo(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+id).classList.add('active'); }
+
+/* ══ AUTH LOGIN ══ */
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim(), pass=document.getElementById('l-pass').value.trim();
+  const errEl=document.getElementById('login-err'), btn=document.getElementById('login-btn');
+  errEl.style.display='none'; btn.textContent='Ingresando...'; btn.disabled=true;
+  if(!LIVE){
+    if(email==='demo@lexora.com'&&pass==='demo123'){ CU={id:'demo',email,nombre:'Estudio Demo',plan:'Pro'}; afterLogin(); }
+    else { showErr('login-err','Credenciales incorrectas. Demo: demo@lexora.com / demo123'); btn.textContent='Ingresar al panel'; btn.disabled=false; }
+    return;
   }
-  // Listen for auth changes
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT') { state = { ...state, user:null, estudio:null, isAdmin:false }; goTo('login'); }
-  });
+  try{
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error) throw error;
+    const {data:p}=await sb.from('estudios').select('*').eq('id',data.user.id).single();
+    CU={...data.user,nombre:p?.nombre||email,plan:p?.plan||'basic',activo:p?.activo??true};
+    if(!CU.activo){await sb.auth.signOut();throw new Error('Cuenta suspendida. Contactá al administrador.');}
+    afterLogin();
+  }catch(e){ showErr('login-err',e.message||'Credenciales incorrectas.'); btn.textContent='Ingresar al panel'; btn.disabled=false; }
 }
-
-async function doLogin() {
-  const email = document.getElementById('li-email').value.trim();
-  const pass  = document.getElementById('li-pass').value.trim();
-  if (!email || !pass) { showLoginErr('login-err','Completá todos los campos.'); return; }
-
-  const btn = document.getElementById('login-btn');
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Ingresando...';
-
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.textContent = 'Ingresar al panel';
-
-  if (error) { showLoginErr('login-err', 'Email o contraseña incorrectos.'); return; }
-
-  state.user = data.user;
-  document.getElementById('login-err').style.display = 'none';
-
-  if (state.user.email === CONFIG.ADMIN_EMAIL) {
-    state.isAdmin = true;
-    document.getElementById('admin-user-email').textContent = state.user.email;
-    goTo('admin');
-    await loadAdminData();
-  } else {
-    await loadEstudio();
-    goTo('app');
-    await loadAllAppData();
-  }
+function showErr(id,msg){ const e=document.getElementById(id); e.textContent=msg; e.style.display='block'; }
+function afterLogin(){
+  const ini=(CU.nombre||'E').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('sb-avatar').textContent=ini;
+  document.getElementById('sb-name').textContent=CU.nombre;
+  document.getElementById('sb-plan').textContent=`Plan ${CU.plan||'Pro'} · Cerrar sesión`;
+  goTo('app'); loadAll();
 }
-
-async function doAdminLogin() {
-  const email = document.getElementById('ai-email').value.trim();
-  const pass  = document.getElementById('ai-pass').value.trim();
-  if (email !== CONFIG.ADMIN_EMAIL) { showLoginErr('admin-err','Credenciales incorrectas.'); return; }
-
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) { showLoginErr('admin-err','Credenciales incorrectas.'); return; }
-
-  state.user = data.user;
-  state.isAdmin = true;
-  document.getElementById('admin-user-email').textContent = state.user.email;
-  document.getElementById('admin-err').style.display = 'none';
-  goTo('admin');
-  await loadAdminData();
-}
-
-async function doLogout() {
-  await sb.auth.signOut();
-  state.user = null; state.estudio = null; state.isAdmin = false;
+async function doLogout(){
+  if(LIVE&&sb) await sb.auth.signOut();
+  CU=null; C={clientes:[],expedientes:[],recordatorios:[],facturas:[]};
+  document.getElementById('l-pass').value='';
   goTo('login');
 }
 
-function doAdminLogout() { doLogout(); }
+/* ══ ADMIN AUTH ══ */
+function doAdminLogin(){
+  const e=document.getElementById('al-email').value.trim(), p=document.getElementById('al-pass').value.trim();
+  if(e===CFG.ADMIN_EMAIL&&p===CFG.ADMIN_PASS){ goTo('admin'); renderAdmin(); }
+  else showErr('admin-err','Credenciales incorrectas.');
+}
+function doAdminLogout(){ goTo('login'); }
 
-async function loadEstudio() {
-  const { data, error } = await sb.from('estudios').select('*').eq('user_id', state.user.id).single();
-  if (error || !data) {
-    // Primer login: crear el registro del estudio automáticamente
-    const nombre = state.user.email.split('@')[0];
-    const { data: newE } = await sb.from('estudios').insert({
-      user_id: state.user.id,
-      nombre: nombre,
-      titular: nombre,
-      plan: 'pro',
-      activo: true
-    }).select().single();
-    state.estudio = newE;
-  } else {
-    state.estudio = data;
-  }
-  if (state.estudio) {
-    const initials = state.estudio.nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    document.getElementById('sidebar-ava').textContent = initials;
-    document.getElementById('sidebar-name').textContent = state.estudio.nombre;
-    document.getElementById('sidebar-plan').textContent = `Plan ${capitalize(state.estudio.plan)} · Cerrar sesión`;
-  }
+/* ══ DATA LAYER ══ */
+async function dbGet(t){
+  if(!LIVE) return DD[t]||[];
+  const {data,error}=await sb.from(t).select('*').eq('estudio_id',CU.id).order('created_at',{ascending:false});
+  return error?[]:data||[];
+}
+async function dbInsert(t,row){
+  if(!LIVE){ const n={...row,id:'d'+Date.now(),created_at:new Date().toISOString()}; DD[t].unshift(n); return n; }
+  const {data,error}=await sb.from(t).insert({...row,estudio_id:CU.id}).select().single();
+  if(error) throw error; return data;
+}
+async function dbUpdate(t,id,row){
+  if(!LIVE){ const i=DD[t].findIndex(r=>r.id===id); if(i>=0) DD[t][i]={...DD[t][i],...row}; return DD[t][i]; }
+  const {data,error}=await sb.from(t).update(row).eq('id',id).select().single();
+  if(error) throw error; return data;
+}
+async function dbDelete(t,id){
+  if(!LIVE){ DD[t]=DD[t].filter(r=>r.id!==id); return; }
+  const {error}=await sb.from(t).delete().eq('id',id);
+  if(error) throw error;
 }
 
-// ════════════════════════════════════════════════════════
-//  DATA LAYER — APP
-// ════════════════════════════════════════════════════════
+/* ══ LOAD ══ */
+async function loadAll(){
+  const [a,b,c,d]=await Promise.all([dbGet('clientes'),dbGet('expedientes'),dbGet('recordatorios'),dbGet('facturas')]);
+  C.clientes=a; C.expedientes=b; C.recordatorios=c; C.facturas=d;
+  renderAll();
+}
+function renderAll(){ rDash(); rCli(); rExp(); rRec(); rFact(); rBadges(); }
 
-async function loadAllAppData() {
-  await Promise.all([loadClientes(), loadExpedientes(), loadRecordatorios(), loadFacturas()]);
-  renderDashboard();
+/* ══ HELPERS ══ */
+const fmt=n=>'$'+Number(n||0).toLocaleString('es-AR');
+const cliName=id=>(C.clientes.find(x=>x.id===id)||{}).nombre||'—';
+const expTitle=id=>((C.expedientes.find(x=>x.id===id)||{}).titulo||'—');
+const stBadge=s=>`<span class="status ${s}">${s}</span>`;
+const planBadge=p=>{const m={pro:'plan-pro',basic:'plan-basic',enterprise:'plan-ent',trial:'plan-basic'};return`<span class="plan-badge ${m[p]||'plan-basic'}">${p||'basic'}</span>`;};
+function rBadges(){ const u=C.recordatorios.filter(r=>r.urgencia==='urgente').length; document.getElementById('rec-badge').textContent=u; document.getElementById('notif-count').textContent=u; }
+
+/* ══ DASHBOARD ══ */
+function rDash(){
+  document.getElementById('st-cli').textContent=C.clientes.length;
+  document.getElementById('st-exp').textContent=C.expedientes.filter(e=>e.estado==='activo').length;
+  document.getElementById('st-fact').textContent=fmt(C.facturas.filter(f=>f.estado==='cobrado').reduce((a,b)=>a+Number(b.monto||0),0));
+  const u=C.recordatorios.filter(r=>r.urgencia==='urgente').length;
+  document.getElementById('st-venc').textContent=u;
+  document.getElementById('st-venc-sub').textContent=u>0?'⚠ requieren atención':'✓ todo al día';
+  document.getElementById('dash-exp').innerHTML=C.expedientes.slice(0,5).map(e=>`
+    <div class="table-row exp-row">
+      <div><div class="cell-primary">${e.titulo}</div><div class="cell-secondary">${e.juzgado||'Sin juzgado'}</div></div>
+      <div class="cell-mono" style="font-size:11.5px;">${cliName(e.cliente_id).split(' ')[0]}</div>
+      <div class="cell-mono">${e.tipo||'—'}</div>
+      <div>${stBadge(e.estado)}</div><div></div>
+    </div>`).join('')||`<div class="empty-state"><div class="ei">📋</div><p>Sin expedientes</p></div>`;
+  const ac=[{color:'red',urgencia:'urgente'},...[]].concat(C.recordatorios.filter(r=>r.urgencia!=='cerrado').slice(0,5));
+  const cols={urgente:'red',activo:'gold',pendiente:'blue'};
+  document.getElementById('dash-alerts').innerHTML=C.recordatorios.slice(0,5).map(r=>`
+    <div class="table-row alert-row">
+      <div class="alert-dot ${cols[r.urgencia]||'blue'}" style="margin-top:4px;"></div>
+      <div><div class="cell-primary" style="font-size:12.5px;">${r.titulo}</div><div class="cell-secondary">${r.fecha_limite||''}</div></div>
+    </div>`).join('')||`<div class="empty-state"><div class="ei">✅</div><p>Sin alertas</p></div>`;
+  document.getElementById('alert-count').textContent=C.recordatorios.length+' activas';
 }
 
-async function loadClientes() {
-  const { data } = await sb.from('clientes').select('*').eq('estudio_id', state.estudio.id).order('created_at', { ascending: false });
-  state.clientes = data || [];
-  renderClientes();
-}
-async function loadExpedientes() {
-  const { data } = await sb.from('expedientes').select('*, clientes(nombre)').eq('estudio_id', state.estudio.id).order('created_at', { ascending: false });
-  state.expedientes = data || [];
-  renderExpedientes();
-}
-async function loadRecordatorios() {
-  const { data } = await sb.from('recordatorios').select('*').eq('estudio_id', state.estudio.id).order('fecha_limite', { ascending: true });
-  state.recordatorios = data || [];
-  const urgentes = state.recordatorios.filter(r => r.urgencia === 'urgente').length;
-  const badge = document.getElementById('rec-badge');
-  const notif = document.getElementById('notif-count');
-  if (urgentes > 0) {
-    badge.textContent = urgentes; badge.style.display = '';
-    notif.textContent = urgentes; notif.style.display = '';
-  }
-  renderRecordatorios();
-}
-async function loadFacturas() {
-  const { data } = await sb.from('facturas').select('*, clientes(nombre)').eq('estudio_id', state.estudio.id).order('created_at', { ascending: false });
-  state.facturas = data || [];
-  renderFacturas();
-}
-
-async function deleteRecord(table, id, reloadFn) {
-  if (!confirm('¿Eliminár este registro?')) return;
-  await sb.from(table).delete().eq('id', id);
-  await reloadFn();
-  showToast('🗑️ Eliminado correctamente');
-}
-
-// ════════════════════════════════════════════════════════
-//  RENDER — APP
-// ════════════════════════════════════════════════════════
-
-function fmt(n) { return '$' + Number(n||0).toLocaleString('es-AR'); }
-function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
-function fmtDate(d) { if (!d) return '—'; return d.slice(5).replace('-','/') + '/' + d.slice(0,4); }
-
-function renderDashboard() {
-  const expActivos = state.expedientes.filter(e => e.estado === 'activo').length;
-  const cobrado = state.facturas.filter(f => f.estado === 'cobrado').reduce((a,f) => a + Number(f.monto||0), 0);
-  const urgentes = state.recordatorios.filter(r => r.urgencia === 'urgente').length;
-
-  document.getElementById('s-clientes').textContent = state.clientes.length;
-  document.getElementById('s-clientes-ch').className = 'stat-ch up';
-  document.getElementById('s-clientes-ch').textContent = '↑ total registrados';
-  document.getElementById('s-exp').textContent = expActivos;
-  document.getElementById('s-exp-ch').className = 'stat-ch up';
-  document.getElementById('s-exp-ch').textContent = '↑ causas activas';
-  document.getElementById('s-fact').textContent = fmt(cobrado);
-  document.getElementById('s-rec').textContent = urgentes;
-  document.getElementById('s-rec-ch').textContent = urgentes > 0 ? '↓ requieren atención' : '✓ sin urgencias';
-
-  // Expedientes recientes
-  const recent = state.expedientes.slice(0, 5);
-  document.getElementById('dash-exp').innerHTML = recent.length
-    ? recent.map(e => `<div class="t-row exp-row" onclick="showPage('expedientes',null)">
-        <div><div class="cp">${e.titulo}</div><div class="cs">${e.tipo||'—'} · ${e.id}</div></div>
-        <div class="cm">${e.clientes?.nombre || '—'}</div>
-        <div><span class="st ${e.estado}">${e.estado}</span></div>
-        <div class="cm">${fmtDate(e.fecha_apertura)}</div>
-        <div></div>
-      </div>`).join('')
-    : `<div class="empty"><div class="empty-ico">▤</div><p>No hay expedientes aún.<br>Creá el primero.</p></div>`;
-
-  // Alertas
-  const alerts = state.recordatorios.filter(r => r.urgencia === 'urgente' || r.urgencia === 'activo').slice(0, 5);
-  document.getElementById('alerts-count').textContent = alerts.length + ' activas';
-  document.getElementById('dash-alerts').innerHTML = alerts.length
-    ? alerts.map(r => `<div class="t-row alert-row">
-        <div class="adot ${r.urgencia === 'urgente' ? 'red' : r.urgencia === 'activo' ? 'gold' : 'blue'}"></div>
-        <div><div class="cp" style="font-size:12.5px;">${r.titulo}</div><div class="cs">${r.fecha_limite ? 'Vence: '+fmtDate(r.fecha_limite) : 'Sin fecha'}</div></div>
-      </div>`).join('')
-    : `<div class="empty" style="padding:24px;"><p style="font-size:12px;">Sin alertas activas ✓</p></div>`;
-}
-
-function renderClientes() {
-  const grid = document.getElementById('cl-grid');
-  if (!state.clientes.length) {
-    grid.innerHTML = `<div style="grid-column:1/-1;"><div class="empty"><div class="empty-ico">◎</div><p>No tenés clientes registrados.<br>Agregá el primero.</p></div></div>`;
-    return;
-  }
-  grid.innerHTML = state.clientes.map(c => {
-    const initials = c.nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const expCount = state.expedientes.filter(e => e.cliente_id === c.id).length;
-    const deuda = state.facturas.filter(f => f.cliente_id === c.id && f.estado === 'pendiente').reduce((a,f) => a + Number(f.monto||0), 0);
-    return `<div class="cl-card">
-      <div class="cl-ava">${initials}</div>
-      <div class="cl-name">${c.nombre}</div>
-      <div class="cl-meta">${c.tipo||'—'} · ${c.email||'sin email'}</div>
-      <div class="cl-stats">
-        <div><div class="csi-val">${expCount}</div><div class="csi-lbl">Exptes.</div></div>
-        <div><div class="csi-val" style="${deuda>0?'color:var(--red)':'color:var(--grn)'}">${deuda>0?fmt(deuda):'✓'}</div><div class="csi-lbl">${deuda>0?'Pendiente':'Al día'}</div></div>
-        <div style="margin-left:auto;display:flex;align-items:flex-end;gap:6px;padding-bottom:2px;">
-          <button class="btn btn-g" style="padding:4px 9px;font-size:11px;" onclick="editCliente('${c.id}')">✎</button>
-          <button class="btn btn-d" style="padding:4px 9px;font-size:11px;" onclick="event.stopPropagation();deleteRecord('clientes','${c.id}',loadClientes)">✕</button>
-        </div>
+/* ══ CLIENTES ══ */
+function rCli(){
+  const g=document.getElementById('cli-grid');
+  if(!C.clientes.length){g.innerHTML=`<div class="empty-state" style="grid-column:1/-1;"><div class="ei">◎</div><p>Sin clientes aún.</p></div>`;return;}
+  g.innerHTML=C.clientes.map(c=>{
+    const exps=C.expedientes.filter(e=>e.cliente_id===c.id).length;
+    const deuda=C.facturas.filter(f=>f.cliente_id===c.id&&f.estado!=='cobrado').reduce((a,b)=>a+Number(b.monto||0),0);
+    const ini=c.nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    return`<div class="client-card"><div class="client-avatar-big">${ini}</div>
+      <div class="client-name">${c.nombre}</div>
+      <div class="client-meta">${c.tipo||'—'} · ${c.email||'—'}</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <button class="tbl-action" onclick="editItem('cliente','${c.id}')">editar</button>
+        <button class="tbl-action del" onclick="delItem('clientes','${c.id}','cliente')">eliminar</button>
       </div>
-    </div>`;
-  }).join('');
+      <div class="client-stats">
+        <div><div class="cs-val">${exps}</div><div class="cs-lbl">Exptes.</div></div>
+        <div><div class="cs-val" style="${deuda>0?'color:var(--red)':'color:var(--green)'}">${deuda>0?fmt(deuda):'✓'}</div><div class="cs-lbl">${deuda>0?'Pendiente':'Al día'}</div></div>
+      </div></div>`;}).join('');
 }
 
-function renderExpedientes() {
-  const list = document.getElementById('exp-list');
-  if (!state.expedientes.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-ico">▤</div><p>No hay expedientes. Creá el primero.</p></div>`;
-    return;
-  }
-  list.innerHTML = state.expedientes.map(e => `
-    <div class="t-row exp-row">
-      <div><div class="cp">${e.titulo}</div><div class="cs">${e.tipo||'—'} · ${e.id}</div></div>
-      <div class="cm">${e.clientes?.nombre || '—'}</div>
-      <div><span class="st ${e.estado}">${e.estado}</span></div>
-      <div class="cm">${fmtDate(e.fecha_apertura)}</div>
-      <div style="display:flex;gap:5px;">
-        <button class="btn btn-g" style="padding:4px 9px;font-size:11px;" onclick="editExpediente('${e.id}')">✎</button>
-        <button class="btn btn-d" style="padding:4px 9px;font-size:11px;" onclick="deleteRecord('expedientes','${e.id}',loadExpedientes)">✕</button>
-      </div>
+/* ══ EXPEDIENTES ══ */
+function rExp(){
+  const el=document.getElementById('exp-list');
+  if(!C.expedientes.length){el.innerHTML=`<div class="empty-state"><div class="ei">▤</div><p>Sin expedientes.</p></div>`;return;}
+  el.innerHTML=C.expedientes.map(e=>`
+    <div class="table-row exp-row">
+      <div><div class="cell-primary">${e.titulo}</div><div class="cell-secondary">${e.juzgado||'Sin juzgado'}</div></div>
+      <div class="cell-mono" style="font-size:11.5px;">${cliName(e.cliente_id)}</div>
+      <div class="cell-mono">${e.tipo||'—'}</div>
+      <div>${stBadge(e.estado)}</div>
+      <div><button class="tbl-action" onclick="editItem('expediente','${e.id}')">editar</button><button class="tbl-action del" onclick="delItem('expedientes','${e.id}','expediente')">✕</button></div>
     </div>`).join('');
 }
 
-function renderRecordatorios() {
-  const urg = state.recordatorios.filter(r => r.urgencia === 'urgente');
-  const rest = state.recordatorios.filter(r => r.urgencia !== 'urgente');
-  let html = '';
-  if (!state.recordatorios.length) {
-    html = `<div class="empty"><div class="empty-ico">◷</div><p>Sin recordatorios. Agendá un vencimiento.</p></div>`;
-  } else {
-    if (urg.length) {
-      html += `<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:10px;">● Urgentes</div>`;
-      html += `<div class="card" style="margin-bottom:18px;">${urg.map(renderRec).join('')}</div>`;
-    }
-    if (rest.length) {
-      html += `<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--tmut);margin-bottom:10px;">Próximos vencimientos</div>`;
-      html += `<div class="card">${rest.map(renderRec).join('')}</div>`;
-    }
-  }
-  document.getElementById('rec-list').innerHTML = html;
+/* ══ RECORDATORIOS ══ */
+function rRec(){
+  const el=document.getElementById('rec-list');
+  if(!C.recordatorios.length){el.innerHTML=`<div class="empty-state"><div class="ei">◷</div><p>Sin recordatorios.</p></div>`;return;}
+  const urg=C.recordatorios.filter(r=>r.urgencia==='urgente');
+  const rest=C.recordatorios.filter(r=>r.urgencia!=='urgente');
+  let h='';
+  if(urg.length){h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:10px;">● Urgentes</div><div class="card" style="margin-bottom:18px;">${urg.map(recRow).join('')}</div>`;}
+  if(rest.length){h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:10px;">Próximos</div><div class="card">${rest.map(recRow).join('')}</div>`;}
+  el.innerHTML=h;
 }
-function renderRec(r) {
-  return `<div class="t-row rec-row">
-    <div><div class="cp">${r.titulo}</div><div class="cs">${r.nota||''}</div></div>
-    <div class="cm" style="font-size:11px;">${r.expediente_id||'—'}</div>
-    <div class="cm">${r.fecha_limite ? fmtDate(r.fecha_limite) : '—'}</div>
-    <div><span class="st ${r.urgencia}">${r.urgencia}</span></div>
-    <div style="display:flex;gap:5px;">
-      <button class="btn btn-d" style="padding:4px 9px;font-size:11px;" onclick="deleteRecord('recordatorios','${r.id}',loadRecordatorios)">✕</button>
-    </div>
-  </div>`;
-}
+function recRow(r){return`<div class="table-row rec-row"><div><div class="cell-primary">${r.titulo}</div><div class="cell-secondary">${r.nota||''}</div></div><div class="cell-mono">${expTitle(r.expediente_id).slice(0,24)}</div><div class="cell-mono">${r.fecha_limite||'—'}</div><div>${stBadge(r.urgencia)}</div><div><button class="tbl-action" onclick="editItem('recordatorio','${r.id}')">editar</button><button class="tbl-action del" onclick="delItem('recordatorios','${r.id}','recordatorio')">✕</button></div></div>`;}
 
-function renderFacturas() {
-  const cobrado = state.facturas.filter(f => f.estado === 'cobrado').reduce((a,f) => a+Number(f.monto||0), 0);
-  const pendiente = state.facturas.filter(f => f.estado === 'pendiente').reduce((a,f) => a+Number(f.monto||0), 0);
-  const vencido = state.facturas.filter(f => f.estado === 'vencido').reduce((a,f) => a+Number(f.monto||0), 0);
-  const pendCnt = state.facturas.filter(f => f.estado === 'pendiente').length;
-  const vencCnt = state.facturas.filter(f => f.estado === 'vencido').length;
-
-  document.getElementById('f-cobrado').textContent = fmt(cobrado);
-  document.getElementById('f-pendiente').textContent = fmt(pendiente);
-  document.getElementById('f-pend-cnt').textContent = pendCnt + ' factura(s)';
-  document.getElementById('f-vencido').textContent = fmt(vencido);
-  document.getElementById('f-venc-cnt').textContent = vencCnt + ' factura(s)';
-
-  const sm = { cobrado:'cobrado', pendiente:'pendiente', vencido:'vencido' };
-  const list = document.getElementById('inv-list');
-  if (!state.facturas.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-ico">◈</div><p>Sin facturas. Emitíla primera.</p></div>`;
-    return;
-  }
-  list.innerHTML = state.facturas.map((f,i) => `
-    <div class="t-row inv-row">
-      <div class="cm">${String(i+1).padStart(4,'0')}</div>
-      <div class="cp">${f.clientes?.nombre || '—'}</div>
-      <div class="cs">${f.concepto||'—'}</div>
-      <div class="amt ${f.estado==='cobrado'?'pos':f.estado==='vencido'?'neg':'neu'}">${fmt(f.monto)}</div>
-      <div><span class="st ${sm[f.estado]||'pendiente'}">${f.estado}</span></div>
-      <div style="display:flex;gap:4px;">
-        <button class="btn btn-d" style="padding:4px 9px;font-size:11px;" onclick="deleteRecord('facturas','${f.id}',loadFacturas)">✕</button>
-      </div>
+/* ══ FACTURAS ══ */
+function rFact(){
+  const cob=C.facturas.filter(f=>f.estado==='cobrado').reduce((a,b)=>a+Number(b.monto||0),0);
+  const pen=C.facturas.filter(f=>f.estado==='pendiente').reduce((a,b)=>a+Number(b.monto||0),0);
+  const vec=C.facturas.filter(f=>f.estado==='vencido').reduce((a,b)=>a+Number(b.monto||0),0);
+  document.getElementById('f-cob').textContent=fmt(cob);
+  document.getElementById('f-pen').textContent=fmt(pen);
+  document.getElementById('f-vec').textContent=fmt(vec);
+  const el=document.getElementById('inv-list');
+  if(!C.facturas.length){el.innerHTML=`<div class="empty-state"><div class="ei">◈</div><p>Sin facturas.</p></div>`;return;}
+  const sm={cobrado:'cobrado',pendiente:'pendiente',vencido:'vencido'};
+  el.innerHTML=C.facturas.map((f,i)=>`
+    <div class="table-row inv-row">
+      <div class="cell-mono">${f.numero||String(i+1).padStart(4,'0')}</div>
+      <div class="cell-primary">${cliName(f.cliente_id)}</div>
+      <div class="cell-secondary">${f.concepto||'—'}</div>
+      <div class="amount ${f.estado==='cobrado'?'pos':f.estado==='vencido'?'neg':'neu'}">${fmt(f.monto)}</div>
+      <div>${stBadge(sm[f.estado]||'pendiente')}</div>
+      <div><button class="tbl-action" onclick="editItem('factura','${f.id}')">editar</button><button class="tbl-action del" onclick="delItem('facturas','${f.id}','factura')">✕</button></div>
     </div>`).join('');
 }
 
-// ════════════════════════════════════════════════════════
-//  MODAL APP
-// ════════════════════════════════════════════════════════
+/* ══ APP NAV ══ */
+const PT={dashboard:'Dashboard',clientes:'Clientes',expedientes:'Expedientes',recordatorios:'Recordatorios',facturacion:'Facturación'};
+function showPage(p,el){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('pageTitle').textContent=PT[p]||p;
+  if(el) el.classList.add('active');
+}
 
-const clienteOptions = () => state.clientes.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
-const expOptions = () => state.expedientes.map(e => `<option value="${e.id}">${e.id} — ${e.titulo.slice(0,30)}</option>`).join('');
+/* ══ SEARCH ══ */
+function handleSearch(v){
+  if(!v||v.length<2) return;
+  const vc=v.toLowerCase();
+  const cr=C.clientes.filter(c=>c.nombre.toLowerCase().includes(vc)).length;
+  const er=C.expedientes.filter(e=>e.titulo.toLowerCase().includes(vc)).length;
+  if(cr+er) showToast(`🔍 ${cr+er} resultado(s) — ${cr} cliente(s), ${er} expediente(s)`);
+}
 
-const MODALS = {
-  default: {
-    title: '¿Qué querés crear?',
-    body: () => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      ${['Nuevo cliente','Nuevo expediente','Recordatorio','Factura'].map((t,i) => `
-        <div onclick="closeModal();setTimeout(()=>openModal(['cliente','expediente','recordatorio','factura'][${i}]),80)"
-          style="background:var(--sf2);border:1px solid var(--bd2);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .18s;"
-          onmouseover="this.style.borderColor='var(--gdim)'" onmouseout="this.style.borderColor='var(--bd2)'">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--txt);margin-bottom:3px;">${t}</div>
-          <div style="font-size:11px;color:var(--tmut);">${['Agregar cliente al estudio','Abrir nueva causa','Agendar vencimiento','Emitir comprobante'][i]}</div>
-        </div>`).join('')}
-    </div>`,
-    save: null
-  },
-  cliente: {
-    title: 'Nuevo cliente',
-    body: (d) => `
-      <div class="fr"><div class="fg"><label class="fl">Nombre / Razón social</label><input id="m-nombre" class="fi" placeholder="Juan García" value="${d?.nombre||''}"></div>
-      <div class="fg"><label class="fl">Tipo</label><select id="m-tipo" class="fi"><option ${d?.tipo==='Persona física'?'selected':''}>Persona física</option><option ${d?.tipo==='Empresa'?'selected':''}>Empresa</option></select></div></div>
-      <div class="fr"><div class="fg"><label class="fl">Email</label><input id="m-email" class="fi" type="email" placeholder="email@dominio.com" value="${d?.email||''}"></div>
-      <div class="fg"><label class="fl">Teléfono</label><input id="m-tel" class="fi" placeholder="011-xxxx-xxxx" value="${d?.telefono||''}"></div></div>
-      <div class="fg"><label class="fl">Notas</label><textarea id="m-notas" class="fi" style="height:70px;">${d?.notas||''}</textarea></div>`,
-    save: async () => {
-      const payload = { nombre:val('m-nombre'), tipo:val('m-tipo'), email:val('m-email'), telefono:val('m-tel'), notas:val('m-notas'), estudio_id:state.estudio.id };
-      if (!payload.nombre) { showToast('⚠️ El nombre es obligatorio'); return false; }
-      if (state.editingId) { await sb.from('clientes').update(payload).eq('id',state.editingId); }
-      else { await sb.from('clientes').insert(payload); }
-      await loadClientes(); renderDashboard();
-      return true;
-    }
-  },
-  expediente: {
-    title: 'Nuevo expediente',
-    body: (d) => `
-      <div class="fg"><label class="fl">Carátula / Título</label><input id="m-titulo" class="fi" placeholder="García c/ López s/ daños y perjuicios" value="${d?.titulo||''}"></div>
-      <div class="fr">
-        <div class="fg"><label class="fl">Cliente</label><select id="m-cliente" class="fi"><option value="">Sin asignar</option>${clienteOptions()}</select></div>
-        <div class="fg"><label class="fl">Tipo de causa</label><select id="m-tipo" class="fi"><option ${d?.tipo==='Civil'?'selected':''}>Civil</option><option ${d?.tipo==='Comercial'?'selected':''}>Comercial</option><option ${d?.tipo==='Laboral'?'selected':''}>Laboral</option><option ${d?.tipo==='Familia'?'selected':''}>Familia</option><option ${d?.tipo==='Penal'?'selected':''}>Penal</option></select></div>
-      </div>
-      <div class="fr">
-        <div class="fg"><label class="fl">Juzgado / Tribunal</label><input id="m-juzgado" class="fi" placeholder="Juzgado Civil Nº 12" value="${d?.juzgado||''}"></div>
-        <div class="fg"><label class="fl">Estado</label><select id="m-estado" class="fi"><option ${d?.estado==='activo'?'selected':''}>activo</option><option ${d?.estado==='pendiente'?'selected':''}>pendiente</option><option ${d?.estado==='cerrado'?'selected':''}>cerrado</option></select></div>
-      </div>
-      <div class="fg"><label class="fl">Descripción</label><textarea id="m-desc" class="fi" style="height:68px;">${d?.descripcion||''}</textarea></div>`,
-    save: async () => {
-      const titulo = val('m-titulo'); if (!titulo) { showToast('⚠️ El título es obligatorio'); return false; }
-      const clienteId = val('m-cliente') || null;
-      const prefix = `EXP-${new Date().getFullYear()}-`;
-      const count = state.expedientes.filter(e => e.id.startsWith(prefix)).length + 1;
-      const id = state.editingId || (prefix + String(count).padStart(3,'0'));
-      const payload = { id, titulo, tipo:val('m-tipo'), juzgado:val('m-juzgado'), estado:val('m-estado'), descripcion:val('m-desc'), cliente_id:clienteId, estudio_id:state.estudio.id };
-      if (state.editingId) { await sb.from('expedientes').update(payload).eq('id',state.editingId); }
-      else { await sb.from('expedientes').insert(payload); }
-      await loadExpedientes(); renderDashboard();
-      return true;
-    }
-  },
-  recordatorio: {
-    title: 'Nuevo recordatorio',
-    body: (d) => `
-      <div class="fg"><label class="fl">Descripción</label><input id="m-titulo" class="fi" placeholder="Vencimiento para contestar demanda" value="${d?.titulo||''}"></div>
-      <div class="fr">
-        <div class="fg"><label class="fl">Expediente</label><select id="m-exp" class="fi"><option value="">Sin asignar</option>${expOptions()}</select></div>
-        <div class="fg"><label class="fl">Fecha límite</label><input id="m-fecha" class="fi" type="date" value="${d?.fecha_limite||''}"></div>
-      </div>
-      <div class="fr">
-        <div class="fg"><label class="fl">Urgencia</label><select id="m-urg" class="fi"><option ${d?.urgencia==='activo'?'selected':''}>activo</option><option ${d?.urgencia==='pendiente'?'selected':''}>pendiente</option><option ${d?.urgencia==='urgente'?'selected':''}>urgente</option></select></div>
-        <div class="fg"><label class="fl">Nota</label><input id="m-nota" class="fi" placeholder="Instrucciones..." value="${d?.nota||''}"></div>
-      </div>`,
-    save: async () => {
-      const titulo = val('m-titulo'); if (!titulo) { showToast('⚠️ La descripción es obligatoria'); return false; }
-      const payload = { titulo, expediente_id:val('m-exp')||null, fecha_limite:val('m-fecha')||null, urgencia:val('m-urg'), nota:val('m-nota'), estudio_id:state.estudio.id };
-      if (state.editingId) { await sb.from('recordatorios').update(payload).eq('id',state.editingId); }
-      else { await sb.from('recordatorios').insert(payload); }
-      await loadRecordatorios(); renderDashboard();
-      return true;
-    }
-  },
-  factura: {
-    title: 'Nueva factura',
-    body: (d) => `
-      <div class="fr">
-        <div class="fg"><label class="fl">Cliente</label><select id="m-cliente" class="fi"><option value="">Sin asignar</option>${clienteOptions()}</select></div>
-        <div class="fg"><label class="fl">Expediente</label><select id="m-exp" class="fi"><option value="">General</option>${expOptions()}</select></div>
-      </div>
-      <div class="fg"><label class="fl">Concepto</label><input id="m-concepto" class="fi" placeholder="Honorarios profesionales — Abril 2024" value="${d?.concepto||''}"></div>
-      <div class="fr">
-        <div class="fg"><label class="fl">Monto ($)</label><input id="m-monto" class="fi" type="number" placeholder="0" value="${d?.monto||''}"></div>
-        <div class="fg"><label class="fl">Vencimiento</label><input id="m-venc" class="fi" type="date" value="${d?.vencimiento||''}"></div>
-      </div>
-      <div class="fg"><label class="fl">Estado</label><select id="m-estado" class="fi"><option>pendiente</option><option>cobrado</option><option>vencido</option></select></div>`,
-    save: async () => {
-      const concepto = val('m-concepto'); if (!concepto) { showToast('⚠️ El concepto es obligatorio'); return false; }
-      const payload = { concepto, cliente_id:val('m-cliente')||null, monto:parseFloat(val('m-monto')||0), vencimiento:val('m-venc')||null, estado:val('m-estado'), estudio_id:state.estudio.id };
-      if (state.editingId) { await sb.from('facturas').update(payload).eq('id',state.editingId); }
-      else { await sb.from('facturas').insert(payload); }
-      await loadFacturas(); renderDashboard();
-      return true;
-    }
-  }
+/* ══ MODAL ══ */
+const cliOpts=(sel='')=>C.clientes.map(c=>`<option value="${c.id}"${c.id===sel?' selected':''}>${c.nombre}</option>`).join('');
+const expOpts=(sel='')=>C.expedientes.map(e=>`<option value="${e.id}"${e.id===sel?' selected':''}>${e.titulo}</option>`).join('');
+const selOpt=(val,opts)=>opts.map(o=>`<option${o===val?' selected':''}>${o}</option>`).join('');
+
+const FORMS={
+  cliente:(d={})=>({title:d.id?'Editar Cliente':'Nuevo Cliente',body:`
+    <div class="form-row"><div class="form-group"><label class="form-label">Nombre / Razón social</label><input id="ff-nombre" class="form-input" placeholder="Juan García" value="${d.nombre||''}"></div><div class="form-group"><label class="form-label">Tipo</label><select id="ff-tipo" class="form-input"><option${(d.tipo||'')==='Persona física'?' selected':''}>Persona física</option><option${(d.tipo||'')==='Empresa'?' selected':''}>Empresa</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Email</label><input id="ff-email" class="form-input" type="email" placeholder="email@dominio.com" value="${d.email||''}"></div><div class="form-group"><label class="form-label">Teléfono</label><input id="ff-telefono" class="form-input" placeholder="011-xxxx-xxxx" value="${d.telefono||''}"></div></div>
+    <div class="form-group"><label class="form-label">Notas internas</label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
+  expediente:(d={})=>({title:d.id?'Editar Expediente':'Nuevo Expediente',body:`
+    <div class="form-group"><label class="form-label">Carátula</label><input id="ff-titulo" class="form-input" placeholder="García c/ López s/ daños..." value="${d.titulo||''}"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Cliente</label><select id="ff-cliente_id" class="form-input"><option value="">Seleccionar...</option>${cliOpts(d.cliente_id)}</select></div><div class="form-group"><label class="form-label">Tipo</label><select id="ff-tipo" class="form-input">${selOpt(d.tipo||'Civil',['Civil','Comercial','Laboral','Familia','Penal'])}</select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Juzgado / Tribunal</label><input id="ff-juzgado" class="form-input" placeholder="Juzgado Civil Nº 12" value="${d.juzgado||''}"></div><div class="form-group"><label class="form-label">Estado</label><select id="ff-estado" class="form-input"><option value="activo"${(d.estado||'')==='activo'?' selected':''}>activo</option><option value="pendiente"${(d.estado||'')==='pendiente'?' selected':''}>pendiente</option><option value="cerrado"${(d.estado||'')==='cerrado'?' selected':''}>cerrado</option></select></div></div>
+    <div class="form-group"><label class="form-label">Descripción</label><textarea id="ff-descripcion" class="form-input">${d.descripcion||''}</textarea></div>`}),
+  recordatorio:(d={})=>({title:d.id?'Editar Recordatorio':'Nuevo Recordatorio',body:`
+    <div class="form-group"><label class="form-label">Título</label><input id="ff-titulo" class="form-input" placeholder="Vencimiento para contestar demanda" value="${d.titulo||''}"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Expediente</label><select id="ff-expediente_id" class="form-input"><option value="">Seleccionar...</option>${expOpts(d.expediente_id)}</select></div><div class="form-group"><label class="form-label">Fecha límite</label><input id="ff-fecha_limite" class="form-input" type="date" value="${d.fecha_limite||''}"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Urgencia</label><select id="ff-urgencia" class="form-input"><option value="activo"${(d.urgencia||'')==='activo'?' selected':''}>activo</option><option value="pendiente"${(d.urgencia||'')==='pendiente'?' selected':''}>pendiente</option><option value="urgente"${(d.urgencia||'')==='urgente'?' selected':''}>urgente</option></select></div><div class="form-group"><label class="form-label">Notificar</label><select id="ff-notif" class="form-input"><option>24hs antes</option><option>48hs antes</option><option>1 semana antes</option><option>No notificar</option></select></div></div>
+    <div class="form-group"><label class="form-label">Notas</label><textarea id="ff-nota" class="form-input">${d.nota||''}</textarea></div>`}),
+  factura:(d={})=>({title:d.id?'Editar Factura':'Nueva Factura',body:`
+    <div class="form-row"><div class="form-group"><label class="form-label">Cliente</label><select id="ff-cliente_id" class="form-input"><option value="">Seleccionar...</option>${cliOpts(d.cliente_id)}</select></div><div class="form-group"><label class="form-label">Número</label><input id="ff-numero" class="form-input" placeholder="0001-00001" value="${d.numero||''}"></div></div>
+    <div class="form-group"><label class="form-label">Concepto</label><input id="ff-concepto" class="form-input" placeholder="Honorarios profesionales — Abril 2024" value="${d.concepto||''}"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Monto ($)</label><input id="ff-monto" class="form-input" type="number" placeholder="0" value="${d.monto||''}"></div><div class="form-group"><label class="form-label">Vencimiento</label><input id="ff-vencimiento" class="form-input" type="date" value="${d.vencimiento||''}"></div></div>
+    <div class="form-group"><label class="form-label">Estado</label><select id="ff-estado" class="form-input"><option value="pendiente"${(d.estado||'')==='pendiente'?' selected':''}>pendiente</option><option value="cobrado"${(d.estado||'')==='cobrado'?' selected':''}>cobrado</option><option value="vencido"${(d.estado||'')==='vencido'?' selected':''}>vencido</option></select></div>`}),
+  default:()=>({title:'¿Qué querés crear?',body:`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${[['cliente','Nuevo Cliente','Agregar cliente'],['expediente','Nuevo Expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento'],['factura','Nueva Factura','Emitir comprobante']].map(([t,l,s])=>`<div onclick="closeModal();setTimeout(()=>openModal('${t}'),90)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:17px;cursor:pointer;transition:all .18s;" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor='var(--border2)'"><div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);margin-bottom:3px;">${l}</div><div style="font-size:11px;color:var(--text-muted);">${s}</div></div>`).join('')}</div>`,noSave:true})
 };
 
-function openModal(type='default', data=null, editId=null) {
-  state.curModal = type; state.editingId = editId;
-  const m = MODALS[type] || MODALS.default;
-  document.getElementById('modal-title').textContent = editId ? (m.title.replace('Nuevo','Editar').replace('Nueva','Editar')) : m.title;
-  document.getElementById('modal-body').innerHTML = m.body(data);
-  const saveBtn = document.getElementById('modal-save-btn');
-  saveBtn.style.display = m.save ? '' : 'none';
-  document.getElementById('modal-ov').classList.add('open');
+function openModal(type='default',prefill={}){
+  curModal=type; editId=prefill.id||null;
+  const f=FORMS[type]?FORMS[type](prefill):FORMS.default();
+  document.getElementById('modal-title').textContent=f.title;
+  document.getElementById('modal-body').innerHTML=f.body;
+  document.getElementById('modal-footer').style.display=f.noSave?'none':'flex';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(e){if(e&&e.target!==document.getElementById('modalOverlay'))return;document.getElementById('modalOverlay').classList.remove('open');editId=null;}
+
+const gv=id=>document.getElementById(id)?.value||'';
+const FV={
+  cliente:   ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),email:gv('ff-email'),telefono:gv('ff-telefono'),notas:gv('ff-notas')}),
+  expediente:()=>({titulo:gv('ff-titulo'),cliente_id:gv('ff-cliente_id'),tipo:gv('ff-tipo'),juzgado:gv('ff-juzgado'),estado:gv('ff-estado'),descripcion:gv('ff-descripcion')}),
+  recordatorio:()=>({titulo:gv('ff-titulo'),expediente_id:gv('ff-expediente_id'),fecha_limite:gv('ff-fecha_limite'),urgencia:gv('ff-urgencia'),nota:gv('ff-nota')}),
+  factura:   ()=>({cliente_id:gv('ff-cliente_id'),numero:gv('ff-numero'),concepto:gv('ff-concepto'),monto:parseFloat(gv('ff-monto'))||0,vencimiento:gv('ff-vencimiento'),estado:gv('ff-estado')}),
+};
+const TBL={cliente:'clientes',expediente:'expedientes',recordatorio:'recordatorios',factura:'facturas'};
+
+async function saveModal(){
+  if(curModal==='default') return;
+  const btn=document.getElementById('modal-save'); btn.textContent='Guardando...'; btn.disabled=true;
+  const vals=FV[curModal]?FV[curModal]():{};
+  const tbl=TBL[curModal];
+  try{
+    if(editId){
+      await dbUpdate(tbl,editId,vals);
+      const i=C[tbl].findIndex(r=>r.id===editId);
+      if(i>=0) C[tbl][i]={...C[tbl][i],...vals};
+      showToast('✅ Actualizado');
+    }else{
+      const n=await dbInsert(tbl,vals);
+      C[tbl].unshift(n);
+      showToast('✅ Creado correctamente');
+    }
+    closeModal(); renderAll();
+  }catch(e){ showToast('❌ Error: '+(e.message||'Intentá de nuevo')); }
+  finally{ btn.textContent='Guardar'; btn.disabled=false; }
 }
 
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal-ov')) return;
-  document.getElementById('modal-ov').classList.remove('open');
+function editItem(type,id){
+  const item=C[TBL[type]]?.find(r=>r.id===id);
+  if(item) openModal(type,item);
+}
+async function delItem(tbl,id,label){
+  if(!confirm(`¿Eliminar este ${label}? Esta acción no se puede deshacer.`)) return;
+  try{ await dbDelete(tbl,id); C[tbl]=C[tbl].filter(r=>r.id!==id); renderAll(); showToast(`🗑 ${label} eliminado`); }
+  catch(e){ showToast('❌ Error al eliminar'); }
 }
 
-async function saveModal() {
-  const m = MODALS[state.curModal];
-  if (!m || !m.save) return;
-  const saveBtn = document.getElementById('modal-save-btn');
-  saveBtn.disabled = true; saveBtn.innerHTML = '<div class="spinner"></div>';
-  const ok = await m.save();
-  saveBtn.disabled = false; saveBtn.textContent = 'Guardar';
-  if (ok !== false) {
-    document.getElementById('modal-ov').classList.remove('open');
-    showToast('✅ Guardado correctamente');
-  }
+/* ══ ADMIN RENDER ══ */
+function renderAdmin(){ renderAdminOverview(); renderAdminFirms(); renderAdminSubs(); }
+function renderAdminOverview(){
+  const a=FIRMS.filter(f=>f.activo).length, s=FIRMS.filter(f=>!f.activo).length;
+  const plans={basic:0,pro:0,enterprise:0,trial:0};
+  FIRMS.forEach(f=>{if(plans[f.plan]!==undefined) plans[f.plan]++;});
+  const mrr=plans.basic*29+plans.pro*79+plans.enterprise*199;
+  document.getElementById('a-stats').innerHTML=[
+    {l:'Estudios activos',v:a,s:'↑ creciendo'},
+    {l:'MRR (USD)',v:'$'+mrr,s:'mensual recurrente'},
+    {l:'Suspendidas',v:s,s:'pago vencido'},
+    {l:'Total cuentas',v:FIRMS.length,s:'registradas'},
+  ].map(x=>`<div class="admin-stat"><div class="admin-stat-lbl">${x.l}</div><div class="admin-stat-val">${x.v}</div><div class="admin-stat-sub">${x.s}</div></div>`).join('');
+  document.getElementById('a-recent').innerHTML=FIRMS.slice(0,5).map(f=>`
+    <div style="display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid rgba(30,30,40,.7);">
+      <div style="width:30px;height:30px;background:rgba(76,123,201,.1);border:1px solid rgba(76,123,201,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--blue);">${f.nombre[0]}</div>
+      <div style="flex:1;"><div style="font-size:13px;color:var(--text);">${f.nombre}</div><div style="font-size:11px;color:var(--text-muted);">${f.email}</div></div>
+      ${planBadge(f.plan)}
+      <span class="plan-badge ${f.activo?'act-on':'act-off'}">${f.activo?'activo':'inactivo'}</span>
+    </div>`).join('');
+  const pc={basic:'var(--text-dim)',pro:'var(--gold)',enterprise:'var(--blue)',trial:'var(--text-muted)'};
+  document.getElementById('a-plans').innerHTML=Object.entries(plans).filter(([,v])=>v>0).map(([k,v])=>`
+    <div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text);text-transform:capitalize;">${k}</span><span style="font-family:'DM Mono',monospace;color:var(--text-dim);">${v}</span></div>
+    <div style="height:5px;background:#1e1e28;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${v/FIRMS.length*100}%;background:${pc[k]};border-radius:3px;"></div></div></div>`).join('');
+  document.getElementById('a-mrr').innerHTML=`<div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:var(--text);line-height:1;margin-bottom:8px;">$${mrr}</div><div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);">USD / mes · ${a} estudios activos</div><div style="margin-top:14px;font-size:12px;color:var(--text-dim);">ARR estimado: <span style="color:var(--green);font-family:'DM Mono',monospace;">$${mrr*12} USD/año</span></div>`;
 }
-
-function editCliente(id) {
-  const c = state.clientes.find(x => x.id === id);
-  openModal('cliente', c, id);
-}
-function editExpediente(id) {
-  const e = state.expedientes.find(x => x.id === id);
-  openModal('expediente', e, id);
-}
-
-// ════════════════════════════════════════════════════════
-//  ADMIN DATA
-// ════════════════════════════════════════════════════════
-
-async function loadAdminData() {
-  const { data } = await sb.from('estudios').select('*').order('created_at', { ascending: false });
-  state.adminFirms = data || [];
-  renderAdminOverview();
-  renderAdminFirms();
-  renderAdminSubs();
-}
-
-function renderAdminOverview() {
-  const active = state.adminFirms.filter(f => f.activo).length;
-  const inactive = state.adminFirms.filter(f => !f.activo).length;
-  const mrr = state.adminFirms.filter(f => f.activo).reduce((a,f) => a + (PLAN_PRICE[f.plan]||0), 0);
-
-  document.getElementById('a-activos').textContent = active;
-  document.getElementById('a-mrr').textContent = '$' + mrr;
-  document.getElementById('a-susp').textContent = inactive;
-  document.getElementById('a-total').textContent = state.adminFirms.length;
-
-  const plans = ['basic','pro','enterprise','trial'];
-  const planNames = { basic:'Basic', pro:'Pro', enterprise:'Enterprise', trial:'Trial' };
-  const planColors = { basic:'var(--tdim)', pro:'var(--gold)', enterprise:'var(--blu)', trial:'var(--grn)' };
-  const total = Math.max(state.adminFirms.length, 1);
-  document.getElementById('a-plan-dist').innerHTML = plans.map(p => {
-    const cnt = state.adminFirms.filter(f => f.plan === p).length;
-    if (!cnt) return '';
-    return `<div style="margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;">
-        <span>${planNames[p]}</span><span style="font-family:'DM Mono',monospace;color:var(--tdim);">${cnt} estudios · $${PLAN_PRICE[p]}/mes</span>
-      </div>
-      <div style="height:5px;background:#1e1e28;border-radius:3px;overflow:hidden;">
-        <div style="height:100%;width:${cnt/total*100}%;background:${planColors[p]};border-radius:3px;"></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderAdminFirms() {
-  const list = document.getElementById('a-firms-list');
-  if (!state.adminFirms.length) {
-    list.innerHTML = `<div class="empty"><p>No hay estudios registrados aún.</p></div>`;
-    return;
-  }
-  list.innerHTML = state.adminFirms.map(f => `
-    <div class="firm-row firm-cols">
-      <div><div class="cp">${f.nombre}</div><div class="cs">${f.titular||''}</div></div>
-      <div><span class="plan-b plan-${f.plan==='pro'?'pro':f.plan==='enterprise'?'ent':'basic'}">${capitalize(f.plan)}</span></div>
-      <div><span class="act-b ${f.activo?'act-on':'act-off'}">${f.activo?'activo':'inactivo'}</span></div>
-      <div class="cm">—</div>
-      <div class="cm" style="${!f.activo?'color:var(--red)':''}">${f.activo?'Activo':'Vencido'}</div>
+function renderAdminFirms(){
+  document.getElementById('a-firms').innerHTML=FIRMS.map(f=>`
+    <div class="firm-row">
+      <div><div class="cell-primary">${f.nombre}</div><div class="cell-secondary">${f.email}</div></div>
+      <div>${planBadge(f.plan)}</div>
+      <div><span class="plan-badge ${f.activo?'act-on':'act-off'}">${f.activo?'activo':'inactivo'}</span></div>
+      <div class="cell-mono">—</div>
+      <div class="cell-mono">${f.created_at?.slice(0,10)||'—'}</div>
       <div>
-        <button class="abtn" onclick="openAdminEditModal('${f.id}')">editar</button>
-        <button class="abtn danger" onclick="toggleFirmStatus('${f.id}',${f.activo})">${f.activo?'suspender':'activar'}</button>
+        <button class="tbl-action" onclick="adminEditFirm('${f.id}')">editar</button>
+        <button class="tbl-action del" onclick="adminToggle('${f.id}')">${f.activo?'suspender':'activar'}</button>
       </div>
     </div>`).join('');
 }
-
-function renderAdminSubs() {
-  const plans = ['basic','pro','enterprise'];
-  const pn = {basic:'Basic',pro:'Pro',enterprise:'Enterprise'};
-  plans.forEach(p => {
-    const cnt = state.adminFirms.filter(f => f.plan===p && f.activo).length;
-    document.getElementById(`a-${p}-cnt`).textContent = cnt;
-    document.getElementById(`a-${p}-mrr`).textContent = `= $${cnt*PLAN_PRICE[p]}/mes`;
-  });
-  document.getElementById('a-subs-list').innerHTML = state.adminFirms.map(f => `
-    <div style="display:grid;grid-template-columns:1fr 100px 100px 90px;padding:12px 20px;border-bottom:1px solid rgba(30,30,40,.8);align-items:center;">
-      <div><div class="cp">${f.nombre}</div><div class="cs">${f.titular||f.nombre}</div></div>
-      <span class="plan-b plan-${f.plan==='pro'?'pro':f.plan==='enterprise'?'ent':'basic'}">${pn[f.plan]||capitalize(f.plan)}</span>
-      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--txt);">$${PLAN_PRICE[f.plan]||0}</div>
-      <span class="act-b ${f.activo?'act-on':'act-off'}">${f.activo?'activo':'inactivo'}</span>
+function renderAdminSubs(){
+  const prices={basic:29,pro:79,enterprise:199,trial:0};
+  const bp={basic:0,pro:0,enterprise:0};
+  FIRMS.filter(f=>f.activo).forEach(f=>{if(bp[f.plan]!==undefined)bp[f.plan]++;});
+  document.getElementById('a-plan-stats').innerHTML=[
+    {l:'Plan Basic ($29/mes)',n:bp.basic,t:bp.basic*29},
+    {l:'Plan Pro ($79/mes)',n:bp.pro,t:bp.pro*79},
+    {l:'Enterprise ($199/mes)',n:bp.enterprise,t:bp.enterprise*199},
+  ].map(x=>`<div class="admin-stat"><div class="admin-stat-lbl">${x.l}</div><div class="admin-stat-val">${x.n}</div><div class="admin-stat-sub">= $${x.t}/mes</div></div>`).join('');
+  document.getElementById('a-sub-list').innerHTML=FIRMS.map(f=>`
+    <div style="display:grid;grid-template-columns:1fr 100px 90px 90px;padding:12px 20px;border-bottom:1px solid rgba(30,30,40,.8);align-items:center;">
+      <div class="cell-primary">${f.nombre}</div>
+      ${planBadge(f.plan)}
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:${f.activo?'var(--green)':'var(--text-muted)'};">$${prices[f.plan]||0}/mes</div>
+      <span class="plan-badge ${f.activo?'act-on':'act-off'}">${f.activo?'activo':'inactivo'}</span>
     </div>`).join('');
 }
-
-async function toggleFirmStatus(id, current) {
-  await sb.from('estudios').update({ activo: !current }).eq('id', id);
-  await loadAdminData();
-  showToast(current ? '⛔ Estudio suspendido' : '✅ Estudio reactivado');
+function adminToggle(id){
+  const f=FIRMS.find(x=>x.id===id); if(!f) return;
+  f.activo=!f.activo;
+  showToast(f.activo?`✅ ${f.nombre} reactivado`:`⛔ ${f.nombre} suspendido`);
+  renderAdmin();
+}
+function adminEditFirm(id){ showToast('✏️ Función de edición disponible en la versión conectada a Supabase'); }
+async function adminCreateFirm(){
+  const nombre=document.getElementById('nf-nombre').value.trim();
+  const email=document.getElementById('nf-email').value.trim();
+  const pass=document.getElementById('nf-pass').value.trim();
+  const plan=document.getElementById('nf-plan').value;
+  const errEl=document.getElementById('nf-err'), btn=document.getElementById('nf-btn');
+  errEl.style.display='none';
+  if(!nombre||!email||!pass){errEl.textContent='Completá todos los campos.';errEl.style.display='block';return;}
+  if(pass.length<8){errEl.textContent='La contraseña debe tener al menos 8 caracteres.';errEl.style.display='block';return;}
+  btn.textContent='Creando...'; btn.disabled=true;
+  try{
+    if(LIVE&&sb){
+      // Requires Supabase service role key for server-side user creation
+      // In production: use a Supabase Edge Function or server endpoint
+      showToast('⚠ Para crear usuarios en producción usá Supabase Dashboard → Authentication → Users');
+    }
+    FIRMS.unshift({id:'fi'+Date.now(),nombre,email,plan,activo:true,created_at:new Date().toISOString()});
+    showToast(`✅ Estudio "${nombre}" creado`);
+    ['nf-nombre','nf-titular','nf-email','nf-pass'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+    showAdminPage('estudios',null);
+    document.querySelectorAll('.admin-nav-item')[1].classList.add('active');
+    document.querySelectorAll('.admin-nav-item')[3].classList.remove('active');
+    renderAdmin();
+  }catch(e){errEl.textContent=e.message||'Error.';errEl.style.display='block';}
+  finally{btn.textContent='Crear cuenta del estudio';btn.disabled=false;}
+}
+function showAdminPage(p,el){
+  document.querySelectorAll('.admin-page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.admin-nav-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('admin-page-'+p).classList.add('active');
+  const t={'overview':'Resumen general','estudios':'Estudios / Cuentas','suscripciones':'Suscripciones & Ingresos','nuevo-estudio':'Alta de nuevo estudio'};
+  document.getElementById('admin-ptitle').textContent=t[p]||p;
+  if(el) el.classList.add('active');
 }
 
-function openAdminEditModal(id) {
-  const f = state.adminFirms.find(x => x.id === id);
-  if (!f) return;
-  state.adminEditingId = id;
-  document.getElementById('admin-modal-title').textContent = 'Editar estudio';
-  document.getElementById('admin-modal-body').innerHTML = `
-    <div class="fr" style="margin-bottom:15px;">
-      <div class="fg"><label class="fl">Nombre del estudio</label><input id="ae-nombre" class="fi" value="${f.nombre||''}"></div>
-      <div class="fg"><label class="fl">Titular</label><input id="ae-titular" class="fi" value="${f.titular||''}"></div>
-    </div>
-    <div class="fr" style="margin-bottom:15px;">
-      <div class="fg"><label class="fl">Plan</label><select id="ae-plan" class="fi">
-        <option value="basic" ${f.plan==='basic'?'selected':''}>Basic — $29/mes</option>
-        <option value="pro" ${f.plan==='pro'?'selected':''}>Pro — $79/mes</option>
-        <option value="enterprise" ${f.plan==='enterprise'?'selected':''}>Enterprise — $199/mes</option>
-        <option value="trial" ${f.plan==='trial'?'selected':''}>Trial (gratis)</option>
-      </select></div>
-      <div class="fg"><label class="fl">Estado</label><select id="ae-activo" class="fi">
-        <option value="true" ${f.activo?'selected':''}>Activo</option>
-        <option value="false" ${!f.activo?'selected':''}>Suspendido</option>
-      </select></div>
-    </div>
-    <div class="fg"><label class="fl">Teléfono</label><input id="ae-tel" class="fi" value="${f.telefono||''}"></div>`;
-  document.getElementById('admin-modal-ov').classList.add('open');
-}
+/* ══ TOAST ══ */
+let tt;
+function showToast(msg){const ex=document.querySelector('.toast');if(ex)ex.remove();clearTimeout(tt);const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);tt=setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(10px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},3200);}
 
-function closeAdminModal(e) {
-  if (e && e.target !== document.getElementById('admin-modal-ov')) return;
-  document.getElementById('admin-modal-ov').classList.remove('open');
-}
-
-async function saveAdminModal() {
-  const btn = document.getElementById('admin-modal-save');
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
-  await sb.from('estudios').update({
-    nombre: val('ae-nombre'),
-    titular: val('ae-titular'),
-    plan: val('ae-plan'),
-    activo: val('ae-activo') === 'true',
-    telefono: val('ae-tel'),
-  }).eq('id', state.adminEditingId);
-  btn.disabled = false; btn.textContent = 'Guardar';
-  document.getElementById('admin-modal-ov').classList.remove('open');
-  await loadAdminData();
-  showToast('✅ Estudio actualizado');
-}
-
-async function createFirm() {
-  const nombre  = val('nf-nombre');
-  const titular = val('nf-titular');
-  const email   = val('nf-email');
-  const pass    = val('nf-pass');
-  const plan    = val('nf-plan');
-  const pais    = val('nf-pais');
-  const tel     = val('nf-tel');
-  const errBox  = document.getElementById('new-firm-err');
-
-  if (!nombre || !email || !pass) {
-    errBox.textContent = 'Nombre, email y contraseña son obligatorios.';
-    errBox.style.display = 'block'; return;
-  }
-  if (pass.length < 6) {
-    errBox.textContent = 'La contraseña debe tener al menos 6 caracteres.';
-    errBox.style.display = 'block'; return;
-  }
-
-  const btn = document.getElementById('create-firm-btn');
-  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Creando...';
-  errBox.style.display = 'none';
-
-  // 1. Crear usuario en Supabase Auth
-  const { data: authData, error: authErr } = await sb.auth.signUp({ email, password: pass });
-  if (authErr) {
-    errBox.textContent = 'Error al crear usuario: ' + authErr.message;
-    errBox.style.display = 'block';
-    btn.disabled = false; btn.textContent = 'Crear cuenta del estudio';
-    return;
-  }
-
-  // 2. Crear registro en tabla estudios
-  const userId = authData.user?.id;
-  if (userId) {
-    await sb.from('estudios').insert({ user_id:userId, nombre, titular, plan, pais, telefono:tel, activo:true });
-  }
-
-  btn.disabled = false; btn.textContent = 'Crear cuenta del estudio';
-
-  // Limpiar form
-  ['nf-nombre','nf-titular','nf-email','nf-pass','nf-tel'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
-
-  await loadAdminData();
-  showAPage('estudios', document.querySelector('.an-i:nth-child(2)'));
-  showToast('✅ Estudio creado. El usuario recibirá un email de confirmación.');
-}
-
-// ════════════════════════════════════════════════════════
-//  NAVIGATION
-// ════════════════════════════════════════════════════════
-
-const PAGE_TITLES = { dashboard:'Dashboard', clientes:'Clientes', expedientes:'Expedientes', recordatorios:'Recordatorios', facturacion:'Facturación' };
-
-function showPage(page, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
-  document.getElementById('p-'+page).classList.add('active');
-  document.getElementById('page-title').textContent = PAGE_TITLES[page] || page;
-  if (el) el.classList.add('active');
-}
-
-const A_PAGE_TITLES = { overview:'Resumen general', estudios:'Estudios / Cuentas', suscripciones:'Suscripciones & Ingresos', nuevo:'Alta de nuevo estudio' };
-
-function showAPage(page, el) {
-  document.querySelectorAll('.apage').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.an-i').forEach(n => n.classList.remove('active'));
-  document.getElementById('ap-'+page).classList.add('active');
-  document.getElementById('a-page-title').textContent = A_PAGE_TITLES[page] || page;
-  if (el) el.classList.add('active');
-}
-
-function goTo(screen) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('sc-'+screen).classList.add('active');
-}
-
-// ════════════════════════════════════════════════════════
-//  SEARCH
-// ════════════════════════════════════════════════════════
-
-function handleSearch(v) {
-  if (!v || v.length < 2) return;
-  const q = v.toLowerCase();
-  const r = [...state.clientes.filter(c => c.nombre.toLowerCase().includes(q)), ...state.expedientes.filter(e => e.titulo.toLowerCase().includes(q))];
-  if (r.length) showToast(`🔍 ${r.length} resultado(s) para "${v}"`);
-}
-
-// ════════════════════════════════════════════════════════
-//  HELPERS
-// ════════════════════════════════════════════════════════
-
-function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
-
-function showLoginErr(errId, msg) {
-  const el = document.getElementById(errId);
-  el.textContent = msg; el.style.display = 'block';
-  el.parentElement.classList.add('shake');
-  setTimeout(() => el.parentElement.classList.remove('shake'), 400);
-}
-
-let toastT;
-function showToast(msg) {
-  const ex = document.querySelector('.toast'); if (ex) ex.remove(); clearTimeout(toastT);
-  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t);
-  toastT = setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(10px)'; t.style.transition='all .3s'; setTimeout(() => t.remove(), 300); }, 3500);
-}
-
-// ════════════════════════════════════════════════════════
-//  BOOT
-// ════════════════════════════════════════════════════════
-initAuth();
+/* ══ INIT ══ */
+if(!LIVE){document.getElementById('l-email').value='demo@lexora.com';document.getElementById('l-pass').value='demo123';document.getElementById('al-email').value=CFG.ADMIN_EMAIL;document.getElementById('al-pass').value=CFG.ADMIN_PASS;}
+if(LIVE&&sb){sb.auth.getSession().then(({data:{session}})=>{if(session){sb.from('estudios').select('*').eq('id',session.user.id).single().then(({data:p})=>{CU={...session.user,nombre:p?.nombre||session.user.email,plan:p?.plan||'basic',activo:p?.activo??true};afterLogin();});}});}
 </script>
+
+<!--
+╔══════════════════════════════════════════════════════════╗
+║  SQL SETUP — PEGÁ EN SUPABASE > SQL EDITOR > RUN       ║
+╠══════════════════════════════════════════════════════════╣
+
+create table estudios (
+  id uuid references auth.users(id) primary key,
+  nombre text, email text, plan text default 'basic',
+  activo boolean default true, created_at timestamp default now()
+);
+create table clientes (
+  id uuid default gen_random_uuid() primary key,
+  estudio_id uuid references estudios(id) on delete cascade,
+  nombre text not null, tipo text, email text,
+  telefono text, notas text, created_at timestamp default now()
+);
+create table expedientes (
+  id uuid default gen_random_uuid() primary key,
+  estudio_id uuid references estudios(id) on delete cascade,
+  cliente_id uuid references clientes(id),
+  titulo text not null, tipo text, estado text default 'activo',
+  juzgado text, descripcion text, created_at timestamp default now()
+);
+create table recordatorios (
+  id uuid default gen_random_uuid() primary key,
+  estudio_id uuid references estudios(id) on delete cascade,
+  expediente_id uuid references expedientes(id),
+  titulo text not null, fecha_limite date,
+  urgencia text default 'pendiente', nota text,
+  created_at timestamp default now()
+);
+create table facturas (
+  id uuid default gen_random_uuid() primary key,
+  estudio_id uuid references estudios(id) on delete cascade,
+  cliente_id uuid references clientes(id),
+  numero text, concepto text, monto numeric default 0,
+  estado text default 'pendiente', vencimiento date,
+  created_at timestamp default now()
+);
+
+-- Row Level Security: cada estudio ve SOLO sus datos
+alter table clientes      enable row level security;
+alter table expedientes   enable row level security;
+alter table recordatorios enable row level security;
+alter table facturas      enable row level security;
+
+create policy "Propios" on clientes      for all using (estudio_id = auth.uid());
+create policy "Propios" on expedientes   for all using (estudio_id = auth.uid());
+create policy "Propios" on recordatorios for all using (estudio_id = auth.uid());
+create policy "Propios" on facturas      for all using (estudio_id = auth.uid());
+
+-- Auto-crear perfil al registrarse
+create or replace function handle_new_user() returns trigger as $$
+begin
+  insert into estudios(id,email,nombre)
+  values(new.id, new.email, coalesce(new.raw_user_meta_data->>'nombre', new.email));
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure handle_new_user();
+
+╚══════════════════════════════════════════════════════════╝
+-->
 </body>
 </html>

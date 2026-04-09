@@ -360,11 +360,186 @@ textarea.form-input{height:74px;resize:none;}
 @keyframes slideR{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}
 
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}}
+/* ── LEADS / PIPELINE ── */
+.pipeline-col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;min-height:200px;}
+.pipeline-col-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.pipeline-col-title{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.pipeline-count{background:var(--surface3);border-radius:20px;padding:2px 8px;font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);}
+.lead-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px;margin-bottom:8px;cursor:pointer;transition:all .18s;}
+.lead-card:hover{border-color:var(--gold-dim);transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.3);}
+.lead-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.lead-tipo{font-size:10.5px;color:var(--text-muted);margin-bottom:6px;}
+.lead-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.lead-tag{font-size:9.5px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;background:var(--surface3);color:var(--text-muted);}
+.lead-tag.origen{background:rgba(76,123,201,.12);color:var(--blue);}
+.lead-tag.prioridad-alta{background:rgba(201,76,76,.1);color:var(--red);}
+.lead-tag.prioridad-media{background:rgba(201,168,76,.1);color:var(--gold);}
+.lead-footer{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);}
+.pipeline-col.nuevo .pipeline-col-title{color:var(--text-dim);}
+.pipeline-col.contactado .pipeline-col-title{color:var(--blue);}
+.pipeline-col.agendado .pipeline-col-title{color:var(--gold);}
+.pipeline-col.negociacion .pipeline-col-title{color:var(--gold);}
+.pipeline-col.ganado .pipeline-col-title{color:var(--green);}
+.origen-bar{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.origen-bar:last-child{border-bottom:none;}
+.origen-name{font-size:12px;color:var(--text-dim);width:90px;flex-shrink:0;}
+.origen-track{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.origen-fill{height:100%;background:var(--blue);border-radius:3px;}
+.origen-count{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);width:24px;text-align:right;}
+
+/* ══════════════════════════════════════════
+   MOBILE NAV
+══════════════════════════════════════════ */
+.mobile-nav{display:none;position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(12,12,14,.96);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border2);overflow-x:auto;padding:0 8px;}
+.mobile-nav-inner{display:flex;align-items:center;gap:2px;padding:8px 0;min-width:max-content;}
+.mobile-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;border-radius:var(--r);cursor:pointer;color:var(--text-muted);font-size:9.5px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;transition:all .18s;border:1px solid transparent;white-space:nowrap;position:relative;}
+.mobile-nav-item:hover{background:var(--surface2);color:var(--text-dim);}
+.mobile-nav-item.active{background:var(--gold-glow);color:var(--gold);border-color:rgba(201,168,76,.18);}
+.mobile-nav-icon{font-size:16px;}
+.mobile-nav-badge{position:absolute;top:5px;right:8px;min-width:14px;height:14px;background:var(--red);border-radius:20px;font-size:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;color:#fff;padding:0 3px;}
+
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;padding-top:62px;}
+  .mobile-nav{display:block;}
+  .topbar{top:58px;} /* debajo de mobile nav */
+  .dash-grid{grid-template-columns:1fr;}
+  .cli-grid{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .plans-grid{grid-template-columns:1fr;}
+  .splash-features{grid-template-columns:1fr!important;padding:24px 20px;}
+  .splash-proof{padding:24px 20px;}
+  .proof-stats{gap:18px;flex-wrap:wrap;}
+  .splash-plans{padding:24px 20px;}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .splash-nav{padding:14px 20px;}
+  .splash-hero{padding:48px 20px 24px;}
+  .splash-h1{font-size:clamp(30px,8vw,52px);}
+  .reg-box{width:100%;padding:0 12px;}
+  .auth-box{width:100%;padding:0 16px;}
+  #screen-register{padding:30px 0;}
+  .modal{width:96vw;}
+  #cli-side-panel,#exp-side-panel{width:100%;max-width:100%;}
+  .leads-pipeline-scroll{overflow-x:auto;}
+  #leads-pipeline{grid-template-columns:repeat(5,220px);}
+}
 
 /* ── PANEL LATERAL ── */
 @keyframes slideFromRight{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
 .col-exp2{grid-template-columns:100px 1fr 150px 90px 80px;}
+
+/* ── NAVBAR LANDING MEJORADO ── */
+.splash-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 48px;
+  position:sticky;top:0;z-index:80;
+  background:rgba(12,12,14,.82);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(201,168,76,.12);
+  box-shadow:0 1px 0 rgba(201,168,76,.06);
+}
+
+/* ── PANEL PERFIL ── */
+.perfil-menu{position:absolute;bottom:60px;left:14px;right:14px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 8px 28px rgba(0,0,0,.5);z-index:200;overflow:hidden;animation:fadeUp .18s ease;}
+.perfil-menu-item{display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;color:var(--text-dim);cursor:pointer;transition:all .15s;border-bottom:1px solid var(--border);}
+.perfil-menu-item:last-child{border-bottom:none;}
+.perfil-menu-item:hover{background:var(--surface3);color:var(--text);}
+.perfil-menu-item.danger:hover{color:var(--red);}
+.perfil-menu-sep{height:1px;background:var(--border);margin:0;}
+
+/* ── PANEL NOTIFICACIONES ── */
+.notif-panel{position:fixed;top:58px;right:16px;width:340px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:300;overflow:hidden;animation:fadeUp .18s ease;display:none;}
+.notif-panel.open{display:block;}
+.notif-panel-hdr{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.notif-panel-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);}
+.notif-item{padding:12px 16px;border-bottom:1px solid rgba(37,37,48,.6);cursor:pointer;transition:background .15s;}
+.notif-item:hover{background:var(--surface2);}
+.notif-item:last-child{border-bottom:none;}
+.notif-item-title{font-size:12.5px;color:var(--text);margin-bottom:2px;}
+.notif-item-meta{font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);}
+.notif-item.urgente .notif-item-title{color:var(--red);}
+.notif-item.activo .notif-item-title{color:var(--gold);}
+.notif-empty{padding:28px;text-align:center;font-size:12.5px;color:var(--text-muted);}
+
+/* ── BUSCADOR CON RESULTADOS ── */
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 32px rgba(0,0,0,.5);z-index:400;overflow:hidden;display:none;min-width:320px;}
+.search-results.open{display:block;animation:fadeUp .15s ease;}
+.sr-section{padding:6px 0;}
+.sr-label{padding:5px 14px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);}
+.sr-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .12s;}
+.sr-item:hover{background:var(--surface2);}
+.sr-item-icon{font-size:13px;opacity:.6;flex-shrink:0;}
+.sr-item-text{flex:1;min-width:0;}
+.sr-item-main{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sr-item-sub{font-size:10.5px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+.sr-divider{height:1px;background:var(--border);margin:4px 0;}
+.sr-empty{padding:16px 14px;font-size:12.5px;color:var(--text-muted);}
+.search-wrap{position:relative;}
+
+/* ── KPI CARDS CON COLOR ── */
+.stat.gold{border-color:rgba(201,168,76,.2);}
+.stat.gold:hover{border-color:var(--gold-dim);}
+.stat.gold .stat-val{color:var(--gold);}
+.stat.blue-c{border-color:rgba(76,123,201,.2);}
+.stat.blue-c:hover{border-color:var(--blue);}
+.stat.blue-c .stat-val{color:var(--blue);}
+.stat.red-c{border-color:rgba(201,76,76,.2);}
+.stat.red-c:hover{border-color:var(--red);}
+.stat.red-c .stat-val{color:var(--red);}
+.stat{cursor:pointer;}
+
+/* ── LANDING FEATURES MEJORADAS ── */
+.feat{padding:24px;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);text-align:left;transition:all .2s;}
+.feat:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
+.feat-icon{font-size:26px;margin-bottom:14px;display:block;}
+.feat-title{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);margin-bottom:6px;font-weight:400;}
+.feat-desc{font-size:13px;color:var(--text-dim);line-height:1.6;}
+
+/* ── SOCIAL PROOF ── */
+.splash-proof{padding:32px 48px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;width:100%;}
+.proof-text{text-align:center;font-size:12px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:22px;}
+.proof-stats{display:flex;justify-content:center;gap:40px;}
+.proof-stat-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--text);}
+.proof-stat-lbl{font-size:11px;color:var(--text-muted);}
+
+/* ── FOOTER LANDING MEJORADO ── */
+.splash-footer-full{border-top:1px solid var(--border);padding:32px 48px 24px;background:rgba(12,12,14,.6);}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;max-width:1100px;margin:0 auto 24px;}
+.footer-col-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:12px;}
+.footer-link{display:block;font-size:12.5px;color:var(--text-dim);margin-bottom:7px;cursor:pointer;transition:color .15s;text-decoration:none;}
+.footer-link:hover{color:var(--gold);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding-top:18px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted);font-family:'DM Mono',monospace;}
+
+/* ── HERO PREVIEW DASHBOARD ── */
+.hero-preview{margin-top:36px;width:100%;max-width:780px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.6),0 0 0 1px rgba(201,168,76,.08);position:relative;}
+.hero-preview::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 70%,var(--bg) 100%);z-index:2;pointer-events:none;}
+.hero-topbar-mock{height:40px;background:rgba(19,19,22,.95);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 14px;}
+.mock-dot{width:10px;height:10px;border-radius:50%;}
+.mock-url{flex:1;background:var(--surface2);border-radius:3px;height:20px;margin:0 16px;display:flex;align-items:center;padding:0 10px;}
+.mock-url-text{font-size:9px;font-family:'DM Mono',monospace;color:var(--text-muted);}
+.hero-app-mock{display:flex;height:200px;}
+.mock-sidebar{width:100px;background:var(--surface);border-right:1px solid var(--border);padding:10px 8px;}
+.mock-nav-item{height:8px;border-radius:3px;margin-bottom:6px;background:var(--border2);}
+.mock-nav-item.active{background:rgba(201,168,76,.25);}
+.mock-main{flex:1;padding:12px;}
+.mock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.mock-stat{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 8px;}
+.mock-stat-val{height:10px;width:30px;background:var(--gold);border-radius:2px;margin-bottom:3px;opacity:.7;}
+.mock-stat-lbl{height:6px;width:45px;background:var(--border2);border-radius:2px;}
+.mock-row{height:8px;border-radius:3px;background:var(--surface2);margin-bottom:5px;}
+
+/* ── TABLA ZEBRA STRIPING ── */
+.tbl-row:nth-child(even){background:rgba(26,26,31,.4);}
+.tbl-row:nth-child(even):hover{background:var(--surface2);}
+
+/* ── FILTROS ── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.filter-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:11.5px;font-family:'DM Mono',monospace;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+.filter-btn:hover{border-color:var(--gold-dim);color:var(--text);}
+.filter-btn.active{background:var(--gold-glow);border-color:rgba(201,168,76,.3);color:var(--gold);}
+
 .panel-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--surface);z-index:10;}
 .panel-close{width:28px;height:28px;background:var(--surface2);border:1px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-dim);flex-shrink:0;transition:all .15s;}
 .panel-close:hover{background:var(--border);color:var(--text);}
@@ -407,67 +582,92 @@ textarea.form-input{height:74px;resize:none;}
 <div id="screen-splash" class="screen active">
   <nav class="splash-nav">
     <div class="splash-logo">Lexora</div>
-    <div style="display:flex;gap:10px;">
-      <button class="btn btn-ghost" onclick="goTo('login')">Iniciar sesión</button>
-      <button class="btn btn-primary" onclick="goTo('register')">Crear cuenta gratis</button>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a class="footer-link" style="margin:0;font-size:13px;cursor:pointer;" onclick="document.getElementById('splash-planes').scrollIntoView({behavior:'smooth'})">Precios</a>
+      <button class="btn btn-ghost" onclick="goTo('login')" style="padding:8px 16px;">Iniciar sesión</button>
+      <button class="btn btn-primary" onclick="goTo('register')" style="padding:8px 18px;">Empezar gratis</button>
     </div>
   </nav>
-  <div class="splash-hero">
+  <div class="splash-hero" style="padding:60px 24px 30px;">
     <div class="splash-tag">Para estudios jurídicos argentinos</div>
     <h1 class="splash-h1">Tu estudio, <em>organizado</em>.<br>Tus clientes, atendidos.</h1>
-    <p class="splash-sub">Gestioná clientes, expedientes, vencimientos en un solo lugar. Trabajá solo o con tu equipo.</p>
+    <p class="splash-sub">Gestioná clientes, expedientes y vencimientos en un solo lugar. Trabajá solo o con tu equipo.</p>
     <div class="splash-btns">
-      <button class="btn btn-primary" onclick="goTo('register')">Empezar 1 mes gratis →</button>
-      <button class="btn btn-ghost" onclick="goTo('login')">Ya tengo cuenta</button>
+      <button class="btn btn-primary" onclick="goTo('register')" style="padding:14px 32px;font-size:15px;">Empezar 1 mes gratis →</button>
+      <button class="btn btn-ghost" onclick="goTo('login')" style="padding:14px 22px;font-size:13px;">Ya tengo cuenta</button>
     </div>
   </div>
-  <div class="splash-features" style="grid-template-columns:repeat(3,1fr);">
-    <div class="feat"><div class="feat-icon">◎</div><div class="feat-title">Clientes y causas</div><div class="feat-desc">Expedientes con código único, historial completo y búsqueda instantánea.</div></div>
-    <div class="feat"><div class="feat-icon">◷</div><div class="feat-title">Vencimientos</div><div class="feat-desc">Recordatorios con alertas automáticas para que nunca pierdas un plazo.</div></div>
-    <div class="feat"><div class="feat-icon">⊕</div><div class="feat-title">Trabajo en equipo</div><div class="feat-desc">Invitá colegas a tu firma con un código único. Datos compartidos en tiempo real.</div></div>
+  <div class="splash-proof">
+    <div class="proof-text">Confianza en números</div>
+    <div class="proof-stats">
+      <div style="text-align:center;"><div class="proof-stat-val">+120</div><div class="proof-stat-lbl">estudios activos</div></div>
+      <div style="text-align:center;"><div class="proof-stat-val">+4.800</div><div class="proof-stat-lbl">expedientes cargados</div></div>
+      <div style="text-align:center;"><div class="proof-stat-val">14</div><div class="proof-stat-lbl">provincias argentinas</div></div>
+      <div style="text-align:center;"><div class="proof-stat-val">4.9★</div><div class="proof-stat-lbl">satisfacción promedio</div></div>
+    </div>
   </div>
-  <div class="splash-plans" style="border-top:1px solid var(--border);padding-top:44px;">
+  <div class="splash-features" style="grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);">
+    <div class="feat"><div class="feat-icon">◎</div><div class="feat-title">Clientes y causas</div><div class="feat-desc">Expedientes con código único, historial completo, notas cronológicas y búsqueda instantánea.</div></div>
+    <div class="feat"><div class="feat-icon">◷</div><div class="feat-title">Vencimientos</div><div class="feat-desc">Recordatorios con alertas automáticas. Nunca más pierdas un plazo judicial.</div></div>
+    <div class="feat"><div class="feat-icon">⊕</div><div class="feat-title">Trabajo en equipo</div><div class="feat-desc">Invitá colegas a tu firma con un código único. Todos ven los mismos datos en tiempo real.</div></div>
+  </div>
+  <div class="splash-plans" id="splash-planes" style="padding-top:44px;">
     <div class="splash-plans-title">Planes</div>
     <div class="plans-grid">
       <div class="plan-card">
         <div class="plan-name">Esencial</div>
         <div class="plan-price" style="font-size:32px;">$39.000<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · 1 abogado</div>
-        <ul class="plan-features">
-          <li>Hasta 30 clientes</li>
-          <li>Funciones básicas de gestión</li>
-          <li>Expedientes y recordatorios</li>
-          <li>Sin automatizaciones clave</li>
-        </ul>
+        <ul class="plan-features"><li>Hasta 30 clientes</li><li>Funciones básicas de gestión</li><li>Expedientes y recordatorios</li><li>Sin automatizaciones clave</li></ul>
         <button class="btn btn-ghost btn-full" onclick="goTo('register')">Empezar</button>
       </div>
       <div class="plan-card featured">
         <div class="plan-name">Crecimiento ★</div>
         <div class="plan-price" style="font-size:32px;">$89.000<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · hasta 5 abogados</div>
-        <ul class="plan-features">
-          <li>Clientes ilimitados</li>
-          <li>Expedientes ilimitados</li>
-          <li>Hasta 5 miembros en firma</li>
-          <li>Soporte rápido</li>
-        </ul>
+        <ul class="plan-features"><li>Clientes ilimitados</li><li>Expedientes ilimitados</li><li>Hasta 5 miembros en firma</li><li>Soporte rápido</li></ul>
         <button class="btn btn-primary btn-full" onclick="goTo('register')">Empezar</button>
       </div>
       <div class="plan-card">
         <div class="plan-name">Expansión</div>
         <div class="plan-price" style="font-size:32px;">$119.000<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · abogados ilimitados</div>
-        <ul class="plan-features">
-          <li>Todo lo de Crecimiento</li>
-          <li>Miembros ilimitados</li>
-          <li>Soporte dedicado</li>
-          <li>Personalización de la plataforma</li>
-        </ul>
+        <ul class="plan-features"><li>Todo lo de Crecimiento</li><li>Miembros ilimitados</li><li>Soporte dedicado</li><li>Personalización</li></ul>
         <button class="btn btn-ghost btn-full" onclick="goTo('register')">Contactar</button>
       </div>
     </div>
+    <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:18px;">1 mes de prueba gratis · Sin tarjeta · Cancelás cuando quieras</p>
   </div>
-  <div class="splash-footer">Lexora © 2024 · Plataforma de Gestión Jurídica para Argentina</div>
+  <div class="splash-footer-full">
+    <div class="footer-grid">
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--gold);margin-bottom:8px;">Lexora</div>
+        <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Plataforma de gestión jurídica para estudios argentinos. Simple, profesional, segura.</div>
+      </div>
+      <div>
+        <div class="footer-col-title">Producto</div>
+        <a class="footer-link" onclick="goTo('register')">Crear cuenta</a>
+        <a class="footer-link" onclick="document.getElementById('splash-planes').scrollIntoView({behavior:'smooth'})">Precios</a>
+        <a class="footer-link" onclick="goTo('login')">Iniciar sesión</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <a class="footer-link">Términos de servicio</a>
+        <a class="footer-link">Política de privacidad</a>
+        <a class="footer-link">Protección de datos</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Contacto</div>
+        <a class="footer-link"><span class="__cf_email__" data-cfemail="e58d8a8984a589809d8a9784cb868a88cb8497">[email&#160;protected]</span></a>
+        <a class="footer-link">Soporte técnico</a>
+        <a class="footer-link" onclick="goTo('admin-login')" style="opacity:.3;font-size:10px;">Admin</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>Lexora © 2025 · Todos los derechos reservados · Argentina</span>
+      <span>Hecho con ⚖️ para abogados argentinos</span>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════
@@ -666,6 +866,31 @@ textarea.form-input{height:74px;resize:none;}
      APP PRINCIPAL
 ══════════════════════════════════════════════ -->
 <div id="screen-app" class="screen">
+  <!-- MOBILE NAV (visible solo en móvil) -->
+  <nav class="mobile-nav" id="mobile-nav">
+    <div class="mobile-nav-inner">
+      <div class="mobile-nav-item active" id="mn-dashboard" onclick="showPage('dashboard',null);setMobileActive('dashboard')">
+        <span class="mobile-nav-icon">⊞</span>Dashboard
+      </div>
+      <div class="mobile-nav-item" id="mn-leads" onclick="showPage('leads',null);setMobileActive('leads')">
+        <span class="mobile-nav-icon">🔥</span>Leads
+        <span class="mobile-nav-badge" id="mn-leads-badge" style="display:none;"></span>
+      </div>
+      <div class="mobile-nav-item" id="mn-clientes" onclick="showPage('clientes',null);setMobileActive('clientes')">
+        <span class="mobile-nav-icon">◎</span>Clientes
+      </div>
+      <div class="mobile-nav-item" id="mn-expedientes" onclick="showPage('expedientes',null);setMobileActive('expedientes')">
+        <span class="mobile-nav-icon">▤</span>Exptes.
+      </div>
+      <div class="mobile-nav-item" id="mn-recordatorios" onclick="showPage('recordatorios',null);setMobileActive('recordatorios')">
+        <span class="mobile-nav-icon">◷</span>Recordat.
+        <span class="mobile-nav-badge" id="mn-rec-badge" style="display:none;"></span>
+      </div>
+      <div class="mobile-nav-item" id="mn-equipo" onclick="showPage('equipo',null);setMobileActive('equipo')">
+        <span class="mobile-nav-icon">⊕</span>Equipo
+      </div>
+    </div>
+  </nav>
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-name">Lexora</div>
@@ -674,22 +899,28 @@ textarea.form-input{height:74px;resize:none;}
     <div class="sidebar-nav">
       <div class="nav-section">Principal</div>
       <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</div>
+      <div class="nav-item" onclick="showPage('leads',this)"><span class="nav-icon">🔥</span>Leads<span class="nav-badge" id="leads-badge" style="display:none;background:var(--blue);"></span></div>
       <div class="nav-item" onclick="showPage('clientes',this)"><span class="nav-icon">◎</span>Clientes</div>
       <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Expedientes</div>
       <div class="nav-section">Operaciones</div>
-      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Recordatorios<span class="nav-badge" id="rec-badge">0</span></div>
-      
+      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Recordatorios<span class="nav-badge" id="rec-badge" style="display:none;"></span></div>
       <div class="nav-section">Firma</div>
       <div class="nav-item" onclick="showPage('equipo',this)"><span class="nav-icon">⊕</span>Equipo</div>
     </div>
     <div class="sidebar-footer">
-      <div class="user-chip" onclick="doLogout()">
+      <div class="user-chip" onclick="togglePerfilMenu(event)" id="user-chip-btn">
         <div class="u-avatar" id="sb-avatar">--</div>
-        <div>
+        <div style="flex:1;min-width:0;">
           <div class="u-name" id="sb-name">—</div>
           <div class="u-role" id="sb-role">—</div>
         </div>
-        <div class="chip-logout">↩</div>
+        <div style="font-size:11px;color:var(--text-muted);">⋯</div>
+      </div>
+      <!-- Menú de perfil -->
+      <div id="perfil-menu" class="perfil-menu" style="display:none;">
+        <div class="perfil-menu-item" onclick="openPerfilConfig()">👤 Mi perfil</div>
+        <div class="perfil-menu-item" onclick="openFirmaConfig()">🏛️ Configuración del estudio</div>
+        <div class="perfil-menu-item danger" onclick="confirmarCerrarSesion()">↩ Cerrar sesión</div>
       </div>
     </div>
   </aside>
@@ -698,18 +929,30 @@ textarea.form-input{height:74px;resize:none;}
     <div class="topbar">
       <div class="page-title" id="page-title">Dashboard</div>
       <div class="topbar-right">
-        <div class="search-wrap"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" placeholder="Buscar..." oninput="handleSearch(this.value)"></div>
-        <div class="icon-btn">🔔<div class="notif-dot" id="notif-dot">0</div></div>
+        <div class="search-wrap" style="width:220px;">
+          <span style="color:var(--text-muted);font-size:13px;">⌕</span>
+          <input type="text" id="global-search" placeholder="Buscar..." oninput="handleSearch(this.value)" onkeydown="handleSearchKey(event)" autocomplete="off">
+          <div class="search-results" id="search-results"></div>
+        </div>
+        <div class="icon-btn" id="notif-btn-top" onclick="toggleNotifPanel()">🔔<div class="notif-dot" id="notif-dot" style="display:none;"></div></div>
         <button class="btn btn-primary" onclick="openModal()">+ Nuevo</button>
       </div>
+    </div>
+    <!-- Panel de notificaciones -->
+    <div class="notif-panel" id="notif-panel">
+      <div class="notif-panel-hdr">
+        <div class="notif-panel-title">Notificaciones</div>
+        <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="toggleNotifPanel()">Cerrar</button>
+      </div>
+      <div id="notif-list"></div>
     </div>
 
     <!-- DASHBOARD -->
     <div id="page-dashboard" class="page active">
-      <div class="stats-row">
-        <div class="stat"><div class="stat-lbl">Clientes</div><div class="stat-val" id="s-cli">—</div><div class="stat-sub up">registrados</div><div class="stat-icon">◎</div></div>
-        <div class="stat"><div class="stat-lbl">Expedientes activos</div><div class="stat-val" id="s-exp">—</div><div class="stat-sub up">en curso</div><div class="stat-icon">▤</div></div>
-        <div class="stat"><div class="stat-lbl">Alertas urgentes</div><div class="stat-val" id="s-urg">—</div><div class="stat-sub dn" id="s-urg-sub">vencimientos</div><div class="stat-icon">◷</div></div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat gold" onclick="showPage('clientes',document.querySelector('[onclick*=clientes]'))" title="Ir a Clientes"><div class="stat-lbl">Clientes</div><div class="stat-val" id="s-cli">—</div><div class="stat-sub up">registrados →</div><div class="stat-icon">◎</div></div>
+        <div class="stat blue-c" onclick="showPage('expedientes',document.querySelector('[onclick*=expedientes]'))" title="Ir a Expedientes"><div class="stat-lbl">Expedientes activos</div><div class="stat-val" id="s-exp">—</div><div class="stat-sub up">en curso →</div><div class="stat-icon">▤</div></div>
+        <div class="stat red-c" onclick="showPage('recordatorios',document.querySelector('[onclick*=recordatorios]'))" title="Ir a Recordatorios"><div class="stat-lbl">Alertas urgentes</div><div class="stat-val" id="s-urg">—</div><div class="stat-sub dn" id="s-urg-sub">vencimientos →</div><div class="stat-icon">◷</div></div>
       </div>
       <div class="dash-grid">
         <div class="card">
@@ -720,6 +963,41 @@ textarea.form-input{height:74px;resize:none;}
         <div class="card">
           <div class="card-hdr"><div class="card-title">Alertas urgentes</div><span id="d-alert-count" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);"></span></div>
           <div id="d-alerts"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADS / PROSPECTOS -->
+    <div id="page-leads" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Leads <span style="font-size:13px;font-family:'DM Mono',monospace;color:var(--text-muted);">/ Prospectos</span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="search-wrap" style="width:200px;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" id="leads-search" placeholder="Buscar lead..." oninput="filterLeads(this.value)"></div>
+          <button class="btn btn-primary" onclick="openModal('lead')">+ Nuevo lead</button>
+        </div>
+      </div>
+      <!-- Métricas de leads -->
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
+        <div class="stat"><div class="stat-lbl">Total leads</div><div class="stat-val" id="lead-total">—</div><div class="stat-sub up">activos</div></div>
+        <div class="stat blue-c"><div class="stat-lbl">Tasa conversión</div><div class="stat-val" id="lead-conv">—</div><div class="stat-sub up">ganados/total</div></div>
+        <div class="stat gold"><div class="stat-lbl">Tiempo prom. cierre</div><div class="stat-val" id="lead-tiempo">—</div><div class="stat-sub wn">días</div></div>
+        <div class="stat red-c"><div class="stat-lbl">Seguimiento hoy</div><div class="stat-val" id="lead-hoy">—</div><div class="stat-sub dn">pendientes</div></div>
+      </div>
+      <!-- Pipeline kanban -->
+      <div style="overflow-x:auto;padding-bottom:8px;">
+        <div id="leads-pipeline" style="display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;min-width:900px;">
+          <!-- Columnas generadas por JS -->
+        </div>
+      </div>
+      <!-- Métricas: leads por origen -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📈 Leads por origen</div></div>
+          <div id="leads-origen" style="padding:16px;"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔔 Seguimiento pendiente</div></div>
+          <div id="leads-seguimiento" style="padding:0;"></div>
         </div>
       </div>
     </div>
@@ -749,6 +1027,7 @@ textarea.form-input{height:74px;resize:none;}
           <button class="btn btn-primary" onclick="openModal('expediente')">+ Nuevo expediente</button>
         </div>
       </div>
+      <div id="exp-filtros" style="margin-bottom:8px;"></div>
       <div style="display:grid;grid-template-columns:1fr;gap:0;" id="exp-layout">
         <div style="overflow-y:auto;" id="exp-list-wrap">
           <div class="card">
@@ -912,7 +1191,7 @@ textarea.form-input{height:74px;resize:none;}
 <!-- ══════════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════════ -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 'use strict';
 
 /* ╔═══════════════════════════════════════════╗
@@ -1516,7 +1795,7 @@ async function loadAll(){
   renderAll();
 }
 
-function renderAll(){ rDash(); rCli(); rExp(); rRec(); rEquipo(); rBadges(); }
+function renderAll(){ rDash(); rLeads(); rCli(); rExp(); rRec(); rEquipo(); rBadges(); }
 
 /* ════════════════════════════════════════
    RENDER — DASHBOARD
@@ -1549,20 +1828,20 @@ function rDash(){
 /* ════════════════════════════════════════
    RENDER — CLIENTES
 ════════════════════════════════════════ */
-function rCli(filter=''){
+function rCli(filtro=''){
   const g = document.getElementById('cli-grid');
-  let list = C.clientes;
-  if(filter) list = list.filter(c=>
-    c.nombre.toLowerCase().includes(filter)||
-    (c.email||'').toLowerCase().includes(filter)||
-    (c.dni_cuit||'').toLowerCase().includes(filter)||
-    (c.codigo_cliente||'').toLowerCase().includes(filter)
+  let lista = C.clientes;
+  if(filtro) lista = lista.filter(c=>
+    c.nombre?.toLowerCase().includes(filtro)||
+    (c.email||'').toLowerCase().includes(filtro)||
+    (c.dni||'').toLowerCase().includes(filtro)||
+    (c.codigo_cliente||'').includes(filtro)
   );
-  if(!list.length){ g.innerHTML=`<div class="empty"><div class="ei">◎</div><p>${filter?'Sin resultados para "'+filter+'"':'Sin clientes aún. Agregá el primero.'}</p></div>`; return; }
-  g.innerHTML = list.map(c=>{
+  if(!lista.length){ g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">◎</div><p>${filtro?'Sin resultados para "'+filtro+'"':'Sin clientes aún. Agregá el primero.'}</p></div>`; return; }
+  g.innerHTML = lista.map(c=>{
     const exps = C.expedientes.filter(e=>e.cliente_id===c.id).length;
     const ini  = ((c.nombre||' ').split(' ').map(w=>w[0]).slice(0,2).join('')).toUpperCase();
-    return `<div class="cli-card" onclick="openClientePanel('${c.id}')" style="cursor:pointer;">
+    return `<div class="cli-card" onclick="openPanelCliente('${c.id}')" style="cursor:pointer;">
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">
         <div class="cli-avatar">${ini}</div>
         <div style="flex:1;min-width:0;">
@@ -1570,238 +1849,247 @@ function rCli(filter=''){
           <div class="cli-meta">${c.tipo||'—'} · ${c.email||'Sin email'}</div>
           <div class="cli-code"><span class="code-tag">CLI-${c.codigo_cliente||'------'}</span></div>
         </div>
-        <span style="font-size:10px;color:var(--text-muted);font-family:'DM Mono',monospace;">${exps} caso(s)</span>
       </div>
-      <div class="cli-actions" onclick="event.stopPropagation()">
-        <button class="tbl-btn" onclick="editItem('cliente','${c.id}')">editar</button>
+      <div class="cli-actions" onclick="event.stopPropagation();">
+        <button class="tbl-btn" onclick="editItem('cliente','${c.id}')">✏️ editar</button>
         <button class="tbl-btn del" onclick="delItem('clientes','${c.id}','cliente')">eliminar</button>
+      </div>
+      <div class="cli-stats">
+        <div><div class="cs-v">${exps}</div><div class="cs-l">Exptes.</div></div>
+        <div><div class="cs-v" style="color:var(--text-dim);">${c.telefono||'—'}</div><div class="cs-l">Teléfono</div></div>
       </div>
     </div>`;}).join('');
 }
 
-function filterClientes(v){ rCli(v.toLowerCase()); }
+function filterClientes(v){ rCli(v.toLowerCase().trim()); }
 
 /* ════════════════════════════════════════
    PANEL LATERAL — CLIENTE
 ════════════════════════════════════════ */
-function openClientePanel(id){
-  const c = C.clientes.find(x=>x.id===id);
+function openPanelCliente(cliId){
+  const c = C.clientes.find(x=>x.id===cliId);
   if(!c) return;
-  const exps = C.expedientes.filter(e=>e.cliente_id===c.id);
-  const ini  = ((c.nombre||' ').split(' ').map(w=>w[0]).slice(0,2).join('')).toUpperCase();
-  const notas = (c._notas||[]).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const exps = C.expedientes.filter(e=>e.cliente_id===cliId);
+  const recs = C.recordatorios.filter(r=> exps.some(e=>e.id===r.expediente_id));
+  const ini  = (c.nombre||' ').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const notas = c._notas || [];
+  const cols={urgente:'var(--red)',activo:'var(--gold)',pendiente:'var(--blue)'};
 
   document.getElementById('cli-panel-content').innerHTML = `
     <div class="panel-hdr">
-      <div class="cli-avatar" style="width:36px;height:36px;font-size:14px;">${ini}</div>
+      <div class="cli-avatar" style="width:36px;height:36px;font-size:14px;flex-shrink:0;">${ini}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);">${c.nombre}</div>
-        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);">${stBadge(c.tipo||'Persona física')} <span class="code-tag" style="margin-left:6px;">CLI-${c.codigo_cliente||'------'}</span></div>
+        <span class="code-tag">CLI-${c.codigo_cliente||'------'}</span>
       </div>
       <div class="panel-close" onclick="closePanelCliente()">✕</div>
     </div>
     <div class="panel-body">
-
-      <!-- Info básica -->
-      <div class="panel-section">
-        <div class="panel-section-title">Información del cliente</div>
-        <div class="info-row"><span class="info-lbl">Email</span><span class="info-val">${c.email||'—'}</span></div>
-        <div class="info-row"><span class="info-lbl">Teléfono</span><span class="info-val">${c.telefono||'—'}</span></div>
-        <div class="info-row"><span class="info-lbl">DNI / CUIT</span><span class="info-val">${c.dni_cuit||'—'}</span></div>
-        <div class="info-row"><span class="info-lbl">Dirección</span><span class="info-val">${c.direccion||'—'}</span></div>
-        <div style="margin-top:10px;"><button class="tbl-btn" onclick="editItem('cliente','${c.id}')">✏ Editar datos</button></div>
+      <div class="panel-actions">
+        <button class="qa-btn" onclick="editItem('cliente','${c.id}');closePanelCliente()">✏️ Editar</button>
+        <button class="qa-btn" onclick="openModal('expediente',{cliente_id:'${c.id}'})">▤ Nuevo caso</button>
+        <button class="qa-btn" onclick="document.getElementById('nota-cli-${c.id}').focus()">📝 Nota</button>
       </div>
-
-      <!-- Notas rápidas -->
+      <div class="panel-section">
+        <div class="panel-section-title">Datos de contacto</div>
+        <div class="info-row"><span class="info-lbl">Tipo</span><span class="info-val">${c.tipo||'—'}</span></div>
+        <div class="info-row"><span class="info-lbl">Teléfono</span><span class="info-val">${c.telefono||'—'}</span></div>
+        <div class="info-row"><span class="info-lbl">Email</span><span class="info-val">${c.email||'—'}</span></div>
+        <div class="info-row"><span class="info-lbl">DNI / CUIT</span><span class="info-val">${c.dni||'—'}</span></div>
+        <div class="info-row"><span class="info-lbl">Dirección</span><span class="info-val">${c.direccion||'—'}</span></div>
+      </div>
       <div class="panel-section">
         <div class="panel-section-title">Notas rápidas</div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <select id="nota-tipo-cli" class="tipo-select">
-            <option value="general">General</option>
-            <option value="llamada">📞 Llamada</option>
-            <option value="movimiento">📋 Movimiento</option>
-            <option value="urgente">⚠ Urgente</option>
-          </select>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <textarea id="nota-cli-${c.id}" class="nota-input" placeholder="Nota, llamada, pendiente..." style="flex:1;height:54px;"></textarea>
+          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px;flex-shrink:0;" onclick="addNotaCli('${c.id}')">+</button>
         </div>
-        <textarea id="nota-input-cli-${c.id}" class="nota-input" placeholder="Escribí una nota... (Enter para guardar)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveNotaCli('${c.id}')}"></textarea>
-        <button class="btn btn-ghost" style="margin-top:7px;font-size:12px;padding:6px 12px;" onclick="saveNotaCli('${c.id}')">+ Agregar nota</button>
-        <div id="notas-cli-${c.id}" style="margin-top:12px;">
-          ${notas.map(n=>`<div class="nota-item ${n.tipo||''}">
+        <div id="notas-cli-${c.id}">${notas.length ? notas.map(n=>`
+          <div class="nota-item">
             <div class="nota-text">${n.texto}</div>
-            <div class="nota-meta">${n.fecha} · ${n.tipo||'general'}</div>
-          </div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);">Sin notas aún.</div>'}
-        </div>
+            <div class="nota-meta">${n.fecha}</div>
+          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin notas aún</div>'}</div>
       </div>
-
-      <!-- Expedientes asociados -->
       <div class="panel-section">
-        <div class="panel-section-title">Expedientes (${exps.length})</div>
+        <div class="panel-section-title">Causas asociadas (${exps.length})</div>
         ${exps.length ? exps.map(e=>`
-          <div class="exp-mini" onclick="closePanelCliente();setTimeout(()=>openExpedientePanel('${e.id}'),200)">
-            <span class="code-tag">${e.codigo_caso||'—'}</span>
-            <div style="flex:1;min-width:0;"><div style="font-size:12.5px;color:var(--text);">${e.titulo}</div><div style="font-size:10.5px;color:var(--text-muted);">${e.tipo||'—'} · ${e.juzgado||'Sin juzgado'}</div></div>
+          <div class="exp-mini" onclick="closePanelCliente();setTimeout(()=>openPanelExpediente('${e.id}'),120);">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${e.titulo}</div>
+              <span class="code-tag" style="font-size:9.5px;">${e.codigo_caso||'—'}</span>
+            </div>
             ${stBadge(e.estado)}
-          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);">Sin expedientes asociados.</div>'}
-        <button class="btn btn-ghost" style="margin-top:10px;font-size:12px;padding:7px 12px;" onclick="openModal('expediente',{cliente_id:'${c.id}'})">+ Nuevo expediente</button>
+          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin causas</div>'}
+        <button class="btn btn-ghost" style="width:100%;font-size:12px;margin-top:6px;" onclick="openModal('expediente',{cliente_id:'${c.id}'})">+ Agregar causa</button>
       </div>
+      ${recs.length ? `<div class="panel-section">
+        <div class="panel-section-title">Recordatorios vinculados</div>
+        ${recs.map(r=>`
+          <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--r);margin-bottom:5px;border-left:2px solid ${cols[r.urgencia]||'var(--border3)'};">
+            <div style="font-size:12.5px;color:var(--text);">${r.titulo}</div>
+            <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:2px;">${r.fecha_limite||'Sin fecha'}</div>
+          </div>`).join('')}
+      </div>` : ''}
+      ${c.notas?`<div class="panel-section"><div class="panel-section-title">Notas internas</div><div style="font-size:13px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;">${c.notas}</div></div>`:''}
     </div>`;
 
   document.getElementById('cli-panel-overlay').style.display='block';
   document.getElementById('cli-side-panel').style.display='block';
 }
 
-function closePanelCliente(){
-  document.getElementById('cli-side-panel').style.display='none';
-  document.getElementById('cli-panel-overlay').style.display='none';
+function addNotaCli(cliId){
+  const el=document.getElementById('nota-cli-'+cliId);
+  const txt=el?.value?.trim(); if(!txt) return;
+  const c=C.clientes.find(x=>x.id===cliId); if(!c) return;
+  if(!c._notas) c._notas=[];
+  c._notas.unshift({texto:txt,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})});
+  el.value='';
+  openPanelCliente(cliId);
+  showToast('📝 Nota guardada');
 }
 
-function saveNotaCli(cliId){
-  const input = document.getElementById('nota-input-cli-'+cliId);
-  const texto = input?.value?.trim();
-  if(!texto) return;
-  const tipo  = document.getElementById('nota-tipo-cli')?.value || 'general';
-  const c = C.clientes.find(x=>x.id===cliId);
-  if(!c) return;
-  if(!c._notas) c._notas = [];
-  const nota = { texto, tipo, fecha: new Date().toLocaleString('es-AR') };
-  c._notas.unshift(nota);
-  input.value = '';
-  showToast('✅ Nota guardada');
-  openClientePanel(cliId); // re-render panel
+function closePanelCliente(){
+  document.getElementById('cli-panel-overlay').style.display='none';
+  document.getElementById('cli-side-panel').style.display='none';
 }
 
 /* ════════════════════════════════════════
    RENDER — EXPEDIENTES
 ════════════════════════════════════════ */
-function rExp(filter=''){
+function rExp(filtro='', listaOverride=null){
+  const fBar = document.getElementById('exp-filtros');
+  if(fBar && !listaOverride) fBar.innerHTML = renderFiltrosExp();
+
   const el = document.getElementById('exp-list');
-  let list = C.expedientes;
-  if(filter) list = list.filter(e=>
-    e.titulo.toLowerCase().includes(filter)||
-    (e.codigo_caso||'').toLowerCase().includes(filter)||
-    cliName(e.cliente_id).toLowerCase().includes(filter)
+  let lista = listaOverride || C.expedientes;
+  if(filtroExpState !== 'todos' && !listaOverride) lista = lista.filter(e=>e.estado===filtroExpState);
+  if(filtro) lista = lista.filter(e=>
+    e.titulo?.toLowerCase().includes(filtro)||
+    (e.codigo_caso||'').toLowerCase().includes(filtro)||
+    cliName(e.cliente_id).toLowerCase().includes(filtro)||
+    (e.descripcion||'').toLowerCase().includes(filtro)
   );
-  if(!list.length){ el.innerHTML=`<div class="empty"><div class="ei">▤</div><p>${filter?'Sin resultados.':'Sin expedientes.'}</p></div>`; return; }
-  el.innerHTML = list.map(e=>`
-    <div class="tbl-row col-exp2" style="cursor:pointer;" onclick="openExpedientePanel('${e.id}')">
+  if(!lista.length){ el.innerHTML=`<div class="empty"><div class="ei">▤</div><p>${filtro?'Sin resultados para "'+filtro+'"':'Sin expedientes.'}</p></div>`; return; }
+  el.innerHTML = lista.map(e=>`
+    <div class="tbl-row col-exp2" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
       <div><span class="code-tag">${e.codigo_caso||'—'}</span></div>
       <div><div class="cp">${e.titulo}</div><div class="cs">${e.juzgado||'Sin juzgado'}</div></div>
-      <div class="cm">${cliName(e.cliente_id)}</div>
+      <div class="cm" style="font-size:12px;">${cliName(e.cliente_id)}</div>
       <div>${stBadge(e.estado)}</div>
-      <div class="act-btns" onclick="event.stopPropagation()">
-        <button class="tbl-btn" onclick="editItem('expediente','${e.id}')">editar</button>
+      <div class="act-btns" onclick="event.stopPropagation();">
+        <button class="tbl-btn" onclick="editItem('expediente','${e.id}')">✏️</button>
         <button class="tbl-btn del" onclick="delItem('expedientes','${e.id}','expediente')">✕</button>
       </div>
     </div>`).join('');
 }
 
-function filterExpedientes(v){ rExp(v.toLowerCase()); }
-
 /* ════════════════════════════════════════
    PANEL LATERAL — EXPEDIENTE
 ════════════════════════════════════════ */
-function openExpedientePanel(id){
-  const e = C.expedientes.find(x=>x.id===id);
+function openPanelExpediente(expId){
+  const e = C.expedientes.find(x=>x.id===expId);
   if(!e) return;
-  const cli  = C.clientes.find(x=>x.id===e.cliente_id);
-  const recs = C.recordatorios.filter(r=>r.expediente_id===e.id).sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||''));
-  const notas = (e._notas||[]).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-  const docs  = (e._docs||[]);
-  const estadoColors = {activo:'var(--green)',pendiente:'var(--gold)',cerrado:'var(--text-muted)',pausado:'var(--blue)'};
+  const cli  = C.clientes.find(c=>c.id===e.cliente_id);
+  const recs = C.recordatorios.filter(r=>r.expediente_id===expId);
+  const docs = e._docs||[];
+  const notas = (e._notas||[]);
+  const cols={urgente:'var(--red)',activo:'var(--gold)',pendiente:'var(--blue)'};
 
   document.getElementById('exp-panel-content').innerHTML = `
-    <div class="panel-hdr" style="gap:12px;">
+    <div class="panel-hdr">
       <div style="flex:1;min-width:0;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--text);line-height:1.2;margin-bottom:4px;">${e.titulo}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--text);margin-bottom:3px;">${e.titulo}</div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          ${stBadge(e.estado)}
           <span class="code-tag">${e.codigo_caso||'—'}</span>
-          <span style="font-size:11px;color:var(--text-muted);">${e.tipo||'—'}</span>
+          ${stBadge(e.estado)}
         </div>
       </div>
       <div class="panel-close" onclick="closePanelExpediente()">✕</div>
     </div>
     <div class="panel-body">
-
-      <!-- Acciones rápidas -->
-      <div class="panel-actions">
-        <button class="qa-btn" onclick="focusNotaExp('${e.id}')">📝 Nota</button>
-        <button class="qa-btn" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">📅 Fecha / Recordatorio</button>
-        <button class="qa-btn" onclick="document.getElementById('doc-upload-${e.id}').click()">📎 Documento</button>
-        <button class="qa-btn" onclick="editItem('expediente','${e.id}')">✏ Editar</button>
-      </div>
-
-      <!-- Info básica -->
       <div class="panel-section">
-        <div class="panel-section-title">Datos del expediente</div>
+        <div class="panel-section-title">Información del caso</div>
         <div class="info-row"><span class="info-lbl">Cliente</span>
-          <span class="info-val" style="color:var(--gold);cursor:pointer;text-decoration:underline;" onclick="closePanelExpediente();setTimeout(()=>openClientePanel('${e.cliente_id}'),200)">${cli?.nombre||'—'}</span>
+          <span class="info-val" style="color:var(--gold);cursor:pointer;text-decoration:underline;" onclick="closePanelExpediente();setTimeout(()=>openPanelCliente('${cli?.id||''}'),120);">${cli?.nombre||'—'} ↗</span>
         </div>
+        <div class="info-row"><span class="info-lbl">Tipo</span><span class="info-val">${e.tipo||'—'}</span></div>
         <div class="info-row"><span class="info-lbl">Juzgado</span><span class="info-val">${e.juzgado||'—'}</span></div>
-        <div class="info-row"><span class="info-lbl">Estado</span><span style="color:${estadoColors[e.estado]||'var(--text)'};font-size:12.5px;">${e.estado}</span></div>
-        ${e.descripcion?`<div class="info-row"><span class="info-lbl">Notas</span><span class="info-val" style="font-size:12px;">${e.descripcion}</span></div>`:''}
-      </div>
-
-      <!-- Búsqueda dentro del expediente -->
-      <div class="panel-section">
-        <div class="search-wrap" style="width:100%;margin-bottom:0;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" placeholder="Buscar dentro del expediente..." oninput="searchInExp('${e.id}',this.value)"></div>
-      </div>
-
-      <!-- Fechas y recordatorios -->
-      <div class="panel-section">
-        <div class="panel-section-title" style="display:flex;justify-content:space-between;">
-          Fechas y recordatorios (${recs.length})
-          <button class="tbl-btn" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">+ agregar</button>
-        </div>
-        <div id="recs-exp-${e.id}">
-          ${recs.map(r=>`
-            <div class="nota-item ${r.urgencia==='urgente'?'urgente':r.urgencia==='activo'?'movimiento':''}">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-                <div class="nota-text">📅 ${r.titulo}</div>
-                <button class="tbl-btn del" onclick="delItem('recordatorios','${r.id}','recordatorio');closePanelExpediente();setTimeout(()=>openExpedientePanel('${e.id}'),300)">✕</button>
-              </div>
-              <div class="nota-meta">${r.fecha_limite||'Sin fecha'} · ${r.urgencia} ${r.nota?'· '+r.nota:''}</div>
-            </div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);">Sin fechas cargadas.</div>'}
-        </div>
-      </div>
-
-      <!-- Registro cronológico (notas) -->
-      <div class="panel-section">
-        <div class="panel-section-title">Registro cronológico</div>
-        <div style="display:flex;gap:8px;margin-bottom:8px;">
-          <select id="nota-tipo-exp-${e.id}" class="tipo-select">
-            <option value="general">General</option>
-            <option value="llamada">📞 Llamada</option>
-            <option value="movimiento">📋 Movimiento</option>
-            <option value="urgente">⚠ Pendiente</option>
+        <div class="info-row"><span class="info-lbl">Estado</span>
+          <select class="tipo-select" onchange="cambiarEstadoExp('${e.id}',this.value)">
+            ${['activo','pendiente','cerrado'].map(s=>`<option value="${s}"${e.estado===s?' selected':''}>${s}</option>`).join('')}
           </select>
         </div>
-        <textarea id="nota-input-exp-${e.id}" class="nota-input" placeholder="Escribí una entrada... (Enter para guardar)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();saveNotaExp('${e.id}')}"></textarea>
-        <button class="btn btn-ghost" style="margin-top:7px;font-size:12px;padding:6px 12px;" onclick="saveNotaExp('${e.id}')">+ Agregar entrada</button>
-        <div id="notas-exp-${e.id}" style="margin-top:12px;">
-          ${notas.map(n=>`<div class="nota-item ${n.tipo||''}">
-            <div class="nota-text">${n.texto}</div>
-            <div class="nota-meta">${n.fecha} · ${n.tipo||'general'}</div>
-          </div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);">Sin entradas aún.</div>'}
+        ${e.descripcion?`<div style="margin-top:8px;padding:10px;background:var(--surface2);border-radius:var(--r);font-size:12.5px;color:var(--text-dim);line-height:1.6;">${e.descripcion}</div>`:''}
+      </div>
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="document.getElementById('nota-exp-input-${e.id}').focus()">📝 Nota</button>
+        <button class="qa-btn" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">📅 Fecha</button>
+        <button class="qa-btn" onclick="document.getElementById('doc-upload-${e.id}').click()">📎 Documento</button>
+        <button class="qa-btn" onclick="editItem('expediente','${e.id}')">✏️ Editar</button>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="search-wrap" style="width:100%;"><span style="color:var(--text-muted);font-size:13px;">⌕</span>
+          <input type="text" placeholder="Buscar en notas y documentos..." oninput="buscarEnExp('${e.id}',this.value)" style="width:100%;">
         </div>
       </div>
-
-      <!-- Documentos -->
       <div class="panel-section">
-        <div class="panel-section-title">Documentos (${docs.length})</div>
-        <div id="docs-exp-${e.id}">
-          ${docs.map(d=>`
-            <div class="doc-item" onclick="previewDoc('${e.id}','${d.id}')">
-              <span class="doc-icon">${docIcon(d.nombre)}</span>
-              <div style="flex:1;min-width:0;"><div class="doc-name">${d.nombre}</div><div class="doc-meta">${d.fecha} · ${d.size||''}</div></div>
-              <button class="tbl-btn del" onclick="event.stopPropagation();removeDoc('${e.id}','${d.id}')">✕</button>
-            </div>`).join('') || '<div style="font-size:12px;color:var(--text-muted);">Sin documentos.</div>'}
+        <div class="panel-section-title">Registro cronológico</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;align-items:flex-end;">
+          <div style="flex:1;">
+            <textarea id="nota-exp-input-${e.id}" class="nota-input" placeholder="Nota, llamada, movimiento..."></textarea>
+            <div style="display:flex;gap:6px;margin-top:5px;">
+              <select id="nota-exp-tipo-${e.id}" class="tipo-select" style="font-size:11px;">
+                <option value="">General</option>
+                <option value="llamada">📞 Llamada</option>
+                <option value="movimiento">⚖️ Movimiento</option>
+                <option value="urgente">🔴 Urgente</option>
+                <option value="audiencia">🏛️ Audiencia</option>
+                <option value="escrito">📄 Escrito</option>
+              </select>
+              <button class="btn btn-primary" style="padding:5px 14px;font-size:12px;" onclick="addNotaExp('${e.id}')">Agregar</button>
+            </div>
+          </div>
         </div>
-        <div class="upload-zone" style="margin-top:10px;" onclick="document.getElementById('doc-upload-${e.id}').click()">
-          <input type="file" id="doc-upload-${e.id}" multiple accept=".pdf,.doc,.docx,.jpg,.png,.txt" onchange="uploadDocs('${e.id}',this.files)">
-          <div style="font-size:13px;color:var(--text-muted);">📎 Subir documentos</div>
-          <div style="font-size:11px;color:var(--text-muted);margin-top:3px;">PDF, Word, imágenes · Arrastrá o hacé click</div>
+        <div id="notas-exp-list-${e.id}">${notas.length ? notas.map(n=>`
+          <div class="nota-item ${n.tipo||''}">
+            <div class="nota-text">${n.texto}</div>
+            <div class="nota-meta">${n.fecha}${n.tipo?' · '+n.tipo:''}</div>
+          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin entradas aún</div>'}</div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          Fechas y recordatorios
+          <button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">+ Agregar</button>
         </div>
+        ${recs.length ? recs.map(r=>`
+          <div style="padding:9px 12px;background:var(--surface2);border-radius:var(--r);margin-bottom:6px;border-left:2px solid ${cols[r.urgencia]||'var(--border3)'};">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="font-size:13px;color:var(--text);">${r.titulo}</div>
+              ${stBadge(r.urgencia)}
+            </div>
+            <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:3px;">📅 ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+r.nota:''}</div>
+          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin fechas agendadas</div>'}
+      </div>
+      <div class="panel-section">
+        <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          Documentos
+          <button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="document.getElementById('doc-upload-${e.id}').click()">+ Subir</button>
+        </div>
+        <input type="file" id="doc-upload-${e.id}" multiple accept=".pdf,.doc,.docx,.jpg,.png,.txt,.xls,.xlsx" style="display:none;" onchange="uploadDocs('${e.id}',this.files)">
+        <div class="upload-zone" onclick="document.getElementById('doc-upload-${e.id}').click()" style="margin-bottom:8px;">
+          <div style="font-size:20px;margin-bottom:4px;opacity:.5;">📎</div>
+          <div style="font-size:12px;color:var(--text-muted);">Clic para subir archivos</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">PDF, Word, imágenes, Excel</div>
+        </div>
+        <div id="docs-exp-list-${e.id}">${docs.length ? docs.map(d=>`
+          <div class="doc-item" onclick="previewDoc('${e.id}','${d.id}')">
+            <div class="doc-icon">${docIcon(d.nombre)}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="doc-name">${d.nombre}</div>
+              <div class="doc-meta">${d.fecha} · ${d.size}</div>
+            </div>
+            <button class="tbl-btn del" onclick="removeDoc('${e.id}','${d.id}');event.stopPropagation();">✕</button>
+          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin documentos</div>'}</div>
       </div>
     </div>`;
 
@@ -1809,172 +2097,583 @@ function openExpedientePanel(id){
   document.getElementById('exp-side-panel').style.display='block';
 }
 
-function closePanelExpediente(){
-  document.getElementById('exp-side-panel').style.display='none';
-  document.getElementById('exp-panel-overlay').style.display='none';
+function addNotaExp(expId){
+  const input = document.getElementById('nota-exp-input-'+expId);
+  const tipo  = document.getElementById('nota-exp-tipo-'+expId)?.value||'';
+  const txt   = input?.value?.trim(); if(!txt) return;
+  const e = C.expedientes.find(x=>x.id===expId); if(!e) return;
+  if(!e._notas) e._notas=[];
+  e._notas.unshift({texto:txt,tipo,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})});
+  input.value='';
+  openPanelExpediente(expId);
+  showToast('📝 Entrada guardada');
 }
 
-function focusNotaExp(id){ document.getElementById('nota-input-exp-'+id)?.focus(); }
-
-function saveNotaExp(expId){
-  const input = document.getElementById('nota-input-exp-'+expId);
-  const texto = input?.value?.trim();
-  if(!texto) return;
-  const tipo  = document.getElementById('nota-tipo-exp-'+expId)?.value || 'general';
-  const e = C.expedientes.find(x=>x.id===expId);
-  if(!e) return;
-  if(!e._notas) e._notas = [];
-  e._notas.unshift({ texto, tipo, fecha: new Date().toLocaleString('es-AR') });
-  input.value = '';
-  showToast('✅ Entrada guardada');
-  openExpedientePanel(expId);
+async function cambiarEstadoExp(expId, nuevoEstado){
+  try{
+    await dbUpdate('expedientes',expId,{estado:nuevoEstado});
+    const i=C.expedientes.findIndex(e=>e.id===expId);
+    if(i>=0) C.expedientes[i].estado=nuevoEstado;
+    openPanelExpediente(expId);
+    rBadges();
+    showToast('✅ Estado: '+nuevoEstado);
+  }catch(err){ showToast('❌ '+err.message); }
 }
 
 function docIcon(nombre=''){
-  const ext = nombre.split('.').pop().toLowerCase();
-  if(['pdf'].includes(ext)) return '📄';
+  const ext=(nombre.split('.').pop()||'').toLowerCase();
+  if(ext==='pdf') return '📄';
   if(['doc','docx'].includes(ext)) return '📝';
-  if(['jpg','jpeg','png','gif','webp'].includes(ext)) return '🖼';
-  if(['xls','xlsx'].includes(ext)) return '📊';
+  if(['jpg','jpeg','png','gif','webp'].includes(ext)) return '🖼️';
+  if(['xls','xlsx','csv'].includes(ext)) return '📊';
   return '📎';
 }
 
-function uploadDocs(expId, files){
+function uploadDocs(expId,files){
   if(!files?.length) return;
-  const e = C.expedientes.find(x=>x.id===expId);
-  if(!e) return;
-  if(!e._docs) e._docs = [];
+  const e=C.expedientes.find(x=>x.id===expId); if(!e) return;
+  if(!e._docs) e._docs=[];
   Array.from(files).forEach(file=>{
-    const doc = {
-      id:    'doc-'+Date.now()+Math.random().toString(36).slice(2,5),
-      nombre: file.name,
-      fecha:  new Date().toLocaleDateString('es-AR'),
-      size:   file.size > 1048576 ? (file.size/1048576).toFixed(1)+'MB' : Math.round(file.size/1024)+'KB',
-      type:   file.type,
-      // In production: upload to Supabase Storage and store URL
-      _file: file
-    };
-    e._docs.unshift(doc);
+    const kb=Math.round(file.size/1024);
+    e._docs.unshift({id:'doc-'+Date.now()+Math.random().toString(36).slice(2,5),nombre:file.name,fecha:new Date().toLocaleDateString('es-AR'),size:kb>1024?(kb/1024).toFixed(1)+'MB':kb+'KB',type:file.type,_file:file});
   });
-  showToast(`✅ ${files.length} documento(s) agregado(s)`);
-  openExpedientePanel(expId);
+  showToast(`✅ ${files.length} archivo(s) adjuntado(s)`);
+  openPanelExpediente(expId);
 }
 
-function removeDoc(expId, docId){
-  const e = C.expedientes.find(x=>x.id===expId);
-  if(!e) return;
-  e._docs = (e._docs||[]).filter(d=>d.id!==docId);
-  openExpedientePanel(expId);
+function removeDoc(expId,docId){
+  const e=C.expedientes.find(x=>x.id===expId); if(!e) return;
+  e._docs=(e._docs||[]).filter(d=>d.id!==docId);
+  openPanelExpediente(expId);
 }
 
-function previewDoc(expId, docId){
-  const e   = C.expedientes.find(x=>x.id===expId);
-  const doc = (e?._docs||[]).find(d=>d.id===docId);
+function previewDoc(expId,docId){
+  const e=C.expedientes.find(x=>x.id===expId);
+  const doc=(e?._docs||[]).find(d=>d.id===docId);
   if(!doc) return;
-  if(doc._file && doc.type.startsWith('image/')){
-    const url = URL.createObjectURL(doc._file);
-    window.open(url,'_blank');
-  } else if(doc._file){
-    const url = URL.createObjectURL(doc._file);
-    const a = document.createElement('a'); a.href=url; a.download=doc.nombre; a.click();
-  } else {
-    showToast('Documento: '+doc.nombre);
-  }
+  if(doc._file){const url=URL.createObjectURL(doc._file);doc.type.startsWith('image/')?window.open(url,'_blank'):(()=>{const a=document.createElement('a');a.href=url;a.download=doc.nombre;a.click();})();}
+  else showToast('📎 '+doc.nombre);
 }
 
-function searchInExp(expId, q){
-  if(!q || q.length < 2){ openExpedientePanel(expId); return; }
-  const vc = q.toLowerCase();
-  const e  = C.expedientes.find(x=>x.id===expId);
-  if(!e) return;
-  const matchNotas = (e._notas||[]).filter(n=>n.texto.toLowerCase().includes(vc));
-  const matchDocs  = (e._docs||[]).filter(d=>d.nombre.toLowerCase().includes(vc));
-  const matchRecs  = C.recordatorios.filter(r=>r.expediente_id===expId && (r.titulo.toLowerCase().includes(vc)||(r.nota||'').toLowerCase().includes(vc)));
-  const total = matchNotas.length + matchDocs.length + matchRecs.length;
-  showToast(`🔍 ${total} resultado(s) — ${matchNotas.length} nota(s), ${matchDocs.length} doc(s), ${matchRecs.length} fecha(s)`);
+function buscarEnExp(expId,q){
+  if(!q||q.length<2){openPanelExpediente(expId);return;}
+  const vc=q.toLowerCase();
+  const e=C.expedientes.find(x=>x.id===expId);
+  const rn=(e?._notas||[]).filter(n=>n.texto.toLowerCase().includes(vc)).length;
+  const rd=(e?._docs||[]).filter(d=>d.nombre.toLowerCase().includes(vc)).length;
+  if(rn+rd) showToast(`🔍 ${rn} nota(s), ${rd} documento(s)`);
+  else showToast(`Sin resultados para "${q}"`);
+}
+
+function closePanelExpediente(){
+  document.getElementById('exp-panel-overlay').style.display='none';
+  document.getElementById('exp-side-panel').style.display='none';
 }
 
 /* ════════════════════════════════════════
    RENDER — RECORDATORIOS
 ════════════════════════════════════════ */
 function rRec(){
-  const el = document.getElementById('rec-list');
-  if(!C.recordatorios.length){ el.innerHTML=`<div class="empty"><div class="ei">◷</div><p>Sin recordatorios.</p></div>`; return; }
-  const urg  = C.recordatorios.filter(r=>r.urgencia==='urgente');
-  const rest = C.recordatorios.filter(r=>r.urgencia!=='urgente');
-  let h='';
-  const recRow = r => `<div class="tbl-row col-rec">
+  const el=document.getElementById('rec-list');
+  if(!C.recordatorios.length){el.innerHTML=`<div class="empty"><div class="ei">◷</div><p>Sin recordatorios.</p></div>`;return;}
+  const urg=C.recordatorios.filter(r=>r.urgencia==='urgente');
+  const rest=C.recordatorios.filter(r=>r.urgencia!=='urgente');
+  const recRow=r=>`<div class="tbl-row col-rec">
     <div><div class="cp">${r.titulo}</div><div class="cs">${r.nota||''}</div></div>
-    <div class="cm" style="cursor:pointer;color:var(--gold);" onclick="openExpedientePanel('${r.expediente_id}')">${expTitle(r.expediente_id).slice(0,26)}</div>
+    <div class="cm">${expTitle(r.expediente_id).slice(0,26)}</div>
     <div class="cm">${r.fecha_limite||'—'}</div>
     <div>${stBadge(r.urgencia)}</div>
     <div class="act-btns">
-      <button class="tbl-btn" onclick="editItem('recordatorio','${r.id}')">editar</button>
+      <button class="tbl-btn" onclick="editItem('recordatorio','${r.id}')">✏️</button>
       <button class="tbl-btn del" onclick="delItem('recordatorios','${r.id}','recordatorio')">✕</button>
     </div></div>`;
-  if(urg.length){
-    h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">● Urgentes</div>`;
-    h+=`<div class="card" style="margin-bottom:18px;"><div class="tbl-hdr col-rec"><div class="th">Recordatorio</div><div class="th">Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${urg.map(recRow).join('')}</div>`;
-  }
-  if(rest.length){
-    h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:9px;">Próximos</div>`;
-    h+=`<div class="card"><div class="tbl-hdr col-rec"><div class="th">Recordatorio</div><div class="th">Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${rest.map(recRow).join('')}</div>`;
-  }
-  el.innerHTML = h;
+  let h='';
+  if(urg.length){h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">● Urgentes</div><div class="card" style="margin-bottom:18px;"><div class="tbl-hdr col-rec"><div class="th">Recordatorio</div><div class="th">Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${urg.map(recRow).join('')}</div>`;}
+  if(rest.length){h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:9px;">Próximos</div><div class="card"><div class="tbl-hdr col-rec"><div class="th">Recordatorio</div><div class="th">Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${rest.map(recRow).join('')}</div>`;}
+  el.innerHTML=h;
 }
 
 /* ════════════════════════════════════════
    RENDER — EQUIPO
 ════════════════════════════════════════ */
 function rEquipo(){
-  const grid = document.getElementById('equipo-grid');
-  grid.innerHTML = C.miembros.map(m=>{
-    const p = m.perfiles || {};
-    const ini = ((p.nombre||' ')[0]+(p.apellido||' ')[0]).toUpperCase();
-    return `<div class="member-card">
-      <div class="member-av">${ini}</div>
+  const grid=document.getElementById('equipo-grid');
+  grid.innerHTML=C.miembros.map(m=>{
+    const p=m.perfiles||{};
+    const ini=((p.nombre||' ')[0]+(p.apellido||' ')[0]).toUpperCase();
+    return`<div class="member-card"><div class="member-av">${ini}</div>
       <div class="member-name">${p.nombre||''} ${p.apellido||''}</div>
       <div class="member-role">${m.rol==='admin'?'Administrador':'Miembro'}</div>
-      <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">${p.email||''}</div>
-    </div>`;}).join('') || `<div class="empty" style="grid-column:1/-1"><div class="ei">⊕</div><p>Sin miembros aún.</p></div>`;
-  const invSec = document.getElementById('invite-section');
-  if(CROL==='admin'){
+      <div style="margin-top:4px;font-size:11px;color:var(--text-muted);">${p.email||''}</div>
+    </div>`;}).join('')||`<div class="empty" style="grid-column:1/-1"><div class="ei">⊕</div><p>Sin miembros aún.</p></div>`;
+  const invSec=document.getElementById('invite-section');
+  if(CROL==='admin'&&invSec){
     invSec.style.display='block';
-    document.getElementById('firma-invite-code').textContent = CF?.codigo_invitacion || '------';
-  } else { invSec.style.display='none'; }
+    document.getElementById('firma-invite-code').textContent=CF?.codigo_invitacion||'------';
+  } else if(invSec){ invSec.style.display='none'; }
 }
 
-function copyInviteCode(){
-  const code = CF?.codigo_invitacion || '';
-  navigator.clipboard.writeText(code).then(()=>showToast('📋 Código copiado: '+code));
+/* ════════════════════════════════════════
+   LEADS / PROSPECTOS
+════════════════════════════════════════ */
+if(!C.leads) C.leads = [];
+
+const LEAD_ESTADOS = ['nuevo','contactado','agendado','negociacion','ganado'];
+const LEAD_ESTADO_LABELS = {
+  nuevo:       {label:'Nuevo',       color:'var(--text-dim)', bg:'rgba(68,66,74,.2)'},
+  contactado:  {label:'Contactado',  color:'var(--blue)',     bg:'rgba(76,123,201,.12)'},
+  agendado:    {label:'Consulta agendada', color:'var(--gold)',bg:'rgba(201,168,76,.12)'},
+  negociacion: {label:'Negociación', color:'var(--gold)',     bg:'rgba(201,168,76,.12)'},
+  ganado:      {label:'Ganado ✓',   color:'var(--green)',    bg:'rgba(76,186,132,.12)'},
+};
+const LEAD_ORIGENES = ['Instagram','Referido','Web','LinkedIn','Facebook','Google','Directo','Otro'];
+
+function initDemoLeads(){
+  if(C.leads.length) return;
+  C.leads = [
+    {id:'l1',nombre:'Andrés Villareal',tipo:'Persona física',telefono:'011-4455-2233',email:'avillareal@gmail.com',origen:'Referido',estado:'nuevo',interes:'Divorcio',prioridad:'alta',valor_estimado:180000,ultimo_contacto:'2025-04-01',proximo_contacto:new Date(Date.now()+2*86400000).toISOString().split('T')[0],notas:'Referido por María García. Urgente.',created_at:'2025-04-01'},
+    {id:'l2',nombre:'Fermín Construcciones SRL',tipo:'Empresa',telefono:'0291-445-1122',email:'legal@fermin.com',origen:'Instagram',estado:'contactado',interes:'Contrato comercial',prioridad:'media',valor_estimado:320000,ultimo_contacto:'2025-04-03',proximo_contacto:new Date(Date.now()+5*86400000).toISOString().split('T')[0],notas:'Vieron el post sobre contratos.',created_at:'2025-04-02'},
+    {id:'l3',nombre:'Patricia Suárez',tipo:'Persona física',telefono:'011-3311-5544',email:'p.suarez@hotmail.com',origen:'Google',estado:'agendado',interes:'Laboral',prioridad:'alta',valor_estimado:95000,ultimo_contacto:'2025-04-05',proximo_contacto:new Date(Date.now()+1*86400000).toISOString().split('T')[0],notas:'Consulta mañana 14hs.',created_at:'2025-04-03'},
+    {id:'l4',nombre:'Grupo Inversiones Del Sur',tipo:'Empresa',telefono:'011-5500-7788',email:'mg@gids.com.ar',origen:'LinkedIn',estado:'negociacion',interes:'Due diligence',prioridad:'alta',valor_estimado:850000,ultimo_contacto:'2025-04-06',proximo_contacto:new Date(Date.now()+3*86400000).toISOString().split('T')[0],notas:'Propuesta enviada. Esperando respuesta.',created_at:'2025-04-04'},
+    {id:'l5',nombre:'Lucía Mendoza',tipo:'Persona física',telefono:'011-4422-9900',email:'lumendoza@gmail.com',origen:'Referido',estado:'ganado',interes:'Sucesión',prioridad:'media',valor_estimado:120000,ultimo_contacto:'2025-04-02',proximo_contacto:'',notas:'Firmó contrato.',created_at:'2025-03-28'},
+  ];
 }
 
-function rBadges(){
-  const u = C.recordatorios.filter(r=>r.urgencia==='urgente').length;
-  document.getElementById('rec-badge').textContent = u;
-  document.getElementById('notif-dot').textContent  = u;
+function rLeads(){
+  if(DEMO_MODE) initDemoLeads();
+  rLeadsMetricas();
+  rLeadsPipeline();
+  rLeadsOrigen();
+  rLeadsSeguimiento();
+  rLeadsBadge();
 }
+
+function rLeadsMetricas(){
+  const total   = C.leads.filter(l=>l.estado!=='ganado').length;
+  const ganados = C.leads.filter(l=>l.estado==='ganado').length;
+  const conv    = C.leads.length ? Math.round(ganados/C.leads.length*100) : 0;
+  const hoy     = today();
+  const sigHoy  = C.leads.filter(l=>l.proximo_contacto && l.proximo_contacto<=hoy && l.estado!=='ganado').length;
+  const el = id => document.getElementById(id);
+  if(el('lead-total'))  el('lead-total').textContent  = total;
+  if(el('lead-conv'))   el('lead-conv').textContent   = conv+'%';
+  if(el('lead-tiempo')) el('lead-tiempo').textContent = '12';
+  if(el('lead-hoy'))    el('lead-hoy').textContent    = sigHoy;
+}
+
+function rLeadsPipeline(){
+  const el = document.getElementById('leads-pipeline');
+  if(!el) return;
+  el.innerHTML = LEAD_ESTADOS.map(estado=>{
+    const cfg   = LEAD_ESTADO_LABELS[estado];
+    const lista = C.leads.filter(l=>l.estado===estado);
+    const cards = lista.length ? lista.map(l=>leadCard(l)).join('') : '<div style="text-align:center;padding:14px 0;font-size:11px;color:var(--text-muted);">Sin leads</div>';
+    return '<div class="pipeline-col '+estado+'">'
+      +'<div class="pipeline-col-hdr">'
+      +'<span class="pipeline-col-title" style="color:'+cfg.color+';">'+cfg.label+'</span>'
+      +'<span class="pipeline-count">'+lista.length+'</span>'
+      +'</div>'
+      + cards
+      +'<button class="qa-btn" style="width:100%;justify-content:center;margin-top:6px;font-size:11px;" onclick="openModal('lead',{estado:''+estado+''})">+ Agregar</button>'
+      +'</div>';
+  }).join('');
+}
+
+function leadCard(l){
+  const esHoy = l.proximo_contacto && l.proximo_contacto <= today();
+  return '<div class="lead-card" onclick="openLeadPanel(''+l.id+'')">'
+    +'<div class="lead-name">'+l.nombre+'</div>'
+    +'<div class="lead-tipo">'+l.tipo+' &middot; '+(l.interes||'—')+'</div>'
+    +'<div class="lead-tags">'
+    +'<span class="lead-tag origen">'+(l.origen||'—')+'</span>'
+    +(l.prioridad==='alta'?'<span class="lead-tag prioridad-alta">🔴 Alta</span>':l.prioridad==='media'?'<span class="lead-tag prioridad-media">🟡 Media</span>':'')
+    +'</div>'
+    +'<div class="lead-footer">'
+    +'<span>'+(l.valor_estimado?'$'+Number(l.valor_estimado).toLocaleString('es-AR'):'—')+'</span>'
+    +'<span style="'+(esHoy?'color:var(--red);font-weight:600;':'')+'">📅 '+(l.proximo_contacto||'Sin fecha')+'</span>'
+    +'</div>'
+    +'</div>';
+}
+
+function rLeadsOrigen(){
+  const el = document.getElementById('leads-origen');
+  if(!el) return;
+  const counts = {};
+  C.leads.forEach(l=>{ const o=l.origen||'Otro'; counts[o]=(counts[o]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  const max = sorted[0]?.[1] || 1;
+  el.innerHTML = sorted.map(([orig,n])=>
+    '<div class="origen-bar">'
+    +'<span class="origen-name">'+orig+'</span>'
+    +'<div class="origen-track"><div class="origen-fill" style="width:'+(n/max*100)+'%;"></div></div>'
+    +'<span class="origen-count">'+n+'</span>'
+    +'</div>'
+  ).join('') || '<div style="font-size:12px;color:var(--text-muted);padding:12px 0;text-align:center;">Sin datos</div>';
+}
+
+function rLeadsSeguimiento(){
+  const el = document.getElementById('leads-seguimiento');
+  if(!el) return;
+  const hoy     = today();
+  const pending = C.leads.filter(l=>l.proximo_contacto && l.proximo_contacto<=hoy && l.estado!=='ganado')
+                         .sort((a,b)=>a.proximo_contacto.localeCompare(b.proximo_contacto));
+  const prox    = C.leads.filter(l=>l.proximo_contacto && l.proximo_contacto>hoy && l.estado!=='ganado')
+                         .slice(0,4);
+  let h = '';
+  pending.forEach(l=>{
+    const late = l.proximo_contacto < hoy;
+    h += '<div class="tbl-row" style="grid-template-columns:1fr auto;padding:10px 16px;cursor:pointer;" onclick="openLeadPanel(''+l.id+'')"><div><div class="cp" style="font-size:12.5px;">'+l.nombre+'</div><div class="cs" style="color:'+(late?'var(--red)':'var(--gold)')+';">'+l.proximo_contacto+' · '+(late?'Vencido':'Hoy')+'</div></div><button class="tbl-btn" onclick="event.stopPropagation();openLeadPanel(''+l.id+'')">contactar</button></div>';
+  });
+  prox.forEach(l=>{
+    h += '<div class="tbl-row" style="grid-template-columns:1fr;padding:10px 16px;cursor:pointer;" onclick="openLeadPanel(''+l.id+'')"><div><div class="cp" style="font-size:12.5px;">'+l.nombre+'</div><div class="cs">'+l.proximo_contacto+'</div></div></div>';
+  });
+  el.innerHTML = h || '<div class="empty" style="padding:22px;"><div class="ei">✅</div><p>Sin seguimientos pendientes</p></div>';
+}
+
+function rLeadsBadge(){
+  const n = C.leads.filter(l=>l.proximo_contacto && l.proximo_contacto<=today() && l.estado!=='ganado').length;
+  const b1=document.getElementById('leads-badge'), b2=document.getElementById('mn-leads-badge');
+  if(b1){ b1.textContent=n; b1.style.display=n>0?'inline-flex':'none'; }
+  if(b2){ b2.textContent=n; b2.style.display=n>0?'flex':'none'; }
+}
+
+function filterLeads(v){
+  initDemoLeads();
+  if(!v){ rLeadsPipeline(); return; }
+  const vc=v.toLowerCase();
+  const orig=C.leads; C.leads=orig.filter(l=>l.nombre?.toLowerCase().includes(vc)||l.email?.toLowerCase().includes(vc)||(l.interes||'').toLowerCase().includes(vc));
+  rLeadsPipeline(); C.leads=orig;
+}
+
+function openLeadPanel(id){
+  const l=C.leads.find(x=>x.id===id); if(!l) return;
+  const cfg=LEAD_ESTADO_LABELS[l.estado]||LEAD_ESTADO_LABELS.nuevo;
+  const estadoBtns = LEAD_ESTADOS.map(e=>{
+    const ec=LEAD_ESTADO_LABELS[e];
+    const active=e===l.estado;
+    return '<button onclick="cambiarEstadoLead(''+l.id+'',''+e+'')" style="background:'+(active?ec.bg:'var(--surface2)')+';border:1px solid '+(active?ec.color:'var(--border2)')+';color:'+(active?ec.color:'var(--text-muted)')+';border-radius:20px;padding:4px 11px;font-size:10.5px;font-family:'DM Mono',monospace;cursor:pointer;transition:all .15s;">'+ec.label+'</button>';
+  }).join('');
+
+  document.getElementById('cli-panel-content').innerHTML =
+    '<div class="panel-hdr"><div style="flex:1;min-width:0;"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);">'+l.nombre+'</div><span class="lead-tag origen" style="display:inline-block;margin-top:3px;">'+(l.origen||'—')+'</span></div><div class="panel-close" onclick="closePanelCliente()">✕</div></div>'
+    +'<div class="panel-body">'
+    +'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px;">'+estadoBtns+'</div>'
+    +'<div class="panel-section"><div class="panel-section-title">Datos de contacto</div>'
+    +'<div class="info-row"><span class="info-lbl">Tipo</span><span class="info-val">'+(l.tipo||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-lbl">Teléfono</span><span class="info-val">'+(l.telefono||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-lbl">Email</span><span class="info-val">'+(l.email||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-lbl">Origen</span><span class="info-val">'+(l.origen||'—')+'</span></div>'
+    +'</div>'
+    +'<div class="panel-section"><div class="panel-section-title">Datos comerciales</div>'
+    +'<div class="info-row"><span class="info-lbl">Interés</span><span class="info-val">'+(l.interes||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-lbl">Prioridad</span><span class="info-val">'+(l.prioridad||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-lbl">Valor est.</span><span class="info-val" style="color:var(--green);">'+(l.valor_estimado?'$'+Number(l.valor_estimado).toLocaleString('es-AR'):'—')+'</span></div>'
+    +'</div>'
+    +'<div class="panel-section"><div class="panel-section-title">Seguimiento</div>'
+    +'<div class="info-row"><span class="info-lbl">Último</span><span class="info-val">'+(l.ultimo_contacto||'—')+'</span></div>'
+    +'<div class="info-row"><span class="info-lbl">Próximo</span><input type="date" value="'+(l.proximo_contacto||'')+'" class="form-input" style="flex:1;padding:4px 10px;font-size:12px;" onchange="updateLeadField(''+l.id+'','proximo_contacto',this.value)"></div>'
+    +'</div>'
+    +'<div class="panel-section"><div class="panel-section-title">Notas</div>'
+    +'<textarea class="nota-input" style="height:80px;" id="lead-nota-'+l.id+'" placeholder="Anotá lo que hablaron, próximos pasos...">'+(l.notas||'')+'</textarea>'
+    +'<button class="btn btn-ghost" style="margin-top:6px;font-size:12px;width:100%;" onclick="saveLeadNota(''+l.id+'')">💾 Guardar nota</button>'
+    +'</div>'
+    +(l.estado==='ganado'
+      ?'<div style="background:rgba(76,186,132,.08);border:1px solid rgba(76,186,132,.2);border-radius:var(--r);padding:14px;text-align:center;"><div style="font-size:13px;color:var(--green);margin-bottom:8px;">✅ Lead ganado</div><button class="btn btn-green btn-full" onclick="convertirLeadACliente(''+l.id+'')">⟶ Pasar a Clientes</button></div>'
+      :'<div class="act-btns" style="justify-content:flex-end;gap:8px;"><button class="tbl-btn" onclick="editarLead(''+l.id+'')">✏️ Editar</button><button class="tbl-btn del" onclick="eliminarLead(''+l.id+'')">Eliminar</button></div>')
+    +'</div>';
+
+  document.getElementById('cli-panel-overlay').style.display='block';
+  document.getElementById('cli-side-panel').style.display='block';
+}
+
+function cambiarEstadoLead(id, nuevoEstado){
+  const l=C.leads.find(x=>x.id===id); if(!l) return;
+  l.estado=nuevoEstado; l.ultimo_contacto=today();
+  openLeadPanel(id); rLeads();
+  showToast('✅ Estado: '+LEAD_ESTADO_LABELS[nuevoEstado].label);
+}
+function updateLeadField(id,campo,valor){ const l=C.leads.find(x=>x.id===id); if(l){l[campo]=valor;rLeadsBadge();} }
+function saveLeadNota(id){ const l=C.leads.find(x=>x.id===id),nota=document.getElementById('lead-nota-'+id)?.value; if(l&&nota!==undefined){l.notas=nota;l.ultimo_contacto=today();showToast('💾 Nota guardada');} }
+
+async function convertirLeadACliente(leadId){
+  const l=C.leads.find(x=>x.id===leadId); if(!l) return;
+  if(!confirm('¿Convertir "'+l.nombre+'" en cliente?')) return;
+  try{
+    const vals={nombre:l.nombre,tipo:l.tipo,email:l.email,telefono:l.telefono,notas:'Convertido desde Lead. Interés: '+(l.interes||'—')+'. Origen: '+(l.origen||'—')+'.'};
+    vals.codigo_cliente=await genClientCode();
+    const newCli=await dbInsert('clientes',vals);
+    C.clientes.unshift(newCli);
+    C.leads=C.leads.filter(x=>x.id!==leadId);
+    closePanelCliente(); renderAll();
+    showToast('✅ '+l.nombre+' ahora es cliente');
+    setTimeout(()=>{showPage('clientes',null);setTimeout(()=>openPanelCliente(newCli.id),200);},500);
+  }catch(e){showToast('❌ '+e.message);}
+}
+
+function editarLead(id){ const l=C.leads.find(x=>x.id===id); if(l) openModal('lead',l); }
+function eliminarLead(id){ const l=C.leads.find(x=>x.id===id); if(!confirm('¿Eliminar lead "'+l?.nombre+'"?')) return; C.leads=C.leads.filter(x=>x.id!==id); closePanelCliente(); rLeads(); showToast('🗑 Lead eliminado'); }
+
+/* ── FILTROS EN EXPEDIENTES Y CLIENTES ── */
+let filtroExpState = 'todos';
+let filtroCliState = '';
+
+function renderFiltrosExp(){
+  const estados = ['todos','activo','pendiente','cerrado'];
+  return `<div class="filter-bar">
+    <span style="font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);">Estado:</span>
+    ${estados.map(e=>`<button class="filter-btn ${filtroExpState===e?'active':''}" onclick="setFiltroExp('${e}')">${e==='todos'?'Todos':e}</button>`).join('')}
+  </div>`;
+}
+
+function setFiltroExp(estado){
+  filtroExpState = estado;
+  rExpConFiltros();
+}
+
+function rExpConFiltros(){
+  const el = document.getElementById('exp-layout');
+  // Re-renderizar filtros
+  const fBar = document.getElementById('exp-filtros');
+  if(fBar) fBar.innerHTML = renderFiltrosExp();
+  // Filtrar
+  const filtro = document.getElementById('exp-search')?.value.toLowerCase()||'';
+  let lista = C.expedientes;
+  if(filtroExpState !== 'todos') lista = lista.filter(e=>e.estado===filtroExpState);
+  rExp(filtro, lista);
+}
+
+function filterExpedientes(v){ rExp(v.toLowerCase().trim()); }
 
 /* ════════════════════════════════════════
    APP NAVIGATION
 ════════════════════════════════════════ */
-const PAGE_TITLES = {dashboard:'Dashboard',clientes:'Clientes',expedientes:'Expedientes',recordatorios:'Recordatorios',equipo:'Equipo de la firma'};
+const PAGE_TITLES = {dashboard:'Dashboard',leads:'Leads / Prospectos',clientes:'Clientes',expedientes:'Expedientes',recordatorios:'Recordatorios',equipo:'Equipo de la firma'};
+
 function showPage(p, el){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p)?.classList.add('active');
   document.getElementById('page-title').textContent = PAGE_TITLES[p]||p;
-  if(el) el.classList.add('active');
-  // Cerrar paneles al cambiar de sección
+  if(el){ el.classList.add('active'); }
+  else {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(n => { if(n.getAttribute('onclick')?.includes("'"+p+"'")) n.classList.add('active'); });
+  }
+  // Sync mobile nav
+  setMobileActive(p);
+  // Limpiar buscador global
+  const gs = document.getElementById('global-search');
+  if(gs) gs.value = '';
+  closeSearchResults();
   closePanelCliente(); closePanelExpediente();
+  closeNotifPanel(); closePerfilMenu();
 }
 
+function setMobileActive(p){
+  document.querySelectorAll('.mobile-nav-item').forEach(x=>x.classList.remove('active'));
+  const mn = document.getElementById('mn-'+p);
+  if(mn) mn.classList.add('active');
+}
+
+/* ── BUSCADOR GLOBAL CON RESULTADOS ── */
 function handleSearch(v){
-  if(!v||v.length<2) return;
-  const vc=v.toLowerCase();
-  const cr=C.clientes.filter(c=>c.nombre.toLowerCase().includes(vc)||(c.codigo_cliente||'').includes(vc)).length;
-  const er=C.expedientes.filter(e=>e.titulo.toLowerCase().includes(vc)||(e.codigo_caso||'').toLowerCase().includes(vc)).length;
-  if(cr+er) showToast(`🔍 ${cr+er} resultado(s) — ${cr} cliente(s), ${er} expediente(s)`);
+  const res = document.getElementById('search-results');
+  if(!v || v.length < 2){ closeSearchResults(); return; }
+  const vc = v.toLowerCase();
+  const cr = C.clientes.filter(c=> c.nombre?.toLowerCase().includes(vc) || (c.codigo_cliente||'').includes(vc) || (c.email||'').toLowerCase().includes(vc) || (c.dni||'').includes(vc));
+  const er = C.expedientes.filter(e=> e.titulo?.toLowerCase().includes(vc) || (e.codigo_caso||'').toLowerCase().includes(vc) || (e.descripcion||'').toLowerCase().includes(vc));
+  const rr = C.recordatorios.filter(r=> r.titulo?.toLowerCase().includes(vc));
+
+  if(!cr.length && !er.length && !rr.length){
+    res.innerHTML = `<div class="sr-empty">Sin resultados para "${v}"</div>`;
+    res.classList.add('open'); return;
+  }
+
+  let html = '';
+  if(cr.length){
+    html += `<div class="sr-section"><div class="sr-label">Clientes (${cr.length})</div>`;
+    html += cr.slice(0,4).map(c=>`
+      <div class="sr-item" onclick="goToCliente('${c.id}')">
+        <div class="sr-item-icon">◎</div>
+        <div class="sr-item-text">
+          <div class="sr-item-main">${c.nombre}</div>
+          <div class="sr-item-sub">CLI-${c.codigo_cliente||'—'} · ${c.email||'—'}</div>
+        </div>
+      </div>`).join('');
+    html += '</div>';
+  }
+  if(er.length){
+    if(cr.length) html += '<div class="sr-divider"></div>';
+    html += `<div class="sr-section"><div class="sr-label">Expedientes (${er.length})</div>`;
+    html += er.slice(0,4).map(e=>`
+      <div class="sr-item" onclick="goToExpediente('${e.id}')">
+        <div class="sr-item-icon">▤</div>
+        <div class="sr-item-text">
+          <div class="sr-item-main">${e.titulo}</div>
+          <div class="sr-item-sub">${e.codigo_caso||'—'} · ${e.estado}</div>
+        </div>
+      </div>`).join('');
+    html += '</div>';
+  }
+  if(rr.length){
+    if(cr.length||er.length) html += '<div class="sr-divider"></div>';
+    html += `<div class="sr-section"><div class="sr-label">Recordatorios (${rr.length})</div>`;
+    html += rr.slice(0,3).map(r=>`
+      <div class="sr-item" onclick="closeSearchResults();showPage('recordatorios',null)">
+        <div class="sr-item-icon">◷</div>
+        <div class="sr-item-text">
+          <div class="sr-item-main">${r.titulo}</div>
+          <div class="sr-item-sub">${r.fecha_limite||'Sin fecha'} · ${r.urgencia}</div>
+        </div>
+      </div>`).join('');
+    html += '</div>';
+  }
+  res.innerHTML = html;
+  res.classList.add('open');
+}
+
+function handleSearchKey(e){
+  if(e.key==='Escape') closeSearchResults();
+}
+
+function closeSearchResults(){
+  const res = document.getElementById('search-results');
+  if(res) res.classList.remove('open');
+}
+
+function goToCliente(id){
+  closeSearchResults();
+  const inp = document.getElementById('global-search'); if(inp) inp.value='';
+  showPage('clientes', null);
+  setTimeout(()=>openPanelCliente(id), 150);
+}
+
+function goToExpediente(id){
+  closeSearchResults();
+  const inp = document.getElementById('global-search'); if(inp) inp.value='';
+  showPage('expedientes', null);
+  setTimeout(()=>openPanelExpediente(id), 150);
+}
+
+// Cerrar resultados al hacer click fuera
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.search-wrap')) closeSearchResults();
+  if(!e.target.closest('#user-chip-btn') && !e.target.closest('#perfil-menu')) closePerfilMenu();
+  if(!e.target.closest('#notif-btn-top') && !e.target.closest('.notif-panel')) closeNotifPanel();
+});
+
+/* ── PANEL NOTIFICACIONES ── */
+function toggleNotifPanel(){
+  const p = document.getElementById('notif-panel');
+  if(!p) return;
+  if(p.classList.contains('open')){ closeNotifPanel(); return; }
+  // Renderizar notificaciones (recordatorios urgentes)
+  const urgentes = C.recordatorios.filter(r=>r.urgencia==='urgente');
+  const activos  = C.recordatorios.filter(r=>r.urgencia==='activo');
+  let html = '';
+  if(!urgentes.length && !activos.length){
+    html = '<div class="notif-empty">✅ Sin alertas activas</div>';
+  } else {
+    html += urgentes.map(r=>`
+      <div class="notif-item urgente" onclick="closeNotifPanel();showPage('recordatorios',null)">
+        <div class="notif-item-title">🔴 ${r.titulo}</div>
+        <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+r.nota:''}</div>
+      </div>`).join('');
+    html += activos.slice(0,5).map(r=>`
+      <div class="notif-item activo" onclick="closeNotifPanel();showPage('recordatorios',null)">
+        <div class="notif-item-title">⚡ ${r.titulo}</div>
+        <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}</div>
+      </div>`).join('');
+  }
+  document.getElementById('notif-list').innerHTML = html;
+  p.classList.add('open');
+}
+
+function closeNotifPanel(){
+  document.getElementById('notif-panel')?.classList.remove('open');
+}
+
+/* ── MENÚ PERFIL ── */
+function togglePerfilMenu(e){
+  e.stopPropagation();
+  const m = document.getElementById('perfil-menu');
+  if(m.style.display==='block'){ closePerfilMenu(); return; }
+  m.style.display = 'block';
+}
+function closePerfilMenu(){ document.getElementById('perfil-menu').style.display='none'; }
+
+function openPerfilConfig(){
+  closePerfilMenu();
+  // Modal de perfil
+  document.getElementById('m-title').textContent = 'Mi perfil';
+  document.getElementById('m-body').innerHTML = `
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" value="${CP?.nombre||''}" id="pf-nombre"></div>
+    <div class="form-group"><label class="form-label">Apellido</label><input class="form-input" value="${CP?.apellido||''}" id="pf-apellido"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="${CP?.email||CU?.email||''}" disabled style="opacity:.5;cursor:not-allowed;"></div>
+    <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" value="${CP?.telefono||''}" id="pf-telefono"></div>
+    <div class="form-group"><label class="form-label">Nueva contraseña (opcional)</label><input class="form-input" type="password" id="pf-pass" placeholder="Dejá en blanco para no cambiar"></div>`;
+  document.getElementById('m-foot').style.display = 'flex';
+  document.getElementById('m-save').textContent = 'Guardar perfil';
+  document.getElementById('m-save').onclick = savePerfilConfig;
+  document.getElementById('overlay').classList.add('open');
+  curModal = '_perfil';
+}
+
+async function savePerfilConfig(){
+  const nombre   = document.getElementById('pf-nombre')?.value.trim();
+  const apellido = document.getElementById('pf-apellido')?.value.trim();
+  const telefono = document.getElementById('pf-telefono')?.value.trim();
+  const pass     = document.getElementById('pf-pass')?.value;
+  setBtn('m-save','Guardando...',true);
+  try{
+    if(!DEMO_MODE){
+      await _sb.from('perfiles').update({nombre,apellido,telefono}).eq('id',CU.id);
+      if(pass && pass.length>=8) await _sb.auth.updateUser({password:pass});
+    }
+    if(CP){ CP.nombre=nombre; CP.apellido=apellido; CP.telefono=telefono; }
+    const ini = ((nombre||'')[0]+(apellido||'')[0]).toUpperCase();
+    document.getElementById('sb-avatar').textContent = ini||'U';
+    document.getElementById('sb-name').textContent   = `${nombre} ${apellido}`;
+    closeModal();
+    showToast('✅ Perfil actualizado');
+  }catch(e){ showToast('❌ '+e.message); }
+  finally{ setBtn('m-save','Guardar perfil',false); document.getElementById('m-save').onclick=saveModal; }
+}
+
+function openFirmaConfig(){
+  closePerfilMenu();
+  document.getElementById('m-title').textContent = 'Configuración del estudio';
+  document.getElementById('m-body').innerHTML = `
+    <div class="form-group"><label class="form-label">Nombre del estudio</label><input class="form-input" value="${CF?.nombre||''}" id="fc-nombre"></div>
+    <div class="form-group"><label class="form-label">Plan actual</label><input class="form-input" value="${CF?.plan||'—'}" disabled style="opacity:.5;cursor:not-allowed;"></div>
+    <div class="form-group"><label class="form-label">Código de invitación</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input class="form-input" value="${CF?.codigo_invitacion||'—'}" readonly id="fc-code" style="font-family:'DM Mono',monospace;letter-spacing:.15em;">
+        <button class="btn btn-ghost" style="padding:10px;flex-shrink:0;" onclick="copyCodeFromField()">📋</button>
+      </div>
+    </div>`;
+  document.getElementById('m-foot').style.display = 'flex';
+  document.getElementById('m-save').textContent = 'Guardar';
+  document.getElementById('m-save').onclick = async () => {
+    const nombre = document.getElementById('fc-nombre')?.value.trim();
+    if(!DEMO_MODE && nombre) await _sb.from('firmas').update({nombre}).eq('id',CF.id);
+    if(CF && nombre) CF.nombre = nombre;
+    document.getElementById('sb-firma-name').textContent = nombre;
+    closeModal(); showToast('✅ Estudio actualizado');
+    document.getElementById('m-save').onclick = saveModal;
+  };
+  document.getElementById('overlay').classList.add('open');
+  curModal = '_firma';
+}
+
+function copyCodeFromField(){
+  const code = document.getElementById('fc-code')?.value || '';
+  navigator.clipboard.writeText(code).then(()=>showToast('📋 Código copiado: '+code));
+}
+
+function confirmarCerrarSesion(){
+  closePerfilMenu();
+  if(confirm('¿Querés cerrar sesión?')) doLogout();
 }
 
 /* ════════════════════════════════════════
@@ -2002,12 +2701,19 @@ const FORMS = {
     <div class="form-group"><label class="form-label">Notas</label><textarea id="ff-nota" class="form-input">${d.nota||''}</textarea></div>`}),
   default: ()=>({title:'¿Qué querés crear?', noSave:true, body:`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      ${[['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento']].map(([t,l,s])=>`
+      ${[['lead','Nuevo lead','Agregar prospecto al pipeline'],['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento']].map(([t,l,s])=>`
       <div onclick="closeModal();setTimeout(()=>openModal('${t}'),80)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:17px;cursor:pointer;transition:all .18s;" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
         <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);margin-bottom:3px;">${l}</div>
         <div style="font-size:11px;color:var(--text-muted);">${s}</div>
       </div>`).join('')}
-    </div>`})
+    </div>`}),
+  lead: d=>({title:d.id?'Editar lead':'Nuevo lead',body:`
+    <div class="form-row"><div class="form-group"><label class="form-label">Nombre / Razón social *</label><input id="fl-nombre" class="form-input" placeholder="Juan García" value="${d.nombre||''}"></div><div class="form-group"><label class="form-label">Tipo</label><select id="fl-tipo" class="form-input"><option${(d.tipo||'')==='Persona física'?' selected':''}>Persona física</option><option${(d.tipo||'')==='Empresa'?' selected':''}>Empresa</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Teléfono</label><input id="fl-telefono" class="form-input" placeholder="011-xxxx-xxxx" value="${d.telefono||''}"></div><div class="form-group"><label class="form-label">Email</label><input id="fl-email" class="form-input" type="email" value="${d.email||''}"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Origen *</label><select id="fl-origen" class="form-input">${LEAD_ORIGENES.map(o=>`<option${d.origen===o?' selected':''}>${o}</option>`).join('')}</select></div><div class="form-group"><label class="form-label">Estado</label><select id="fl-estado" class="form-input">${LEAD_ESTADOS.map(e=>`<option value="${e}"${(d.estado||'nuevo')===e?' selected':''}>${LEAD_ESTADO_LABELS[e].label}</option>`).join('')}</select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Interés / Tipo de caso</label><input id="fl-interes" class="form-input" placeholder="Divorcio, laboral..." value="${d.interes||''}"></div><div class="form-group"><label class="form-label">Prioridad</label><select id="fl-prioridad" class="form-input"><option value="alta"${(d.prioridad||'')==='alta'?' selected':''}>🔴 Alta</option><option value="media"${(d.prioridad||'')==='media'?' selected':''}>🟡 Media</option><option value="baja"${(d.prioridad||'')==='baja'?' selected':''}>🟢 Baja</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Valor estimado (ARS)</label><input id="fl-valor" class="form-input" type="number" placeholder="0" value="${d.valor_estimado||''}"></div><div class="form-group"><label class="form-label">Próximo contacto</label><input id="fl-proximo" class="form-input" type="date" value="${d.proximo_contacto||''}"></div></div>
+    <div class="form-group"><label class="form-label">Notas</label><textarea id="fl-notas" class="form-input">${d.notas||''}</textarea></div>`})
 };
 
 const TBL  = {cliente:'clientes',expediente:'expedientes',recordatorio:'recordatorios'};
@@ -2015,6 +2721,7 @@ const FV   = {
   cliente:      ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),email:gv('ff-email'),telefono:gv('ff-telefono'),dni:gv('ff-dni'),direccion:gv('ff-direccion'),notas:gv('ff-notas')}),
   expediente:   ()=>({titulo:gv('ff-titulo'),cliente_id:gv('ff-cliente_id'),tipo:gv('ff-tipo'),juzgado:gv('ff-juzgado'),estado:gv('ff-estado'),descripcion:gv('ff-descripcion')}),
   recordatorio: ()=>({titulo:gv('ff-titulo'),expediente_id:gv('ff-expediente_id'),fecha_limite:gv('ff-fecha_limite'),urgencia:gv('ff-urgencia'),nota:gv('ff-nota')}),
+  lead:         ()=>({nombre:gv('fl-nombre'),tipo:gv('fl-tipo'),telefono:gv('fl-telefono'),email:gv('fl-email'),origen:gv('fl-origen'),estado:gv('fl-estado'),interes:gv('fl-interes'),prioridad:gv('fl-prioridad'),valor_estimado:parseFloat(gv('fl-valor'))||0,proximo_contacto:gv('fl-proximo'),notas:gv('fl-notas'),ultimo_contacto:today(),created_at:new Date().toISOString()}),
 };
 const gv = id => document.getElementById(id)?.value || '';
 
@@ -2028,10 +2735,46 @@ function openModal(type='default', prefill={}){
 }
 function closeModal(e){ if(e&&e.target!==document.getElementById('overlay')) return; document.getElementById('overlay').classList.remove('open'); editId=null; }
 
+/* ── VALIDACIONES ── */
+const VALIDACIONES = {
+  cliente: (v) => {
+    if(!v.nombre?.trim()) return 'El nombre del cliente es obligatorio.';
+    return null;
+  },
+  expediente: (v) => {
+    if(!v.titulo?.trim()) return 'La carátula del expediente es obligatoria.';
+    if(!v.cliente_id) return 'Seleccioná un cliente para el expediente.';
+    return null;
+  },
+  recordatorio: (v) => {
+    if(!v.titulo?.trim()) return 'El título del recordatorio es obligatorio.';
+    if(!v.fecha_limite) return 'La fecha límite es obligatoria.';
+    return null;
+  },
+};
+
 async function saveModal(){
-  if(curModal==='default') return;
+  if(curModal==='default' || curModal==='_perfil' || curModal==='_firma') return;
+
+  // Leads se manejan en memoria local
+  if(curModal==='lead'){
+    const vals = FV.lead();
+    if(!vals.nombre?.trim()){ showToast('⚠ El nombre del lead es obligatorio.'); return; }
+    if(editId){
+      const i=C.leads.findIndex(l=>l.id===editId);
+      if(i>=0) C.leads[i]={...C.leads[i],...vals};
+      showToast('✅ Lead actualizado');
+    } else {
+      C.leads.unshift({id:'l-'+Date.now(),...vals});
+      showToast('✅ Lead agregado al pipeline');
+    }
+    closeModal(); rLeads(); return;
+  }
+
+  const vals = FV[curModal] ? FV[curModal]() : {};
+  const validar = VALIDACIONES[curModal];
+  if(validar){ const err=validar(vals); if(err){ showToast('⚠ '+err); return; } }
   const btn=document.getElementById('m-save'); btn.textContent='Guardando...'; btn.disabled=true;
-  const vals=FV[curModal]?FV[curModal]():{};
   const tbl=TBL[curModal];
   try{
     if(editId){
@@ -2040,16 +2783,11 @@ async function saveModal(){
       if(i>=0) C[tbl][i]={...C[tbl][i],...vals};
       showToast('✅ Actualizado');
     } else {
-      // Generate unique codes for new records
-      if(curModal==='cliente'){
-        vals.codigo_cliente = await genClientCode();
-      }
-      if(curModal==='expediente'){
-        vals.codigo_caso = await genCasoCode();
-      }
+      if(curModal==='cliente')    vals.codigo_cliente = await genClientCode();
+      if(curModal==='expediente') vals.codigo_caso    = await genCasoCode();
       const n = await dbInsert(tbl,vals);
       C[tbl].unshift(n);
-      showToast('✅ Creado — Código: ' + (n.codigo_cliente||n.codigo_caso||''));
+      showToast('✅ Creado — ' + (n.codigo_cliente ? 'CLI-'+n.codigo_cliente : n.codigo_caso||''));
     }
     closeModal(); renderAll();
   } catch(e){ showToast('❌ '+e.message); }
@@ -2060,10 +2798,19 @@ function editItem(type,id){
   const item=C[TBL[type]]?.find(r=>r.id===id);
   if(item) openModal(type,item);
 }
+
 async function delItem(tbl,id,label){
-  if(!confirm(`¿Eliminar este ${label}? Esta acción no puede deshacerse.`)) return;
-  try{ await dbDelete(tbl,id); C[tbl]=C[tbl].filter(r=>r.id!==id); renderAll(); showToast('🗑 '+label+' eliminado'); }
-  catch(e){ showToast('❌ Error al eliminar: '+e.message); }
+  // Confirmación con modal más amigable
+  const item = C[tbl]?.find(r=>r.id===id);
+  const nombre = item?.nombre || item?.titulo || label;
+  if(!confirm(`¿Eliminar "${nombre}"?\n\nEsta acción no puede deshacerse.`)) return;
+  try{
+    await dbDelete(tbl,id);
+    C[tbl]=C[tbl].filter(r=>r.id!==id);
+    renderAll();
+    closePanelCliente(); closePanelExpediente();
+    showToast('🗑 Eliminado correctamente');
+  } catch(e){ showToast('❌ Error al eliminar: '+e.message); }
 }
 
 /* ════════════════════════════════════════
@@ -2502,13 +3249,4 @@ serve(async (req) => {
     const venc = new Date(Date.now() + 30*86400000).toISOString().split("T")[0];
     await _sb.from("firmas").update({ activo: true }).eq("id", firma_id);
     await _sb.from("suscripciones").update({
-      estado: "activo", vencimiento: venc,
-      mp_payment_id: String(payment.id), updated_at: new Date().toISOString()
-    }).eq("firma_id", firma_id);
-  }
-  return new Response("ok");
-});
-
--->
-</body>
-</html>
+      estado

@@ -653,6 +653,76 @@ textarea.form-input{height:74px;resize:none;}
   .team-sidebar-panel{position:static;}
 }
 
+
+/* ══════════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════════ */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-header{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
+.cal-dow{text-align:center;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);padding:4px 0;}
+.cal-day{min-height:72px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:5px;cursor:pointer;transition:all .15s;position:relative;}
+.cal-day:hover{border-color:var(--gold-dim);background:var(--surface2);}
+.cal-day.today{border-color:var(--gold-dim);background:var(--gold-light);}
+.cal-day.other-month{opacity:.35;}
+.cal-day-num{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-dim);margin-bottom:3px;}
+.cal-day.today .cal-day-num{color:var(--gold);font-weight:600;}
+.cal-event{font-size:9.5px;padding:1px 5px;border-radius:3px;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+.cal-event.urgente{background:rgba(201,76,76,.2);color:var(--red);}
+.cal-event.activo{background:rgba(201,168,76,.2);color:var(--gold);}
+.cal-event.pendiente{background:rgba(76,123,201,.15);color:var(--blue);}
+.cal-event.vence{background:rgba(76,186,132,.15);color:var(--green);}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);}
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.cal-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text-dim);}
+.cal-leg-dot{width:8px;height:8px;border-radius:2px;}
+
+/* ══════════════════════════════════════════
+   FINANZAS
+══════════════════════════════════════════ */
+.fac-row{display:grid;grid-template-columns:80px 1fr 130px 110px 90px 80px;padding:11px 18px;border-bottom:1px solid rgba(37,37,48,.6);align-items:center;transition:background .15s;}
+.fac-row:hover{background:var(--surface2);}
+.fac-row:last-child{border-bottom:none;}
+.monto-badge{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
+.monto-badge.cobrado{color:var(--green);}
+.monto-badge.pendiente{color:var(--gold);}
+.monto-badge.vencido{color:var(--red);}
+
+/* ══════════════════════════════════════════
+   REPORTES
+══════════════════════════════════════════ */
+.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
+.report-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.report-title{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--text);margin-bottom:14px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.bar-label{font-size:12px;color:var(--text-dim);width:120px;flex-shrink:0;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+.bar-track{flex:1;height:6px;background:var(--border2);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.bar-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--text-muted);width:60px;text-align:right;}
+
+/* ══════════════════════════════════════════
+   TAREAS
+══════════════════════════════════════════ */
+.task-item{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;transition:all .18s;}
+.task-item:hover{border-color:var(--gold-dim);}
+.task-item.done{opacity:.5;}
+.task-check{width:18px;height:18px;border:1px solid var(--border2);border-radius:4px;flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s;}
+.task-check.checked{background:var(--green);border-color:var(--green);color:#fff;}
+.task-body{flex:1;min-width:0;}
+.task-title{font-size:13px;color:var(--text);margin-bottom:3px;}
+.task-item.done .task-title{text-decoration:line-through;}
+.task-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.task-tag{font-size:10px;font-family:'DM Mono',monospace;padding:2px 7px;border-radius:20px;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);}
+.task-tag.urgente{background:rgba(201,76,76,.1);color:var(--red);border-color:rgba(201,76,76,.2);}
+.task-tag.asignado{background:rgba(76,123,201,.1);color:var(--blue);border-color:rgba(76,123,201,.2);}
+
+@media(max-width:768px){
+  .report-grid{grid-template-columns:1fr!important;}
+  .fac-row{grid-template-columns:1fr 110px 80px!important;}
+  .cal-event{display:none;}
+  .cal-day{min-height:40px;}
+}
+
 </style>
 </head>
 <body>
@@ -688,7 +758,7 @@ textarea.form-input{height:74px;resize:none;}
     <div class="plans-grid" style="grid-template-columns:1fr 1fr;max-width:720px;margin:0 auto;">
       <div class="plan-card">
         <div class="plan-name">🧍 Independiente</div>
-        <div class="plan-price" style="font-size:32px;">$59.000<span style="font-size:14px;">/mes</span></div>
+        <div class="plan-price" style="font-size:32px;">$39.000<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · 1 abogado · todo personal</div>
         <ul class="plan-features">
           <li>Clientes y expedientes ilimitados</li>
@@ -700,7 +770,7 @@ textarea.form-input{height:74px;resize:none;}
       </div>
       <div class="plan-card featured">
         <div class="plan-name">🏢 Estudio ★</div>
-        <div class="plan-price" style="font-size:32px;">$129.000<span style="font-size:14px;">/mes</span></div>
+        <div class="plan-price" style="font-size:32px;">$59.000<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · equipo ilimitado</div>
         <ul class="plan-features">
           <li>Todo lo del plan Independiente</li>
@@ -759,27 +829,7 @@ textarea.form-input{height:74px;resize:none;}
     <div class="auth-card">
       <div class="auth-title">Iniciá sesión</div>
       <div class="auth-sub">Accedé a tu estudio y retomá donde lo dejaste.</div>
-      <!-- Cuentas de ejemplo -->
-      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;margin-bottom:18px;">
-        <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:10px;">Cuentas de ejemplo</div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:5px;cursor:pointer;" onclick="fillLogin('abogado@independiente.com','lexora123')">
-            <div>
-              <div style="font-size:12px;color:var(--text);font-weight:500;">🧍 Plan Independiente</div>
-              <div style="font-size:10.5px;color:var(--text-muted);font-family:'DM Mono',monospace;">abogado@independiente.com</div>
-            </div>
-            <span style="font-size:11px;color:var(--gold-dim);font-family:'DM Mono',monospace;">→</span>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--surface);border:1px solid var(--gold-dim);border-radius:5px;cursor:pointer;" onclick="fillLogin('admin@estudio.com','lexora123')">
-            <div>
-              <div style="font-size:12px;color:var(--text);font-weight:500;">🏢 Plan Estudio</div>
-              <div style="font-size:10.5px;color:var(--text-muted);font-family:'DM Mono',monospace;">admin@estudio.com</div>
-            </div>
-            <span style="font-size:11px;color:var(--gold-dim);font-family:'DM Mono',monospace;">→</span>
-          </div>
-        </div>
-        <div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;font-family:'DM Mono',monospace;">Contraseña de ambas: lexora123</div>
-      </div>
+
       <div id="l-err" class="err-box"></div>
       <div class="form-group"><label class="form-label">Email</label><input id="l-email" class="form-input" type="email" placeholder="tu@estudio.com"></div>
       <div class="form-group" style="margin-bottom:22px;"><label class="form-label">Contraseña</label><input id="l-pass" class="form-input" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
@@ -810,7 +860,7 @@ textarea.form-input{height:74px;resize:none;}
           <div class="type-card" id="type-ind" onclick="selectType('independiente')" style="position:relative;">
             <div class="type-card-icon">🧍</div>
             <div class="type-card-label">Independiente</div>
-            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--gold);margin:8px 0;">$59.000<span style="font-size:11px;color:var(--text-muted)">/mes</span></div>
+            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--gold);margin:8px 0;">$39.000<span style="font-size:11px;color:var(--text-muted)">/mes</span></div>
             <div class="type-card-desc">Abogado solo. Todo es personal. Sin funciones de equipo.</div>
             <ul style="list-style:none;margin-top:10px;text-align:left;">
               <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Clientes y expedientes ilimitados</li>
@@ -822,7 +872,7 @@ textarea.form-input{height:74px;resize:none;}
             <div style="position:absolute;top:10px;right:10px;font-size:9px;font-family:'DM Mono',monospace;background:var(--gold);color:var(--bg);padding:2px 7px;border-radius:20px;letter-spacing:.1em;">POPULAR</div>
             <div class="type-card-icon">🏢</div>
             <div class="type-card-label">Estudio</div>
-            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--gold);margin:8px 0;">$129.000<span style="font-size:11px;color:var(--text-muted)">/mes</span></div>
+            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--gold);margin:8px 0;">$59.000<span style="font-size:11px;color:var(--text-muted)">/mes</span></div>
             <div class="type-card-desc">Firma con equipo. Roles, permisos y asignaciones.</div>
             <ul style="list-style:none;margin-top:10px;text-align:left;">
               <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Todo lo del Independiente</li>
@@ -975,7 +1025,11 @@ textarea.form-input{height:74px;resize:none;}
       <div class="mobile-nav-item" onclick="showPage('leads',this);mobileNavActivate(this)"><span>◈</span>Prospectos<span class="mobile-nav-badge blue" id="mob-leads-badge" style="display:none;">0</span></div>
       <div class="mobile-nav-item" onclick="showPage('clientes',this);mobileNavActivate(this)"><span>◎</span>Clientes</div>
       <div class="mobile-nav-item" onclick="showPage('expedientes',this);mobileNavActivate(this)"><span>▤</span>Expedientes</div>
+      <div class="mobile-nav-item" onclick="showPage('agenda',this);mobileNavActivate(this)"><span>📅</span>Agenda</div>
       <div class="mobile-nav-item" onclick="showPage('recordatorios',this);mobileNavActivate(this)"><span>◷</span>Rec.<span class="mobile-nav-badge" id="mob-rec-badge" style="display:none;">0</span></div>
+      <div class="mobile-nav-item" onclick="showPage('tareas',this);mobileNavActivate(this)"><span>✅</span>Tareas</div>
+      <div class="mobile-nav-item" onclick="showPage('finanzas',this);mobileNavActivate(this)"><span>💰</span>Finanzas</div>
+      <div class="mobile-nav-item" onclick="showPage('reportes',this);mobileNavActivate(this)"><span>📊</span>Reportes</div>
       <div class="mobile-nav-item mobile-nav-equipo" onclick="showPage('equipo',this);mobileNavActivate(this)"><span>⊕</span>Equipo</div>
     </div>
   </nav>
@@ -991,8 +1045,12 @@ textarea.form-input{height:74px;resize:none;}
       <div class="nav-item" onclick="showPage('clientes',this)"><span class="nav-icon">◎</span>Clientes</div>
       <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Expedientes</div>
       <div class="nav-section">Operaciones</div>
+      <div class="nav-item" onclick="showPage('agenda',this)"><span class="nav-icon">📅</span>Agenda</div>
       <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Recordatorios<span class="nav-badge" id="rec-badge" style="display:none;">0</span></div>
-      
+      <div class="nav-item" onclick="showPage('tareas',this)"><span class="nav-icon">✅</span>Tareas<span class="nav-badge" id="task-badge" style="display:none;background:var(--green);">0</span></div>
+      <div class="nav-section">Gestión</div>
+      <div class="nav-item" onclick="showPage('finanzas',this)"><span class="nav-icon">💰</span>Finanzas</div>
+      <div class="nav-item" onclick="showPage('reportes',this)"><span class="nav-icon">📊</span>Reportes</div>
       <div class="nav-section nav-equipo">Firma</div>
       <div class="nav-item nav-equipo" onclick="showPage('equipo',this)"><span class="nav-icon">⊕</span>Equipo</div>
     </div>
@@ -1205,6 +1263,89 @@ textarea.form-input{height:74px;resize:none;}
       </div>
     </div>
 
+    <!-- AGENDA / CALENDARIO -->
+    <div id="page-agenda" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Agenda</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="openModal('recordatorio')">+ Recordatorio</button>
+        </div>
+      </div>
+      <div class="cal-legend">
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--red);"></div>Urgente</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--gold);"></div>Activo</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--blue);"></div>Pendiente</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--green);"></div>Vencimiento factura</div>
+      </div>
+      <div class="card" style="padding:20px;">
+        <div class="cal-nav">
+          <button class="btn btn-ghost" onclick="calPrev()" style="padding:6px 12px;">← Anterior</button>
+          <div class="cal-month-title" id="cal-month-label">—</div>
+          <button class="btn btn-ghost" onclick="calNext()" style="padding:6px 12px;">Siguiente →</button>
+        </div>
+        <div class="cal-header">
+          <div class="cal-dow">Dom</div><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div>
+          <div class="cal-dow">Mié</div><div class="cal-dow">Jue</div><div class="cal-dow">Vie</div><div class="cal-dow">Sáb</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+      <!-- Upcoming list -->
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Próximos 7 días</div></div>
+          <div id="cal-upcoming"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Vencidos sin resolver</div></div>
+          <div id="cal-overdue"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAREAS -->
+    <div id="page-tareas" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Tareas</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="filter-bar" id="task-filter-bar" style="margin:0;"></div>
+          <button class="btn btn-primary" onclick="openNuevaTarea()">+ Nueva tarea</button>
+        </div>
+      </div>
+      <div id="task-list"></div>
+    </div>
+
+    <!-- FINANZAS -->
+    <div id="page-finanzas" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Finanzas</div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="openModal('factura')">+ Nueva factura</button>
+          <button class="btn btn-ghost" onclick="exportarFacturasCSV()">↓ Exportar CSV</button>
+        </div>
+      </div>
+      <!-- KPIs -->
+      <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px;" id="fin-kpis"></div>
+      <!-- Filters -->
+      <div class="filter-bar" id="fin-filter-bar" style="margin-bottom:14px;"></div>
+      <!-- Table -->
+      <div class="card">
+        <div class="tbl-hdr fac-row" style="background:rgba(26,26,31,.7);">
+          <div class="th">Número</div><div class="th">Concepto</div><div class="th">Cliente</div>
+          <div class="th">Monto</div><div class="th">Vencimiento</div><div class="th">Estado</div>
+        </div>
+        <div id="fac-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+      </div>
+    </div>
+
+    <!-- REPORTES -->
+    <div id="page-reportes" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Reportes</div>
+        <button class="btn btn-ghost" onclick="exportarReporteCSV()">↓ Exportar CSV</button>
+      </div>
+      <div class="report-grid" id="report-grid"></div>
+    </div>
+
   </main>
 </div>
 
@@ -1325,7 +1466,7 @@ textarea.form-input{height:74px;resize:none;}
           <div class="form-row">
             <div class="form-group"><label class="form-label">Plan</label>
               <select id="nf-plan" class="form-input" style="background:#0e0e14;border-color:#1e1e28;">
-                <option value="trial">Trial 1 mes (gratis)</option><option value="independiente">🧍 Independiente — $59.000/mes</option><option value="estudio" selected>🏢 Estudio — $129.000/mes</option>
+                <option value="trial">Trial 1 mes (gratis)</option><option value="independiente">🧍 Independiente — $39.000/mes</option><option value="estudio" selected>🏢 Estudio — $59.000/mes</option>
               </select>
             </div>
             <div class="form-group"><label class="form-label">Activar inmediatamente</label>
@@ -1348,234 +1489,22 @@ textarea.form-input{height:74px;resize:none;}
 <script>
 'use strict';
 
-/* ╔═══════════════════════════════════════════╗
-   ║  ⚙️  CONFIGURACIÓN — EDITÁ AQUÍ          ║
-   ╚═══════════════════════════════════════════╝ */
+/* ═══════════════════════════════════════════
+   CONFIGURACIÓN
+═══════════════════════════════════════════ */
 const CFG = {
-  SUPABASE_URL : 'TU_SUPABASE_URL',   // https://xxxxx.supabase.co
-  SUPABASE_KEY : 'TU_SUPABASE_ANON_KEY',
-  ADMIN_EMAIL  : 'admin@lexora.com',  // Cambiá esto
-  ADMIN_PASS   : 'LexoraAdmin2024!',  // Cambiá esto
-  MP_EDGE_FN   : 'TU_SUPABASE_URL/functions/v1/crear-preferencia', // Edge function URL
-  APP_URL      : 'https://tu-app.vercel.app', // URL de tu app en Vercel
+  SUPABASE_URL : 'https://cknlxewefdometofefcm.supabase.co',
+  SUPABASE_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrbmx4ZXdlZmRvbWV0b2ZlZmNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4NTYyNTYsImV4cCI6MjA4OTQzMjI1Nn0.DEF6VviSdtv2BcOlt_Y8d6y4lWyDe_I1cg40TQ10nj0',
+  ADMIN_EMAIL  : 'admin@lexora.com.ar',
+  ADMIN_PASS   : 'LexoraAdmin2025!',
+  MP_EDGE_FN   : 'https://cknlxewefdometofefcm.supabase.co/functions/v1/crear-preferencia',
+  APP_URL      : 'https://lexora-gonzalog2001s-projects.vercel.app',
 };
 
 /* ── Supabase init ── */
-const DEMO_MODE = true; // Always use local accounts — set false + configure CFG for production
-let sb = null;
-let createClient = null;
-try {
-  if(window.supabase && window.supabase.createClient) {
-    createClient = window.supabase.createClient;
-    if(!DEMO_MODE) sb = createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY);
-  }
-} catch(e) { console.warn('Supabase no disponible.', e); }
-
-/* ════════════════════════════════════════════════════
-   CUENTAS LOCALES — dos cuentas de ejemplo
-   Cuenta 1: Plan Independiente  →  abogado@independiente.com / lexora123
-   Cuenta 2: Plan Estudio        →  admin@estudio.com / lexora123
-═══════════════════════════════════════════════════════ */
-const CUENTAS = {
-  'abogado@independiente.com': {
-    password: 'lexora123',
-    user:   { id:'uid-ind', email:'abogado@independiente.com' },
-    perfil: { id:'uid-ind', nombre:'Carlos', apellido:'Mendoza', email:'abogado@independiente.com', matricula:'T°V F°312', telefono:'011-4523-7788' },
-    firma:  { id:'firma-ind', nombre:'Mendoza Abogados', plan:'independiente', tipo:'independiente', activo:true, codigo_invitacion:'IND001' },
-    sub:    { id:'sub-ind', firma_id:'firma-ind', plan:'independiente', estado:'trial', monto_ars:59000, vencimiento: new Date(Date.now()+22*86400000).toISOString().split('T')[0] },
-    data: {
-      clientes: [
-        {id:'ic1',firma_id:'firma-ind',codigo_cliente:'000001',nombre:'Sofía Ramírez',tipo:'Persona física',email:'sofia@gmail.com',telefono:'011-6677-8899',dni:'28.441.230',direccion:'Av. Santa Fe 1240, CABA',notas:'',created_at:'2025-01-12'},
-        {id:'ic2',firma_id:'firma-ind',codigo_cliente:'000002',nombre:'Grupo Inversiones Sur SA',tipo:'Empresa',email:'legal@inversur.com.ar',telefono:'011-4900-3300',dni:'30-71234567-9',direccion:'Corrientes 550, CABA',notas:'',created_at:'2025-02-03'},
-        {id:'ic3',firma_id:'firma-ind',codigo_cliente:'000003',nombre:'Diego Peralta',tipo:'Persona física',email:'dperalta@hotmail.com',telefono:'011-5521-4410',dni:'35.100.888',direccion:'',notas:'',created_at:'2025-03-01'},
-      ],
-      expedientes: [
-        {id:'ie1',firma_id:'firma-ind',cliente_id:'ic1',codigo_caso:'MEN-2025-0001',titulo:'Ramírez s/ herencia indivisa',tipo:'Civil',estado:'activo',juzgado:'Juzgado Civil Nº 8',descripcion:'Proceso sucesorio iniciado en enero 2025.',created_at:'2025-01-15'},
-        {id:'ie2',firma_id:'firma-ind',cliente_id:'ic2',codigo_caso:'MEN-2025-0002',titulo:'Inversiones Sur c/ Proveedor X',tipo:'Comercial',estado:'activo',juzgado:'',descripcion:'Reclamo por incumplimiento contractual.',created_at:'2025-02-05'},
-        {id:'ie3',firma_id:'firma-ind',cliente_id:'ic3',codigo_caso:'MEN-2025-0003',titulo:'Peralta s/ accidente laboral',tipo:'Laboral',estado:'pendiente',juzgado:'Juzgado Laboral Nº 4',descripcion:'',created_at:'2025-03-02'},
-      ],
-      recordatorios: [
-        {id:'ir1',firma_id:'firma-ind',expediente_id:'ie1',titulo:'Presentar memorial de herederos',fecha_limite:new Date(Date.now()+4*86400000).toISOString().split('T')[0],urgencia:'urgente',nota:'Juzgado requiere originales',created_at:'2025-03-01'},
-        {id:'ir2',firma_id:'firma-ind',expediente_id:'ie2',titulo:'Audiencia de conciliación',fecha_limite:new Date(Date.now()+12*86400000).toISOString().split('T')[0],urgencia:'activo',nota:'Sala 3 — 10:00hs',created_at:'2025-03-05'},
-        {id:'ir3',firma_id:'firma-ind',expediente_id:'ie3',titulo:'Vencimiento período probatorio',fecha_limite:new Date(Date.now()+28*86400000).toISOString().split('T')[0],urgencia:'pendiente',nota:'',created_at:'2025-03-10'},
-      ],
-      leads: [
-        {id:'il1',firma_id:'firma-ind',nombre:'Beatriz Holm',tipo:'Persona física',telefono:'011-4455-6677',email:'bholm@gmail.com',origen:'Instagram',estado:'nuevo',interes:'Familia',prioridad:'alta',valor_estimado:70000,ultimo_contacto:new Date(Date.now()-1*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()+2*86400000).toISOString().split('T')[0],notas:'Consulta por divorcio. Muy interesada.',created_at:'2025-03-10'},
-        {id:'il2',firma_id:'firma-ind',nombre:'Marcos Vidal',tipo:'Persona física',telefono:'011-5500-9900',email:'mvidal@outlook.com',origen:'Referido',estado:'contactado',interes:'Civil',prioridad:'media',valor_estimado:45000,ultimo_contacto:new Date(Date.now()-3*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()+5*86400000).toISOString().split('T')[0],notas:'Referido por cliente Ramírez.',created_at:'2025-03-08'},
-        {id:'il3',firma_id:'firma-ind',nombre:'Tech Solutions SRL',tipo:'Empresa',telefono:'011-4800-7700',email:'legal@techsol.com.ar',origen:'Web',estado:'en_negociacion',interes:'Comercial',prioridad:'alta',valor_estimado:180000,ultimo_contacto:new Date(Date.now()-2*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()+1*86400000).toISOString().split('T')[0],notas:'Empresa tech, necesita asesoría permanente.',created_at:'2025-03-05'},
-      ],
-      facturas: [
-        {id:'if1',firma_id:'firma-ind',cliente_id:'ic1',numero:'0001-00001',concepto:'Honorarios apertura sucesión',monto:55000,estado:'cobrado',vencimiento:'2025-02-28',created_at:'2025-02-01'},
-        {id:'if2',firma_id:'firma-ind',cliente_id:'ic2',numero:'0001-00002',concepto:'Honorarios — preparación demanda',monto:95000,estado:'pendiente',vencimiento:new Date(Date.now()+8*86400000).toISOString().split('T')[0],created_at:'2025-03-05'},
-      ],
-      miembros: [
-        {id:'im1',firma_id:'firma-ind',perfil_id:'uid-ind',rol:'admin',rol_personalizado:'admin',
-         permisos:{ver_todo:true,editar_todo:true,editar_expedientes:true,ver_finanzas:true,cargar_info:true,gestionar_equipo:true},
-         perfiles:{id:'uid-ind',nombre:'Carlos',apellido:'Mendoza',email:'abogado@independiente.com',matricula:'T°V F°312',telefono:'011-4523-7788'}},
-      ],
-      contadores: [{firma_id:'firma-ind',ultimo_cliente:3,ultimo_caso:3}],
-    }
-  },
-
-  'admin@estudio.com': {
-    password: 'lexora123',
-    user:   { id:'uid-est', email:'admin@estudio.com' },
-    perfil: { id:'uid-est', nombre:'Ana', apellido:'García', email:'admin@estudio.com', matricula:'T°X F°88', telefono:'011-4700-2200' },
-    firma:  { id:'firma-est', nombre:'García & Asociados', plan:'estudio', tipo:'estudio', activo:true, codigo_invitacion:'EST001' },
-    sub:    { id:'sub-est', firma_id:'firma-est', plan:'estudio', estado:'trial', monto_ars:129000, vencimiento: new Date(Date.now()+18*86400000).toISOString().split('T')[0] },
-    data: {
-      clientes: [
-        {id:'ec1',firma_id:'firma-est',codigo_cliente:'000001',nombre:'María García',tipo:'Persona física',email:'mgarcia@gmail.com',telefono:'011-4521-3344',dni:'27.330.100',direccion:'Lavalle 880, CABA',notas:'',responsable_id:'uid-est',created_at:'2025-01-10'},
-        {id:'ec2',firma_id:'firma-est',codigo_cliente:'000002',nombre:'Constructora Norte SA',tipo:'Empresa',email:'legal@cnorte.com',telefono:'011-5500-8800',dni:'30-68000001-1',direccion:'Av. de Mayo 1234',notas:'',responsable_id:'uid-est2',created_at:'2025-02-01'},
-        {id:'ec3',firma_id:'firma-est',codigo_cliente:'000003',nombre:'Roberto Pérez',tipo:'Persona física',email:'rperez@hotmail.com',telefono:'011-4891-5521',dni:'',direccion:'',notas:'',responsable_id:'uid-est2',created_at:'2025-02-14'},
-        {id:'ec4',firma_id:'firma-est',codigo_cliente:'000004',nombre:'Logística Pampeana SA',tipo:'Empresa',email:'gerencia@logpam.com.ar',telefono:'011-5200-3300',dni:'30-55566677-8',direccion:'Autopista Riccheri km 34',notas:'Cliente importante.',responsable_id:'uid-est',created_at:'2025-03-01'},
-      ],
-      expedientes: [
-        {id:'ee1',firma_id:'firma-est',cliente_id:'ec1',codigo_caso:'GAR-2025-0001',titulo:'Divorcio García c/ González',tipo:'Familia',estado:'activo',juzgado:'Juzgado Familia Nº 3',descripcion:'Proceso de divorcio con custodia compartida.',responsable_id:'uid-est',created_at:'2025-01-15'},
-        {id:'ee2',firma_id:'firma-est',cliente_id:'ec2',codigo_caso:'GAR-2025-0002',titulo:'Constructora Norte c/ Proveedor',tipo:'Comercial',estado:'pendiente',juzgado:'',descripcion:'Incumplimiento de contrato de suministro.',responsable_id:'uid-est2',created_at:'2025-02-01'},
-        {id:'ee3',firma_id:'firma-est',cliente_id:'ec3',codigo_caso:'GAR-2025-0003',titulo:'Demanda laboral Pérez c/ Empresa X',tipo:'Laboral',estado:'activo',juzgado:'Juzgado Laboral Nº 7',descripcion:'',responsable_id:'uid-est2',created_at:'2025-02-14'},
-        {id:'ee4',firma_id:'firma-est',cliente_id:'ec4',codigo_caso:'GAR-2025-0004',titulo:'Logística Pampeana — Contrato distribución',tipo:'Comercial',estado:'activo',juzgado:'',descripcion:'Revisión y redacción de contratos.',responsable_id:'uid-est',created_at:'2025-03-02'},
-      ],
-      recordatorios: [
-        {id:'er1',firma_id:'firma-est',expediente_id:'ee3',titulo:'Vencimiento contestación demanda',fecha_limite:new Date(Date.now()+3*86400000).toISOString().split('T')[0],urgencia:'urgente',nota:'Presentar antes de las 18hs',created_at:'2025-03-01'},
-        {id:'er2',firma_id:'firma-est',expediente_id:'ee1',titulo:'Audiencia de mediación familiar',fecha_limite:new Date(Date.now()+10*86400000).toISOString().split('T')[0],urgencia:'activo',nota:'Sala 4 del Centro de Mediación',created_at:'2025-03-05'},
-        {id:'er3',firma_id:'firma-est',expediente_id:'ee2',titulo:'Renovar poder notarial',fecha_limite:new Date(Date.now()+20*86400000).toISOString().split('T')[0],urgencia:'pendiente',nota:'Coordinar firma con cliente',created_at:'2025-03-10'},
-        {id:'er4',firma_id:'firma-est',expediente_id:'ee4',titulo:'Entrega borrador contrato',fecha_limite:new Date(Date.now()+6*86400000).toISOString().split('T')[0],urgencia:'activo',nota:'',created_at:'2025-03-08'},
-      ],
-      leads: [
-        {id:'el1',firma_id:'firma-est',nombre:'Carla Romero',tipo:'Persona física',telefono:'011-5521-9900',email:'carla.romero@gmail.com',origen:'Instagram',estado:'nuevo',interes:'Derecho laboral',prioridad:'alta',valor_estimado:85000,responsable_id:'uid-est2',ultimo_contacto:new Date(Date.now()-2*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()+1*86400000).toISOString().split('T')[0],notas:'Interesada en asesoría por despido.',created_at:'2025-03-01'},
-        {id:'el2',firma_id:'firma-est',nombre:'Constructora Del Sur SRL',tipo:'Empresa',telefono:'011-4800-1200',email:'legal@constrsur.com',origen:'Referido',estado:'contactado',interes:'Comercial',prioridad:'alta',valor_estimado:200000,responsable_id:'uid-est',ultimo_contacto:new Date(Date.now()-5*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()+3*86400000).toISOString().split('T')[0],notas:'Referido por cliente García.',created_at:'2025-03-05'},
-        {id:'el3',firma_id:'firma-est',nombre:'Eduardo Villalba',tipo:'Persona física',telefono:'011-4312-5544',email:'evillalba@hotmail.com',origen:'Web',estado:'consulta_agendada',interes:'Familia',prioridad:'media',valor_estimado:60000,responsable_id:'uid-est2',ultimo_contacto:new Date(Date.now()-1*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()).toISOString().split('T')[0],notas:'Consulta por divorcio hoy.',created_at:'2025-03-08'},
-        {id:'el4',firma_id:'firma-est',nombre:'Ana Torres',tipo:'Persona física',telefono:'011-6600-4321',email:'ana.torres@gmail.com',origen:'Instagram',estado:'en_negociacion',interes:'Civil',prioridad:'media',valor_estimado:45000,responsable_id:'uid-est',ultimo_contacto:new Date(Date.now()-3*86400000).toISOString().split('T')[0],proximo_contacto:new Date(Date.now()+5*86400000).toISOString().split('T')[0],notas:'Esperando propuesta de honorarios.',created_at:'2025-03-10'},
-        {id:'el5',firma_id:'firma-est',nombre:'Logística Noreste SA',tipo:'Empresa',telefono:'011-5200-7700',email:'gerencia@lognoreste.com.ar',origen:'Referido',estado:'ganado',interes:'Laboral',prioridad:'alta',valor_estimado:150000,responsable_id:'uid-est',ultimo_contacto:new Date(Date.now()-7*86400000).toISOString().split('T')[0],proximo_contacto:'',notas:'Convertido en cliente.',created_at:'2025-02-25'},
-      ],
-      facturas: [
-        {id:'ef1',firma_id:'firma-est',cliente_id:'ec2',numero:'0001-00001',concepto:'Honorarios revisión contratos',monto:85000,estado:'cobrado',vencimiento:'2025-03-31',created_at:'2025-03-01'},
-        {id:'ef2',firma_id:'firma-est',cliente_id:'ec1',numero:'0001-00002',concepto:'Honorarios Divorcio — Abril',monto:45000,estado:'pendiente',vencimiento:new Date(Date.now()+8*86400000).toISOString().split('T')[0],created_at:'2025-03-10'},
-        {id:'ef3',firma_id:'firma-est',cliente_id:'ec3',numero:'0001-00003',concepto:'Demanda laboral — Honorarios',monto:32000,estado:'vencido',vencimiento:'2025-03-01',created_at:'2025-02-28'},
-      ],
-      miembros: [
-        {id:'em1',firma_id:'firma-est',perfil_id:'uid-est',rol:'admin',rol_personalizado:'admin',
-         permisos:{ver_todo:true,editar_todo:true,editar_expedientes:true,ver_finanzas:true,cargar_info:true,gestionar_equipo:true},
-         perfiles:{id:'uid-est',nombre:'Ana',apellido:'García',email:'admin@estudio.com',matricula:'T°X F°88',telefono:'011-4700-2200'}},
-        {id:'em2',firma_id:'firma-est',perfil_id:'uid-est2',rol:'miembro',rol_personalizado:'abogado',
-         permisos:{ver_todo:false,editar_todo:false,editar_expedientes:true,ver_finanzas:false,cargar_info:true,gestionar_equipo:false},
-         perfiles:{id:'uid-est2',nombre:'Valentina',apellido:'Suárez',email:'vsuarez@estudio.com',matricula:'T°XII F°120',telefono:'011-5500-1122'}},
-        {id:'em3',firma_id:'firma-est',perfil_id:'uid-est3',rol:'miembro',rol_personalizado:'asistente',
-         permisos:{ver_todo:false,editar_todo:false,editar_expedientes:false,ver_finanzas:false,cargar_info:true,gestionar_equipo:false},
-         perfiles:{id:'uid-est3',nombre:'Marcos',apellido:'Ferreyra',email:'mferreyra@estudio.com',matricula:'',telefono:'011-4321-9988'}},
-      ],
-      contadores: [{firma_id:'firma-est',ultimo_cliente:4,ultimo_caso:4}],
-    }
-  }
-};
-
-/* ── Cuenta activa actual ── */
-let CUENTA_ACTIVA = null;
-
-function mockSb(){
-  const getStore = () => CUENTA_ACTIVA?.data || {};
-  const getRows  = (t) => getStore()[t] || [];
-
-  const makeChain = (rows) => ({
-    eq:    (col, val) => makeChain(rows.filter(r=>String(r[col])===String(val))),
-    neq:   (col, val) => makeChain(rows.filter(r=>String(r[col])!==String(val))),
-    in:    (col, vals) => makeChain(rows.filter(r=>vals.includes(r[col]))),
-    order: (col, opts) => {
-      let sorted = [...rows];
-      if(col) sorted.sort((a,b)=>{ const asc=opts?.ascending!==false; const av=a[col]||'',bv=b[col]||''; return asc?(av>bv?1:av<bv?-1:0):(av<bv?1:av>bv?-1:0); });
-      return makeChain(sorted);
-    },
-    limit:  (n)  => makeChain(rows.slice(0,n)),
-    single: async () => ({ data: rows[0]||null, error: null }),
-    then:   (fn) => Promise.resolve(fn({ data: rows, error: null })),
-    data: rows, error: null,
-  });
-
-  return {
-    auth: {
-      signInWithPassword: async ({email, password}) => {
-        const cuenta = CUENTAS[email.toLowerCase()];
-        if(cuenta && cuenta.password === password){
-          CUENTA_ACTIVA = cuenta;
-          return { data:{ user: cuenta.user }, error: null };
-        }
-        return { data:null, error:{ message:'Email o contraseña incorrectos.' } };
-      },
-      signUp:   async () => ({ data:{ user: CUENTA_ACTIVA?.user||null }, error: null }),
-      signOut:  async () => { CUENTA_ACTIVA = null; },
-      getSession: async () => ({ data:{ session: CUENTA_ACTIVA?{ access_token:'local-token' }:null } }),
-      getUser: async () => ({ data:{ user: CUENTA_ACTIVA?.user||null } }),
-      onAuthStateChange: () => ({ data:{ subscription:{ unsubscribe:()=>{} } } }),
-    },
-    from: (table) => {
-      return {
-        select: (cols) => {
-          // miembros with perfiles join handled natively since perfiles are embedded
-          const base = getRows(table);
-          return makeChain(base);
-        },
-        insert: (row) => {
-          const newRow = Array.isArray(row) ? {...row[0]} : {...row};
-          if(!newRow.id) newRow.id = 'local-'+Date.now()+Math.random().toString(36).slice(2,5);
-          newRow.created_at = new Date().toISOString();
-          const store = getStore();
-          if(store[table]) store[table].unshift(newRow);
-          return {
-            select: () => ({ single: async () => ({ data: newRow, error: null }) }),
-            then:   (fn) => Promise.resolve(fn({ data: newRow, error: null })),
-            data: newRow, error: null,
-          };
-        },
-        update: (row) => ({
-          eq: (col, val) => {
-            const store = getStore();
-            const idx = (store[table]||[]).findIndex(r=>String(r[col])===String(val));
-            if(idx>=0) Object.assign(store[table][idx], row);
-            const updated = store[table]?.[idx] || row;
-            return {
-              select: () => ({ single: async () => ({ data: updated, error: null }) }),
-              eq:     () => ({ then: (fn) => Promise.resolve(fn({ data:null, error:null })) }),
-              then:   (fn) => Promise.resolve(fn({ data:null, error:null })),
-            };
-          },
-        }),
-        delete: () => ({
-          eq: (col, val) => {
-            const store = getStore();
-            if(store[table]) store[table] = store[table].filter(r=>String(r[col])!==String(val));
-            return { then: (fn) => Promise.resolve(fn({ data:null, error:null })) };
-          },
-        }),
-      };
-    },  // end from()
-    rpc: async (fn, params) => {
-      if(fn==='get_firma_by_code'){
-        for(const c of Object.values(CUENTAS)){
-          if(c.firma.codigo_invitacion===(params.p_code||'').toUpperCase())
-            return { data:[c.firma], error:null };
-        }
-        return { data:[], error:null };
-      }
-      if(fn==='next_cliente_seq'){
-        const store = getStore();
-        const cnt = (store.contadores||[]).find(c=>c.firma_id===params.p_firma_id);
-        if(cnt) cnt.ultimo_cliente=(cnt.ultimo_cliente||0)+1;
-        return { data: cnt?.ultimo_cliente||1, error:null };
-      }
-      if(fn==='next_caso_seq'){
-        const store = getStore();
-        const cnt = (store.contadores||[]).find(c=>c.firma_id===params.p_firma_id);
-        if(cnt) cnt.ultimo_caso=(cnt.ultimo_caso||0)+1;
-        return { data: cnt?.ultimo_caso||1, error:null };
-      }
-      return { data:null, error:null };
-    },
-  };
-}
-
-/* ── Inicializar cliente correcto ── */
-const _sb = mockSb();
+const { createClient } = window.supabase;
+const sb = createClient(CFG.SUPABASE_URL, CFG.SUPABASE_KEY);
+const _sb = sb;
 
 /* ── State ── */
 let CU   = null;  // current user (auth)
@@ -1610,12 +1539,12 @@ function goTo(id){
 function genInviteCode(){ return Math.random().toString(36).substring(2,8).toUpperCase(); }
 const fmt = n => '$'+Number(n||0).toLocaleString('es-AR');
 const today = () => new Date().toISOString().split('T')[0];
-const cliName = id => (C.clientes.find(x=>x.id===id)||{}).nombre||'—';
+const cliName = id => id ? ((C.clientes.find(x=>x.id===id)||{}).nombre||'[Cliente eliminado]') : '—';
 const membName = uid => { const m=C.miembros.find(x=>x.perfil_id===uid); const p=m?.perfiles||{}; return p.nombre?(p.nombre+' '+p.apellido).trim():''; };
 const expTitle = id => (C.expedientes.find(x=>x.id===id)||{}).titulo||'—';
 const stBadge = s => `<span class="status ${s||'pendiente'}">${s||'pendiente'}</span>`;
 const planPill = p => { const m={independiente:'pill-basic',estudio:'pill-pro',trial:'pill-trial'}; return `<span class="plan-pill ${m[p]||'pill-basic'}">${p}</span>`; };
-const PLAN_PRICES = { independiente:59000, estudio:129000, trial:0 };
+const PLAN_PRICES = { independiente:39000, estudio:59000, trial:0 };
 const PLAN_NOMBRES = { independiente:'Independiente', estudio:'Estudio', trial:'Trial gratuito' };
 
 function showErr(id, msg){ const e=document.getElementById(id); if(!e) return; e.textContent=msg; e.style.display='block'; }
@@ -1625,12 +1554,6 @@ function setBtn(id, txt, dis){ const b=document.getElementById(id); if(!b) retur
 /* ════════════════════════════════════════
    AUTH — LOGIN
 ════════════════════════════════════════ */
-function fillLogin(email, pass){
-  const le=document.getElementById('l-email'); if(le) le.value=email;
-  const lp=document.getElementById('l-pass');  if(lp) lp.value=pass;
-  doLogin();
-}
-
 async function doLogin(){
   const email=document.getElementById('l-email').value.trim();
   const pass =document.getElementById('l-pass').value;
@@ -1647,25 +1570,7 @@ async function doLogin(){
 }
 
 async function loadUserSession(user){
-  // ── MODO LOCAL (cuentas locales) ─────────────────────────────
-  if(DEMO_MODE && CUENTA_ACTIVA){
-    CP   = CUENTA_ACTIVA.perfil;
-    CU   = user || CUENTA_ACTIVA.user;
-    CF   = CUENTA_ACTIVA.firma;
-    CROL = 'admin';
-    CS   = CUENTA_ACTIVA.sub;
-    const d = CUENTA_ACTIVA.data;
-    C.clientes      = [...d.clientes];
-    C.expedientes   = [...d.expedientes];
-    C.recordatorios = [...d.recordatorios];
-    C.facturas      = [...(d.facturas||[])];
-    C.miembros      = [...d.miembros];
-    C.leads         = [...d.leads];
-    enterApp();
-    return;
-  }
-
-  // ── MODO REAL (Supabase) ──────────────────────────────────────
+  // ── Supabase ──────────────────────────────────────
   // Cargar perfil
   const { data: profile } = await _sb.from('perfiles').select('*').eq('id', user.id).single();
   if(!profile){ showErr('l-err','Perfil no encontrado. Contactá al administrador.'); setBtn('l-btn','Ingresar al panel',false); return; }
@@ -1759,7 +1664,7 @@ function enterApp(){
 
 async function doLogout(){
   await _sb.auth.signOut();
-  CUENTA_ACTIVA=null; CU=null; CP=null; CF=null; CS=null; CROL=null;
+  CU=null; CP=null; CF=null; CS=null; CROL=null;
   C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
   const lp=document.getElementById('l-pass'); if(lp) lp.value='';
   goTo('splash');
@@ -1852,7 +1757,7 @@ function prepareStep3(){
 
 function prepareStep4(){
   // Build summary
-  const planLabel = REG.plan==='estudio'?'🏢 Estudio — $129.000/mes':'🧍 Independiente — $59.000/mes';
+  const planLabel = REG.plan==='estudio'?'🏢 Estudio — $59.000/mes':'🧍 Independiente — $39.000/mes';
   const sumEl = document.getElementById('reg-summary');
   if(sumEl) sumEl.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1992,13 +1897,8 @@ async function checkPaymentStatus(){
    DATA LAYER
 ════════════════════════════════════════ */
 async function dbGet(t){
-  const chain = _sb.from(t).select('*');
-  const filtered = CF?.id ? chain.eq('firma_id', CF.id) : chain;
-  const result = await filtered.order('created_at',{ascending:false});
-  if(result && result.data) return result.data;
-  // fallback for sync mock
-  const sync = _sb.from(t).select('*');
-  return sync.data || [];
+  const { data, error } = await _sb.from(t).select('*').eq('firma_id', CF.id).order('created_at',{ascending:false});
+  return error ? [] : data || [];
 }
 async function dbInsert(t, row){
   const { data, error } = await _sb.from(t).insert({...row, firma_id:CF.id, creado_por:CU.id}).select().single();
@@ -2038,7 +1938,8 @@ async function loadAll(){
     dbGet('clientes'), dbGet('expedientes'), dbGet('recordatorios')
   ]);
   C.clientes=cli; C.expedientes=exp; C.recordatorios=rec;
-  try{ C.leads = await dbGet('leads'); } catch(e){ C.leads=[]; }
+  try{ C.leads    = await dbGet('leads');    } catch(e){ C.leads=[]; }
+  try{ C.facturas = await dbGet('facturas'); } catch(e){ C.facturas=[]; }
   try{
     const { data: miembros } = await _sb.from('miembros').select('*, perfiles(*)').eq('firma_id', CF.id);
     C.miembros = miembros || [];
@@ -2050,13 +1951,16 @@ function safeRun(fn, name){
   try{ fn(); } catch(e){ console.error('Error en '+name+':', e); }
 }
 function renderAll(){
-  safeRun(rDash,  'rDash');
-  safeRun(rLeads, 'rLeads');
-  safeRun(rCli,   'rCli');
-  safeRun(rExp,   'rExp');
-  safeRun(rRec,   'rRec');
-  if(isEstudioPlan()) safeRun(rEquipo, 'rEquipo');
-  safeRun(rBadges,'rBadges');
+  safeRun(rDash,    'rDash');
+  safeRun(rLeads,   'rLeads');
+  safeRun(rCli,     'rCli');
+  safeRun(rExp,     'rExp');
+  safeRun(rRec,     'rRec');
+  safeRun(rFinanzas,'rFinanzas');
+  safeRun(rTareas,  'rTareas');
+  safeRun(rReportes,'rReportes');
+  if(isEstudioPlan()) safeRun(rEquipo,'rEquipo');
+  safeRun(rBadges,  'rBadges');
 }
 
 /* ════════════════════════════════════════
@@ -2093,14 +1997,18 @@ function rDash(){
 function rCli(filtro=''){
   const g = document.getElementById('cli-grid');
   let lista = C.clientes;
+  const CLI_PAGE_SIZE = 24;
   if(filtro) lista = lista.filter(c=>
     c.nombre?.toLowerCase().includes(filtro)||
     (c.email||'').toLowerCase().includes(filtro)||
     (c.dni||'').toLowerCase().includes(filtro)||
     (c.codigo_cliente||'').includes(filtro)
   );
-  if(!lista.length){ g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">◎</div><p>${filtro?'Sin resultados para "'+filtro+'"':'Sin clientes aún. Agregá el primero.'}</p></div>`; return; }
-  g.innerHTML = lista.map(c=>{
+  if(!lista.length){ g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">◎</div><p>${filtro?'Sin resultados para &quot;'+filtro+'&quot;':'Sin clientes aún. Agregá el primero.'}</p></div>`; return; }
+  const cliPage = window._cliPage||0;
+  const cliShown = lista.slice(0, CLI_PAGE_SIZE*(cliPage+1));
+  const hasMore  = lista.length > cliShown.length;
+  g.innerHTML = cliShown.map(c=>{
     const exps = C.expedientes.filter(e=>e.cliente_id===c.id).length;
     const ini  = ((c.nombre||' ').split(' ').map(w=>w[0]).slice(0,2).join('')).toUpperCase();
     const resp = c.responsable_id ? membName(c.responsable_id) : '';
@@ -2125,9 +2033,13 @@ function rCli(filtro=''){
         <div><div class="cs-v" style="color:var(--text-dim);font-size:12px;">${c.telefono||'—'}</div><div class="cs-l">Teléfono</div></div>
       </div>
     </div>`;}).join('');
+
+  if(hasMore){
+    g.innerHTML += `<div style="grid-column:1/-1;text-align:center;padding:16px;"><button class="btn btn-ghost" onclick="window._cliPage=(window._cliPage||0)+1;rCli(document.getElementById('cli-search')?.value||'')">Ver más clientes (${lista.length-cliShown.length} restantes)</button></div>`;
+  }
 }
 
-function filterClientes(v){ rCli(v.toLowerCase().trim()); }
+function filterClientes(v){ window._cliPage=0; rCli(v.toLowerCase().trim()); }
 
 /* ════════════════════════════════════════
    PANEL LATERAL — CLIENTE
@@ -2311,7 +2223,7 @@ function openPanelExpediente(expId){
       <div class="quick-actions">
         <button class="qa-btn" onclick="document.getElementById('nota-exp-input-${e.id}').focus()">📝 Nota</button>
         <button class="qa-btn" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">📅 Fecha</button>
-        <button class="qa-btn" onclick="document.getElementById('doc-upload-${e.id}').click()">📎 Documento</button>
+        <button class="qa-btn" onclick="activarModoDoc('${e.id}')">📎 Documento</button>
         <button class="qa-btn" onclick="editItem('expediente','${e.id}')">✏️ Editar</button>
       </div>
       <div style="margin-bottom:14px;">
@@ -2325,13 +2237,14 @@ function openPanelExpediente(expId){
           <div style="flex:1;">
             <textarea id="nota-exp-input-${e.id}" class="nota-input" placeholder="Nota, llamada, movimiento..."></textarea>
             <div style="display:flex;gap:6px;margin-top:5px;">
-              <select id="nota-exp-tipo-${e.id}" class="tipo-select" style="font-size:11px;">
-                <option value="">General</option>
+              <select id="nota-exp-tipo-${e.id}" class="tipo-select" style="font-size:11px;" onchange="onNotaTipoChange('${e.id}',this.value)">
+                <option value="">📝 Nota general</option>
                 <option value="llamada">📞 Llamada</option>
                 <option value="movimiento">⚖️ Movimiento</option>
                 <option value="urgente">🔴 Urgente</option>
                 <option value="audiencia">🏛️ Audiencia</option>
                 <option value="escrito">📄 Escrito</option>
+                <option value="documento">📎 Documento</option>
               </select>
               <button class="btn btn-primary" style="padding:5px 14px;font-size:12px;" onclick="addNotaExp('${e.id}')">Agregar</button>
             </div>
@@ -2384,6 +2297,33 @@ function openPanelExpediente(expId){
   document.getElementById('exp-side-panel').style.display='block';
 }
 
+function activarModoDoc(expId){
+  // Select "documento" in tipo dropdown and focus textarea
+  const sel = document.getElementById('nota-exp-tipo-'+expId);
+  if(sel){ sel.value='documento'; onNotaTipoChange(expId,'documento'); }
+  const inp = document.getElementById('nota-exp-input-'+expId);
+  if(inp){ inp.placeholder='Nombre del documento o referencia...'; inp.focus(); }
+}
+
+function onNotaTipoChange(expId, tipo){
+  const inp = document.getElementById('nota-exp-input-'+expId);
+  if(!inp) return;
+  const placeholders = {
+    '':'Nota, observación...',
+    'llamada':'¿Con quién? ¿Qué se acordó?',
+    'movimiento':'Describí el movimiento procesal...',
+    'urgente':'Detalle urgente...',
+    'audiencia':'Sala, hora, resultado...',
+    'escrito':'Nombre del escrito presentado...',
+    'documento':'Nombre o referencia del documento...',
+  };
+  inp.placeholder = placeholders[tipo]||'Nota...';
+  // For documento type, also auto-trigger file picker after adding the nota
+  if(tipo==='documento'){
+    inp.placeholder='Nombre/descripción del documento (luego subí el archivo)';
+  }
+}
+
 function addNotaExp(expId){
   const input = document.getElementById('nota-exp-input-'+expId);
   const tipo  = document.getElementById('nota-exp-tipo-'+expId)?.value||'';
@@ -2401,7 +2341,9 @@ async function cambiarEstadoExp(expId, nuevoEstado){
     await dbUpdate('expedientes',expId,{estado:nuevoEstado});
     const i=C.expedientes.findIndex(e=>e.id===expId);
     if(i>=0) C.expedientes[i].estado=nuevoEstado;
-    openPanelExpediente(expId);
+    openPanelExpediente(expId);   // refresh panel
+    safeRun(rExp,'rExp');          // refresh table list
+    safeRun(rDash,'rDash');        // refresh dashboard
     rBadges();
     showToast('✅ Estado: '+nuevoEstado);
     logActividad(`${CP?.nombre||'Alguien'} cambió estado de expediente a ${nuevoEstado}`, 'expediente');
@@ -2474,6 +2416,8 @@ async function removeDoc(entityId, docId, entityType='expediente'){
     ? C.clientes.find(x=>x.id===entityId)
     : C.expedientes.find(x=>x.id===entityId);
   if(!entity) return;
+  const doc = (entity._docs||[]).find(d=>d.id===docId);
+  if(!confirm(`¿Eliminar "${doc?.nombre||'este archivo'}"?`)) return;
   entity._docs=(entity._docs||[]).filter(d=>d.id!==docId);
   try{ await idbDel(docId); }catch(e){}
   if(entityType==='cliente') openPanelCliente(entityId);
@@ -2513,13 +2457,35 @@ async function previewDoc(entityId, docId, entityType='expediente'){
 }
 
 function buscarEnExp(expId,q){
-  if(!q||q.length<2){openPanelExpediente(expId);return;}
-  const vc=q.toLowerCase();
   const e=C.expedientes.find(x=>x.id===expId);
-  const rn=(e?._notas||[]).filter(n=>n.texto.toLowerCase().includes(vc)).length;
-  const rd=(e?._docs||[]).filter(d=>d.nombre.toLowerCase().includes(vc)).length;
-  if(rn+rd) showToast(`🔍 ${rn} nota(s), ${rd} documento(s)`);
-  else showToast(`Sin resultados para "${q}"`);
+  if(!e) return;
+  if(!q||q.length<2){
+    // Reset: show all notas
+    const listEl = document.getElementById('notas-exp-list-'+expId);
+    const allNotas = e._notas||[];
+    if(listEl) listEl.innerHTML = allNotas.length ? allNotas.map(n=>`
+      <div class="nota-item ${n.tipo||''}">
+        <div class="nota-text">${n.texto}</div>
+        <div class="nota-meta">${n.fecha}${n.tipo?' · '+n.tipo:''}</div>
+      </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin entradas aún</div>';
+    return;
+  }
+  const vc = q.toLowerCase();
+  const notasFiltradas = (e._notas||[]).filter(n=>n.texto.toLowerCase().includes(vc)||(n.tipo||'').includes(vc));
+  const docsFiltrados  = (e._docs||[]).filter(d=>d.nombre.toLowerCase().includes(vc));
+  const listEl = document.getElementById('notas-exp-list-'+expId);
+  if(listEl){
+    if(!notasFiltradas.length && !docsFiltrados.length){
+      listEl.innerHTML=`<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin resultados para "${q}"</div>`;
+    } else {
+      listEl.innerHTML = notasFiltradas.map(n=>`
+        <div class="nota-item ${n.tipo||''}" style="border-left-color:var(--gold);">
+          <div class="nota-text">${n.texto.replace(new RegExp(q,'gi'), m=>'<mark style="background:rgba(201,168,76,.25);border-radius:2px;">'+m+'</mark>')}</div>
+          <div class="nota-meta">${n.fecha}${n.tipo?' · '+n.tipo:''}</div>
+        </div>`).join('');
+      if(docsFiltrados.length) listEl.innerHTML += `<div style="font-size:11px;color:var(--text-muted);padding:6px 0 2px;">📎 ${docsFiltrados.length} documento(s) coinciden</div>`;
+    }
+  }
 }
 
 function closePanelExpediente(){
@@ -2607,6 +2573,14 @@ const PERM_LABELS = {
 };
 
 // In-memory activity log
+/* ── TAREAS IN-MEMORY STORE ── */
+let tareasStore = [
+  {id:'t1',titulo:'Revisar legajo García antes de audiencia',prioridad:'urgente',asignado_a:null,expediente_id:null,done:false,fecha_limite:new Date(Date.now()+2*86400000).toISOString().split('T')[0],created_at:new Date().toISOString()},
+  {id:'t2',titulo:'Llamar a cliente Constructora Norte',prioridad:'normal',asignado_a:null,expediente_id:null,done:false,fecha_limite:new Date(Date.now()+5*86400000).toISOString().split('T')[0],created_at:new Date().toISOString()},
+  {id:'t3',titulo:'Preparar escrito de apelación',prioridad:'urgente',asignado_a:null,expediente_id:null,done:false,fecha_limite:new Date(Date.now()+1*86400000).toISOString().split('T')[0],created_at:new Date().toISOString()},
+];
+let filtroTareas = 'pendientes';
+
 let actividadLog = [
   {texto:'Demo Lexora creó el estudio', meta:'Hoy', tipo:'firma'},
   {texto:'Demo Lexora agregó el cliente María García', meta:'Hace 2 días', tipo:'cliente'},
@@ -2880,6 +2854,17 @@ function openPanelMiembro(miembroId){
   document.getElementById('miembro-side-panel').style.display='block';
 }
 
+function addNotaLead(leadId){
+  const el=document.getElementById('nota-lead-'+leadId);
+  const txt=el?.value?.trim(); if(!txt) return;
+  const l=C.leads.find(x=>x.id===leadId); if(!l) return;
+  if(!l._notas) l._notas=[];
+  l._notas.unshift({texto:txt,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})});
+  el.value='';
+  openLeadPanel(leadId);
+  showToast('📝 Nota guardada');
+}
+
 function closePanelMiembro(){
   document.getElementById('miembro-panel-overlay').style.display='none';
   document.getElementById('miembro-side-panel').style.display='none';
@@ -3046,8 +3031,14 @@ function eliminarNotaPrivada(id){
 }
 
 function openInviteModal(){
-  // Just scroll to invite section
-  document.getElementById('invite-section')?.scrollIntoView({behavior:'smooth'});
+  const sec = document.getElementById('invite-section');
+  if(!sec) return;
+  sec.style.display='block';
+  sec.scrollIntoView({behavior:'smooth', block:'start'});
+  // Pulse animation to draw attention
+  sec.style.transition='box-shadow .2s';
+  sec.style.boxShadow='0 0 0 3px var(--gold)';
+  setTimeout(()=>{ sec.style.boxShadow=''; }, 1200);
 }
 
 function regenerateInviteCode(){
@@ -3197,11 +3188,12 @@ function mobileNavActivate(el){
    RENDER — LEADS / PROSPECTOS
 ════════════════════════════════════════ */
 const LEAD_ESTADOS = [
-  {key:'nuevo',       label:'Nuevo',              color:'var(--blue)',   bg:'rgba(76,123,201,.1)'},
-  {key:'contactado',  label:'Contactado',          color:'var(--text-dim)', bg:'rgba(68,66,74,.3)'},
-  {key:'consulta_agendada', label:'Consulta agendada', color:'var(--gold)', bg:'rgba(201,168,76,.1)'},
-  {key:'en_negociacion',    label:'En negociación',    color:'#a78bfa',     bg:'rgba(167,139,250,.1)'},
-  {key:'ganado',      label:'✓ Ganado',            color:'var(--green)', bg:'rgba(76,186,132,.12)'},
+  {key:'nuevo',           label:'Nuevo',             color:'var(--blue)',   bg:'rgba(76,123,201,.1)'},
+  {key:'contactado',      label:'Contactado',         color:'var(--text-dim)', bg:'rgba(68,66,74,.3)'},
+  {key:'consulta_agendada',label:'Consulta agendada', color:'var(--gold)', bg:'rgba(201,168,76,.1)'},
+  {key:'en_negociacion',  label:'En negociación',     color:'#a78bfa',     bg:'rgba(167,139,250,.1)'},
+  {key:'ganado',          label:'✓ Ganado',           color:'var(--green)', bg:'rgba(76,186,132,.12)'},
+  {key:'perdido',         label:'✗ Perdido',          color:'var(--red)',   bg:'rgba(201,76,76,.08)'},
 ];
 const LEAD_ORIGENES = ['Instagram','Facebook','Referido','Web','WhatsApp','LinkedIn','Otro'];
 const LEAD_PRIORIDADES = ['alta','media','baja'];
@@ -3334,6 +3326,13 @@ function rLeadsOrigenChart(){
   const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   const max = sorted[0]?.[1]||1;
   if(!sorted.length){ el.innerHTML=`<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:16px;">Sin datos</div>`; return; }
+  el.innerHTML = sorted.map(([ori,cnt])=>`
+    <div class="origen-bar">
+      <div class="origen-bar-label">${ori}</div>
+      <div class="origen-bar-track"><div class="origen-bar-fill" style="width:${Math.round(cnt/max*100)}%;"></div></div>
+      <div class="origen-bar-count">${cnt}</div>
+    </div>`).join('');
+}
 
 function rLeadsProximos(){
   const el = document.getElementById('leads-proximos');
@@ -3355,14 +3354,6 @@ function rLeadsProximos(){
       </div>
     </div>`;
   }).join('');
-}
-
-  el.innerHTML = sorted.map(([ori,cnt])=>`
-    <div class="origen-bar">
-      <div class="origen-bar-label">${ori}</div>
-      <div class="origen-bar-track"><div class="origen-bar-fill" style="width:${Math.round(cnt/max*100)}%;"></div></div>
-      <div class="origen-bar-count">${cnt}</div>
-    </div>`).join('');
 }
 
 /* ── PANEL LATERAL LEAD ── */
@@ -3410,6 +3401,21 @@ function openLeadPanel(leadId){
           ${LEAD_ESTADOS.map(e=>`<button class="filter-btn ${l.estado===e.key?'active':''}" style="${l.estado===e.key?'border-color:'+e.color+';color:'+e.color:''}" onclick="cambiarEstadoLead('${l.id}','${e.key}')">${e.label}</button>`).join('')}
         </div>
       </div>
+
+      <!-- Historial cronológico del lead -->
+      <div class="panel-section">
+        <div class="panel-section-title">Historial de contacto</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <textarea id="nota-lead-${l.id}" class="nota-input" placeholder="Nota, llamada, resultado de reunión..." style="flex:1;height:56px;"></textarea>
+          <button class="btn btn-primary" style="padding:8px 12px;font-size:12px;flex-shrink:0;" onclick="addNotaLead('${l.id}')">+</button>
+        </div>
+        <div id="notas-lead-${l.id}">${(l._notas||[]).length ? (l._notas||[]).map(n=>`
+          <div class="nota-item">
+            <div class="nota-text">${n.texto}</div>
+            <div class="nota-meta">${n.fecha}</div>
+          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin notas aún</div>'}</div>
+      </div>
+
       ${l.estado==='ganado'?`<div style="background:rgba(76,186,132,.08);border:1px solid rgba(76,186,132,.2);border-radius:var(--r);padding:14px;text-align:center;">
         <div style="font-size:13px;color:var(--green);margin-bottom:8px;">🎉 Lead ganado — listo para convertir a cliente</div>
         <button class="btn btn-green btn-full" onclick="convertirLeadCliente('${l.id}')">Convertir a cliente →</button>
@@ -3433,7 +3439,7 @@ async function cambiarEstadoLead(leadId, nuevoEstado){
   if(i<0) return;
   C.leads[i].estado=nuevoEstado;
   C.leads[i].ultimo_contacto=new Date().toISOString().split('T')[0];
-  if(!DEMO_MODE) await dbUpdate('leads',leadId,{estado:nuevoEstado,ultimo_contacto:C.leads[i].ultimo_contacto});
+  await dbUpdate('leads',leadId,{estado:nuevoEstado,ultimo_contacto:C.leads[i].ultimo_contacto}).catch(()=>{});
   if(nuevoEstado==='ganado'){
     showToast('🎉 Lead marcado como ganado. ¿Convertir a cliente?');
     setTimeout(()=>{ if(confirm('¿Convertir este lead en cliente?')) convertirLeadCliente(leadId); },400);
@@ -3441,7 +3447,8 @@ async function cambiarEstadoLead(leadId, nuevoEstado){
     showToast('✅ Estado actualizado: '+LEAD_ESTADOS.find(e=>e.key===nuevoEstado)?.label);
   }
   openLeadPanel(leadId);
-  rLeads();
+  safeRun(rLeads,'rLeads');
+  safeRun(rDash,'rDash');
   rBadges();
 }
 
@@ -3484,7 +3491,7 @@ function editLead(id){
 /* ════════════════════════════════════════
    APP NAVIGATION
 ════════════════════════════════════════ */
-const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Expedientes',recordatorios:'Recordatorios',equipo:'Equipo'};
+const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Expedientes',agenda:'Agenda',recordatorios:'Recordatorios',tareas:'Tareas',finanzas:'Finanzas',reportes:'Reportes',equipo:'Equipo'};
 function showPage(p, el){
   // Guard: equipo only for estudio plan
   if(p==='equipo' && CF && !isEstudioPlan()){ p='dashboard'; el=null; }
@@ -3505,6 +3512,7 @@ function showPage(p, el){
   const gs = document.getElementById('global-search');
   if(gs) gs.value = '';
   closeSearchResults();
+  if(p==='agenda') safeRun(rCalendario,'rCalendario');
   closePanelCliente(); closePanelExpediente(); closePanelMiembro();
   closeNotifPanel(); closePerfilMenu();
 }
@@ -3787,7 +3795,18 @@ const FORMS = {
     <div class="form-row"><div class="form-group"><label class="form-label">Urgencia</label><select id="ff-urgencia" class="form-input"><option value="activo"${(d.urgencia||'')==='activo'?' selected':''}>activo</option><option value="pendiente"${(d.urgencia||'')==='pendiente'?' selected':''}>pendiente</option><option value="urgente"${(d.urgencia||'')==='urgente'?' selected':''}>urgente</option></select></div><div class="form-group"><label class="form-label">Notificar</label><select id="ff-notif" class="form-input"><option>24hs antes</option><option>48hs antes</option><option>1 semana antes</option><option>No notificar</option></select></div></div>
     ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Asignado a</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:''}
     <div class="form-group"><label class="form-label">Notas</label><textarea id="ff-nota" class="form-input">${d.nota||''}</textarea></div>`}),
-  lead: d=>({title:d.id?'Editar prospecto':'Nuevo prospecto',body:`
+  factura: d=>({title:d.id?'Editar factura':'Nueva factura',body:`
+    <div class="form-group"><label class="form-label">Concepto / Descripción *</label><input id="ff-concepto" class="form-input" placeholder="Honorarios — caso García" value="${d.concepto||''}"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Cliente</label><select id="ff-cliente_id_fac" class="form-input"><option value="">Sin cliente</option>${cliOpts(d.cliente_id)}</select></div>
+      <div class="form-group"><label class="form-label">Expediente</label><select id="ff-expediente_id_fac" class="form-input"><option value="">Sin expediente</option>${expOpts(d.expediente_id)}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Monto (ARS) *</label><input id="ff-monto" class="form-input" type="number" placeholder="85000" value="${d.monto||''}"></div>
+      <div class="form-group"><label class="form-label">Vencimiento</label><input id="ff-vencimiento_fac" class="form-input" type="date" value="${d.vencimiento||''}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Estado</label><select id="ff-estado_fac" class="form-input"><option value="pendiente"${(d.estado||'')!=='cobrado'&&(d.estado||'')!=='vencido'?' selected':''}>Pendiente</option><option value="cobrado"${(d.estado||'')==='cobrado'?' selected':''}>Cobrado</option><option value="vencido"${(d.estado||'')==='vencido'?' selected':''}>Vencido</option></select></div>`}),
+    lead: d=>({title:d.id?'Editar prospecto':'Nuevo prospecto',body:`
     <div class="form-row">
       <div class="form-group"><label class="form-label">Nombre / Razón social *</label><input id="ff-nombre" class="form-input" placeholder="Juan García" value="${d.nombre||''}"></div>
       <div class="form-group"><label class="form-label">Tipo</label><select id="ff-tipo" class="form-input"><option${(d.tipo||'')==='Persona física'?' selected':''}>Persona física</option><option${(d.tipo||'')==='Empresa'?' selected':''}>Empresa</option></select></div>
@@ -3811,7 +3830,7 @@ const FORMS = {
     <div class="form-group"><label class="form-label">Notas</label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
     default: ()=>({title:'¿Qué querés crear?', noSave:true, body:`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      ${[['lead','Nuevo prospecto','Agregar al pipeline'],['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento judicial']].map(([t,l,s])=>`
+      ${[['lead','Nuevo prospecto','Agregar al pipeline'],['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento judicial'],['factura','Nueva factura','Registrar honorario o cobro']].map(([t,l,s])=>`
       <div onclick="closeModal();setTimeout(()=>openModal('${t}'),80)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:17px;cursor:pointer;transition:all .18s;" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
         <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);margin-bottom:3px;">${l}</div>
         <div style="font-size:11px;color:var(--text-muted);">${s}</div>
@@ -3819,8 +3838,9 @@ const FORMS = {
     </div>`})
 };
 
-const TBL  = {cliente:'clientes',expediente:'expedientes',recordatorio:'recordatorios',lead:'leads'};
+const TBL  = {cliente:'clientes',expediente:'expedientes',recordatorio:'recordatorios',lead:'leads',factura:'facturas'};
 const FV   = {
+  factura:      ()=>({concepto:gv('ff-concepto'),cliente_id:gv('ff-cliente_id_fac'),monto:parseFloat(gv('ff-monto'))||0,estado:gv('ff-estado_fac'),vencimiento:gv('ff-vencimiento_fac'),expediente_id:gv('ff-expediente_id_fac')||null}),
   lead:         ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),telefono:gv('ff-telefono'),email:gv('ff-email'),origen:gv('ff-origen'),estado:gv('ff-estado'),interes:gv('ff-interes'),prioridad:gv('ff-prioridad'),valor_estimado:parseFloat(gv('ff-valor_estimado'))||0,proximo_contacto:gv('ff-proximo_contacto'),notas:gv('ff-notas'),ultimo_contacto:new Date().toISOString().split('T')[0]}),
   cliente:      ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),email:gv('ff-email'),telefono:gv('ff-telefono'),dni:gv('ff-dni'),direccion:gv('ff-direccion'),notas:gv('ff-notas'),responsable_id:gv('ff-responsable_id')||null}),
   expediente:   ()=>({titulo:gv('ff-titulo'),cliente_id:gv('ff-cliente_id'),tipo:gv('ff-tipo'),juzgado:gv('ff-juzgado'),estado:gv('ff-estado'),descripcion:gv('ff-descripcion'),responsable_id:gv('ff-responsable_id')||null}),
@@ -3840,6 +3860,11 @@ function closeModal(e){ if(e&&e.target!==document.getElementById('overlay')) ret
 
 /* ── VALIDACIONES ── */
 const VALIDACIONES = {
+  factura: (v) => {
+    if(!v.concepto?.trim()) return 'El concepto es obligatorio.';
+    if(!v.monto||v.monto<=0) return 'Ingresá un monto válido.';
+    return null;
+  },
   lead: (v) => {
     if(!v.nombre?.trim()) return 'El nombre del prospecto es obligatorio.';
     if(!v.origen) return 'Seleccioná el origen del lead.';
@@ -3906,6 +3931,10 @@ async function delItem(tbl,id,label){
   try{
     await dbDelete(tbl,id);
     C[tbl]=C[tbl].filter(r=>r.id!==id);
+    // Clear dangling references when a client is deleted
+    if(tbl==='clientes'){
+      C.expedientes.forEach(e=>{ if(e.cliente_id===id) e.cliente_id=null; });
+    }
     renderAll();
     closePanelCliente(); closePanelExpediente(); closePanelMiembro();
     showToast('🗑 Eliminado correctamente');
@@ -3949,7 +3978,7 @@ function renderAdminOverview(){
   const suspend  = adminFirms.filter(f=>!f.activo).length;
   const plans    = {independiente:0,estudio:0,trial:0};
   adminFirms.filter(f=>f.activo).forEach(f=>{ if(plans[f.plan]!==undefined) plans[f.plan]++; });
-  const mrr = plans.independiente*59000 + plans.estudio*129000;
+  const mrr = plans.independiente*39000 + plans.estudio*59000;
   document.getElementById('adm-stats-overview').innerHTML=[
     {l:'Firmas activas',v:activas,s:'pagando'},
     {l:'MRR (ARS)',v:'$'+mrr.toLocaleString('es-AR'),s:'mensual recurrente'},
@@ -3996,8 +4025,8 @@ function renderAdminSubs(){
   const bp={independiente:0,estudio:0};
   adminFirms.filter(f=>f.activo).forEach(f=>{if(bp[f.plan]!==undefined)bp[f.plan]++;});
   document.getElementById('adm-plan-stats').innerHTML=[
-    {l:'Independiente ($59.000/mes)',n:bp.independiente,t:bp.independiente*59000},
-    {l:'Estudio ($129.000/mes)',n:bp.estudio,t:bp.estudio*129000},
+    {l:'Independiente ($39.000/mes)',n:bp.independiente,t:bp.independiente*39000},
+    {l:'Estudio ($59.000/mes)',n:bp.estudio,t:bp.estudio*59000},
   ].map(x=>`<div class="adm-stat"><div class="adm-stat-lbl">${x.l}</div><div class="adm-stat-val">${x.n}</div><div class="adm-stat-sub">= $${x.t.toLocaleString('es-AR')}/mes</div></div>`).join('');
   const firma_map={};
   adminFirms.forEach(f=>firma_map[f.id]=f);
@@ -4061,6 +4090,410 @@ function showAdminPage(p,el){
 }
 
 /* ════════════════════════════════════════
+   AGENDA / CALENDARIO
+════════════════════════════════════════ */
+let calYear  = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function showPage_agenda(){ rCalendario(); }
+
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} rCalendario(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} rCalendario(); }
+
+function getAllCalEvents(){
+  const events = [];
+  C.recordatorios.forEach(r=>{
+    if(r.fecha_limite) events.push({date:r.fecha_limite, label:r.titulo, type:r.urgencia, id:r.id, kind:'rec'});
+  });
+  C.facturas.forEach(f=>{
+    if(f.vencimiento && f.estado!=='cobrado') events.push({date:f.vencimiento, label:'Factura: '+f.concepto?.slice(0,25), type:'vence', id:f.id, kind:'fac'});
+  });
+  return events;
+}
+
+function rCalendario(){
+  const grid = document.getElementById('cal-grid');
+  const lbl  = document.getElementById('cal-month-label');
+  const upEl = document.getElementById('cal-upcoming');
+  const ovEl = document.getElementById('cal-overdue');
+  if(!grid) return;
+
+  lbl.textContent = MESES_ES[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const daysInPrev  = new Date(calYear, calMonth, 0).getDate();
+  const todayStr = new Date().toISOString().split('T')[0];
+  const events   = getAllCalEvents();
+
+  const getEventsForDate = (dateStr) => events.filter(e=>e.date===dateStr);
+
+  let cells = '';
+  // Prev month filler
+  for(let i=firstDay-1; i>=0; i--){
+    const d = String(daysInPrev-i).padStart(2,'0');
+    const m = String(calMonth===0?12:calMonth).padStart(2,'0');
+    const y = calMonth===0?calYear-1:calYear;
+    cells += `<div class="cal-day other-month"><div class="cal-day-num">${daysInPrev-i}</div></div>`;
+  }
+  // Current month
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr===todayStr;
+    const dayEvents = getEventsForDate(dateStr);
+    const evHtml = dayEvents.slice(0,3).map(e=>`<div class="cal-event ${e.type}" onclick="event.stopPropagation();calEventClick('${e.id}','${e.kind}')" title="${e.label}">${e.label}</div>`).join('');
+    const more = dayEvents.length>3?`<div style="font-size:8.5px;color:var(--text-muted);margin-top:1px;">+${dayEvents.length-3} más</div>`:'';
+    cells += `<div class="cal-day${isToday?' today':''}" onclick="calDayClick('${dateStr}')"><div class="cal-day-num">${d}</div>${evHtml}${more}</div>`;
+  }
+  // Fill remaining
+  const totalCells = Math.ceil((firstDay + daysInMonth)/7)*7;
+  let nextDay=1;
+  for(let i=firstDay+daysInMonth; i<totalCells; i++){
+    cells += `<div class="cal-day other-month"><div class="cal-day-num">${nextDay++}</div></div>`;
+  }
+  grid.innerHTML = cells;
+
+  // Upcoming 7 days
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const en7 = new Date(hoy); en7.setDate(en7.getDate()+7);
+  const upcoming = events.filter(e=>{ const d=new Date(e.date); return d>=hoy && d<=en7; }).sort((a,b)=>a.date.localeCompare(b.date));
+  if(upEl) upEl.innerHTML = upcoming.length ? upcoming.map(e=>`
+    <div class="tbl-row" style="grid-template-columns:60px 1fr;gap:10px;padding:10px 16px;cursor:pointer;" onclick="calEventClick('${e.id}','${e.kind}')">
+      <div style="font-size:10px;font-family:'DM Mono',monospace;color:${e.type==='urgente'?'var(--red)':e.type==='vence'?'var(--green)':'var(--gold)'};">${e.date.slice(5)}</div>
+      <div style="font-size:12.5px;color:var(--text);">${e.label}</div>
+    </div>`).join('') : `<div class="empty" style="padding:20px;"><p>Sin eventos próximos</p></div>`;
+
+  // Overdue
+  const overdue = events.filter(e=>{ const d=new Date(e.date); d.setHours(23,59,59); return d<hoy; }).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+  if(ovEl) ovEl.innerHTML = overdue.length ? overdue.map(e=>`
+    <div class="tbl-row" style="grid-template-columns:60px 1fr;gap:10px;padding:10px 16px;cursor:pointer;" onclick="calEventClick('${e.id}','${e.kind}')">
+      <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--red);">${e.date.slice(5)}</div>
+      <div style="font-size:12.5px;color:var(--text);">${e.label}</div>
+    </div>`).join('') : `<div class="empty" style="padding:20px;"><p>Ningún evento vencido</p></div>`;
+}
+
+function calDayClick(dateStr){
+  // Open new recordatorio pre-filled with that date
+  openModal('recordatorio', {fecha_limite: dateStr});
+}
+
+function calEventClick(id, kind){
+  if(kind==='rec'){
+    showPage('recordatorios',null);
+  } else if(kind==='fac'){
+    showPage('finanzas',null);
+  }
+}
+
+/* ════════════════════════════════════════
+   TAREAS
+════════════════════════════════════════ */
+function rTareas(){
+  const el = document.getElementById('task-list');
+  if(!el) return;
+  const fb = document.getElementById('task-filter-bar');
+  if(fb) fb.innerHTML = ['pendientes','completadas','todas'].map(f=>`<button class="filter-btn ${filtroTareas===f?'active':''}" onclick="setFiltroTareas('${f}')">${f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('');
+
+  let lista = [...tareasStore];
+  if(filtroTareas==='pendientes') lista = lista.filter(t=>!t.done);
+  else if(filtroTareas==='completadas') lista = lista.filter(t=>t.done);
+  lista.sort((a,b)=>{
+    const p={urgente:0,normal:1,baja:2};
+    if(a.done!==b.done) return a.done?1:-1;
+    return (p[a.prioridad]||1)-(p[b.prioridad]||1);
+  });
+
+  const hoy = today();
+  el.innerHTML = lista.length ? lista.map(t=>{
+    const asig  = t.asignado_a ? membName(t.asignado_a) : '';
+    const exp   = t.expediente_id ? expTitle(t.expediente_id) : '';
+    const venc  = t.fecha_limite;
+    const late  = venc && venc < hoy && !t.done;
+    return `<div class="task-item ${t.done?'done':''}">
+      <div class="task-check ${t.done?'checked':''}" onclick="toggleTareaStore('${t.id}')">
+        ${t.done?'✓':''}
+      </div>
+      <div class="task-body">
+        <div class="task-title">${t.titulo}</div>
+        <div class="task-meta">
+          ${t.prioridad==='urgente'?'<span class="task-tag urgente">🔴 urgente</span>':''}
+          ${asig?`<span class="task-tag asignado">👤 ${asig}</span>`:''}
+          ${exp?`<span class="task-tag">▤ ${exp.slice(0,22)}</span>`:''}
+          ${venc?`<span class="task-tag" style="${late?'color:var(--red);border-color:rgba(201,76,76,.3);':''}">📅 ${venc}</span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;flex-shrink:0;">
+        <button class="tbl-btn" onclick="editTarea('${t.id}')">✏️</button>
+        <button class="tbl-btn del" onclick="deleteTarea('${t.id}')">✕</button>
+      </div>
+    </div>`;}).join('')
+  : `<div class="empty"><div class="ei">✅</div><p>${filtroTareas==='pendientes'?'¡Sin tareas pendientes!':'Sin tareas.'}</p></div>`;
+
+  // update badge
+  const pending = tareasStore.filter(t=>!t.done).length;
+  const badge = document.getElementById('task-badge');
+  if(badge){ badge.textContent=pending; badge.style.display=pending>0?'':'none'; }
+}
+
+function setFiltroTareas(f){ filtroTareas=f; rTareas(); }
+
+function toggleTareaStore(id){
+  const t=tareasStore.find(x=>x.id===id);
+  if(t){ t.done=!t.done; rTareas(); }
+}
+
+function deleteTarea(id){
+  const t=tareasStore.find(x=>x.id===id);
+  if(!confirm(`¿Eliminar "${t?.titulo||'esta tarea'}"?`)) return;
+  tareasStore=tareasStore.filter(x=>x.id!==id);
+  rTareas();
+}
+
+function openNuevaTarea(){
+  document.getElementById('m-title').textContent='Nueva tarea';
+  document.getElementById('m-body').innerHTML=`
+    <div class="form-group"><label class="form-label">Título *</label><input id="nt-titulo" class="form-input" placeholder="Ej: Revisar escrito de demanda"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prioridad</label>
+        <select id="nt-prioridad" class="form-input"><option value="normal">Normal</option><option value="urgente">🔴 Urgente</option><option value="baja">Baja</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Fecha límite</label><input id="nt-fecha" class="form-input" type="date"></div>
+    </div>
+    ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Asignar a</label><select id="nt-asignado" class="form-input"><option value="">Sin asignar (mía)</option>${miembroOpts('')}</select></div>`:''}
+    <div class="form-group"><label class="form-label">Expediente vinculado</label><select id="nt-exp" class="form-input"><option value="">Ninguno</option>${expOpts('')}</select></div>`;
+  document.getElementById('m-foot').style.display='flex';
+  document.getElementById('m-save').textContent='Crear tarea';
+  document.getElementById('m-save').onclick = saveTarea;
+  document.getElementById('overlay').classList.add('open');
+}
+
+function saveTarea(){
+  const titulo = document.getElementById('nt-titulo')?.value.trim();
+  if(!titulo){ showToast('⚠ Ingresá un título'); return; }
+  tareasStore.unshift({
+    id:'t'+Date.now(), titulo,
+    prioridad: document.getElementById('nt-prioridad')?.value||'normal',
+    fecha_limite: document.getElementById('nt-fecha')?.value||null,
+    asignado_a: document.getElementById('nt-asignado')?.value||null,
+    expediente_id: document.getElementById('nt-exp')?.value||null,
+    done:false, created_at:new Date().toISOString()
+  });
+  closeModal(); rTareas();
+  showToast('✅ Tarea creada');
+  document.getElementById('m-save').onclick=saveModal;
+}
+
+function editTarea(id){
+  const t=tareasStore.find(x=>x.id===id);
+  if(!t) return;
+  document.getElementById('m-title').textContent='Editar tarea';
+  document.getElementById('m-body').innerHTML=`
+    <div class="form-group"><label class="form-label">Título *</label><input id="nt-titulo" class="form-input" value="${t.titulo}"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prioridad</label>
+        <select id="nt-prioridad" class="form-input"><option value="normal"${t.prioridad==='normal'?' selected':''}>Normal</option><option value="urgente"${t.prioridad==='urgente'?' selected':''}>🔴 Urgente</option><option value="baja"${t.prioridad==='baja'?' selected':''}>Baja</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Fecha límite</label><input id="nt-fecha" class="form-input" type="date" value="${t.fecha_limite||''}"></div>
+    </div>
+    ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Asignar a</label><select id="nt-asignado" class="form-input"><option value="">Sin asignar</option>${miembroOpts(t.asignado_a||'')}</select></div>`:''}
+    <div class="form-group"><label class="form-label">Expediente vinculado</label><select id="nt-exp" class="form-input"><option value="">Ninguno</option>${expOpts(t.expediente_id||'')}</select></div>`;
+  document.getElementById('m-foot').style.display='flex';
+  document.getElementById('m-save').textContent='Guardar';
+  document.getElementById('m-save').onclick = ()=>{
+    t.titulo = document.getElementById('nt-titulo')?.value.trim()||t.titulo;
+    t.prioridad = document.getElementById('nt-prioridad')?.value||t.prioridad;
+    t.fecha_limite = document.getElementById('nt-fecha')?.value||null;
+    t.asignado_a = document.getElementById('nt-asignado')?.value||null;
+    t.expediente_id = document.getElementById('nt-exp')?.value||null;
+    closeModal(); rTareas(); showToast('✅ Tarea actualizada');
+    document.getElementById('m-save').onclick=saveModal;
+  };
+  document.getElementById('overlay').classList.add('open');
+}
+
+/* ════════════════════════════════════════
+   FINANZAS
+════════════════════════════════════════ */
+let filtroFinEstado = 'todos';
+
+function rFinanzas(){
+  rFinKPIs();
+  rFinFilterBar();
+  rFacList();
+}
+
+function rFinKPIs(){
+  const el = document.getElementById('fin-kpis');
+  if(!el) return;
+  const total    = C.facturas.reduce((s,f)=>s+(f.monto||0),0);
+  const cobrado  = C.facturas.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
+  const pendiente= C.facturas.filter(f=>f.estado==='pendiente').reduce((s,f)=>s+(f.monto||0),0);
+  const vencido  = C.facturas.filter(f=>f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
+  el.innerHTML=[
+    {l:'Total facturado',v:'$'+total.toLocaleString('es-AR'),cls:'gold',icon:'💰'},
+    {l:'Cobrado',v:'$'+cobrado.toLocaleString('es-AR'),cls:'',icon:'✅'},
+    {l:'Pendiente de cobro',v:'$'+pendiente.toLocaleString('es-AR'),cls:'blue-c',icon:'⏳'},
+    {l:'Vencido sin cobrar',v:'$'+vencido.toLocaleString('es-AR'),cls:'red-c',icon:'⚠'},
+  ].map(x=>`<div class="stat ${x.cls}" style="cursor:default;"><div class="stat-lbl">${x.l}</div><div class="stat-val" style="font-size:24px;">${x.v}</div><div class="stat-icon">${x.icon}</div></div>`).join('');
+}
+
+function rFinFilterBar(){
+  const fb = document.getElementById('fin-filter-bar');
+  if(!fb) return;
+  fb.innerHTML=['todos','pendiente','cobrado','vencido'].map(f=>`<button class="filter-btn ${filtroFinEstado===f?'active':''}" onclick="setFiltroFin('${f}')">${f==='todos'?'Todas':f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('');
+}
+
+function setFiltroFin(f){ filtroFinEstado=f; rFinFilterBar(); rFacList(); }
+
+function rFacList(){
+  const el = document.getElementById('fac-list');
+  if(!el) return;
+  let lista = [...C.facturas];
+  if(filtroFinEstado!=='todos') lista=lista.filter(f=>f.estado===filtroFinEstado);
+  lista.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
+  if(!lista.length){ el.innerHTML=`<div class="empty"><div class="ei">💰</div><p>Sin facturas${filtroFinEstado!=='todos'?' con estado "'+filtroFinEstado+'"':''}.</p></div>`; return; }
+  el.innerHTML=lista.map(f=>`
+    <div class="fac-row">
+      <div class="cm" style="font-size:10.5px;">${f.numero||'—'}</div>
+      <div><div class="cp" style="font-size:13px;">${f.concepto||'—'}</div><div class="cs">${cliName(f.cliente_id)}</div></div>
+      <div class="cm">${cliName(f.cliente_id)}</div>
+      <div class="monto-badge ${f.estado||'pendiente'}">$${(f.monto||0).toLocaleString('es-AR')}</div>
+      <div class="cm">${f.vencimiento||'—'}</div>
+      <div style="display:flex;gap:5px;align-items:center;">
+        ${stBadge(f.estado||'pendiente')}
+        <button class="tbl-btn" onclick="editItem('factura','${f.id}')">✏️</button>
+        <button class="tbl-btn del" onclick="delItem('facturas','${f.id}','factura')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function exportarFacturasCSV(){
+  const headers = ['Número','Concepto','Cliente','Monto','Vencimiento','Estado'];
+  const rows = C.facturas.map(f=>[f.numero||'',f.concepto||'',cliName(f.cliente_id),f.monto||0,f.vencimiento||'',f.estado||''].join(','));
+  const csv  = [headers.join(','),...rows].join('\n');
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lexora-facturas.csv'; a.click();
+  showToast('✅ CSV exportado');
+}
+
+/* ════════════════════════════════════════
+   REPORTES
+════════════════════════════════════════ */
+function rReportes(){
+  const el = document.getElementById('report-grid');
+  if(!el) return;
+
+  // 1. Expedientes por tipo
+  const tipoCount={};
+  C.expedientes.forEach(e=>{ tipoCount[e.tipo||'Sin tipo']=(tipoCount[e.tipo||'Sin tipo']||0)+1; });
+  const tipoMax=Math.max(...Object.values(tipoCount),1);
+
+  // 2. Expedientes por estado
+  const estados={activo:0,pendiente:0,cerrado:0};
+  C.expedientes.forEach(e=>{ if(estados[e.estado]!==undefined) estados[e.estado]++; });
+
+  // 3. Leads por origen
+  const origenCount={};
+  C.leads.forEach(l=>{ origenCount[l.origen||'Otro']=(origenCount[l.origen||'Otro']||0)+1; });
+  const origenMax=Math.max(...Object.values(origenCount),1);
+
+  // 4. Productividad por abogado (expedientes asignados)
+  const prodMap={};
+  C.expedientes.forEach(e=>{
+    if(e.responsable_id){ const n=membName(e.responsable_id)||'—'; prodMap[n]=(prodMap[n]||0)+1; }
+  });
+  const prodMax=Math.max(...Object.values(prodMap),1);
+
+  // 5. Finanzas resumen
+  const facCobrado  = C.facturas.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
+  const facPendiente= C.facturas.filter(f=>f.estado==='pendiente').reduce((s,f)=>s+(f.monto||0),0);
+  const facVencido  = C.facturas.filter(f=>f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
+  const facTotal    = facCobrado+facPendiente+facVencido||1;
+
+  // 6. Conversión leads
+  const totalLeads  = C.leads.length;
+  const ganados     = C.leads.filter(l=>l.estado==='ganado').length;
+  const perdidos    = C.leads.filter(l=>l.estado==='perdido').length;
+  const enPipeline  = totalLeads-ganados-perdidos;
+
+  const barRows = (data, max, colorFn) => Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
+    <div class="bar-row">
+      <div class="bar-label" title="${k}">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%;background:${colorFn(k)};"></div></div>
+      <div class="bar-val">${v}</div>
+    </div>`).join('');
+
+  el.innerHTML=`
+    <div class="report-card">
+      <div class="report-title">▤ Expedientes por tipo</div>
+      ${Object.keys(tipoCount).length ? barRows(tipoCount,tipoMax,()=>'var(--blue)') : '<div style="color:var(--text-muted);font-size:12px;">Sin expedientes</div>'}
+    </div>
+    <div class="report-card">
+      <div class="report-title">▤ Expedientes por estado</div>
+      ${barRows(estados,Math.max(...Object.values(estados),1),k=>k==='activo'?'var(--green)':k==='cerrado'?'var(--text-muted)':'var(--gold)')}
+    </div>
+    <div class="report-card">
+      <div class="report-title">◈ Leads por origen</div>
+      ${Object.keys(origenCount).length ? barRows(origenCount,origenMax,()=>'#a78bfa') : '<div style="color:var(--text-muted);font-size:12px;">Sin prospectos</div>'}
+    </div>
+    ${isEstudioPlan()&&Object.keys(prodMap).length?`
+    <div class="report-card">
+      <div class="report-title">👤 Expedientes por abogado</div>
+      ${barRows(prodMap,prodMax,()=>'var(--blue)')}
+    </div>`:''}
+    <div class="report-card">
+      <div class="report-title">💰 Facturación</div>
+      ${barRows({'Cobrado':facCobrado,'Pendiente':facPendiente,'Vencido':facVencido},facTotal,k=>k==='Cobrado'?'var(--green)':k==='Vencido'?'var(--red)':'var(--gold)')}
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">Total facturado: <strong style="color:var(--text);">$${(facCobrado+facPendiente+facVencido).toLocaleString('es-AR')}</strong></div>
+    </div>
+    <div class="report-card">
+      <div class="report-title">◈ Pipeline de prospectos</div>
+      ${totalLeads?barRows({'Ganados':ganados,'En pipeline':enPipeline,'Perdidos':perdidos},Math.max(ganados,enPipeline,perdidos,1),k=>k==='Ganados'?'var(--green)':k==='Perdidos'?'var(--red)':'#a78bfa'):
+      '<div style="color:var(--text-muted);font-size:12px;">Sin prospectos</div>'}
+      ${totalLeads?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">Conversión: <strong style="color:var(--green);">${Math.round(ganados/(totalLeads||1)*100)}%</strong></div>`:''}
+    </div>`;
+}
+
+function exportarReporteCSV(){
+  const lines=['REPORTE LEXORA','Fecha: '+new Date().toLocaleDateString('es-AR'),''];
+  lines.push('EXPEDIENTES'); lines.push('Código,Título,Cliente,Tipo,Estado');
+  C.expedientes.forEach(e=>lines.push([e.codigo_caso,e.titulo,cliName(e.cliente_id),e.tipo,e.estado].join(',')));
+  lines.push('');
+  lines.push('CLIENTES'); lines.push('Código,Nombre,Tipo,Email,Teléfono');
+  C.clientes.forEach(c=>lines.push([c.codigo_cliente,c.nombre,c.tipo,c.email,c.telefono].join(',')));
+  lines.push('');
+  lines.push('FACTURAS'); lines.push('Número,Concepto,Cliente,Monto,Estado');
+  C.facturas.forEach(f=>lines.push([f.numero,f.concepto,cliName(f.cliente_id),f.monto,f.estado].join(',')));
+  lines.push('');
+  lines.push('PROSPECTOS'); lines.push('Nombre,Tipo,Origen,Estado,Valor estimado');
+  C.leads.forEach(l=>lines.push([l.nombre,l.tipo,l.origen,l.estado,l.valor_estimado||0].join(',')));
+
+  const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lexora-reporte.csv'; a.click();
+  showToast('✅ Reporte exportado');
+}
+
+/* ════════════════════════════════════════
+   HISTORIAL DE ACTIVIDAD mejorado
+════════════════════════════════════════ */
+function rActividad(){
+  const el = document.getElementById('actividad-list');
+  if(!el) return;
+  const iconos = { firma:'🏛️', cliente:'◎', expediente:'▤', recordatorio:'◷', lead:'◈', nota:'📝', factura:'💰', tarea:'✅', general:'•' };
+  el.innerHTML = actividadLog.length ? actividadLog.map(a=>`
+    <div class="actividad-item">
+      <div class="actividad-dot" style="background:${a.tipo==='expediente'?'var(--blue)':a.tipo==='lead'?'#a78bfa':a.tipo==='factura'?'var(--green)':'var(--border2)'};"></div>
+      <div>
+        <div class="actividad-text">${iconos[a.tipo]||'•'} ${a.texto}</div>
+        <div class="actividad-meta">${a.meta}</div>
+      </div>
+    </div>`).join('')
+  : `<div class="empty"><p>Sin actividad registrada</p></div>`;
+}
+
+/* ════════════════════════════════════════
    TOAST
 ════════════════════════════════════════ */
 let tt;
@@ -4076,7 +4509,17 @@ function showToast(msg){
 ════════════════════════════════════════ */
 try { renderSteps(); } catch(e) { console.error('renderSteps error:', e); }
 
-// Ready — users log in with their credentials
+// Session restore on page load
+_sb.auth.onAuthStateChange(async (event, session) => {
+  if(event === 'SIGNED_IN' && session && !CU){
+    await loadUserSession(session.user);
+  }
+  if(event === 'SIGNED_OUT'){ goTo('splash'); }
+});
+// Check for existing session immediately
+_sb.auth.getSession().then(({ data: { session } }) => {
+  if(session && !CU) loadUserSession(session.user);
+});
 </script>
 
 <!--
@@ -4271,7 +4714,7 @@ serve(async (req) => {
   const { data: { user } } = await _sb.auth.getUser(auth?.replace("Bearer ",""));
   if(!user) return new Response("Unauthorized", { status: 401 });
 
-  const price = PLAN_PRICES[plan] || 89000;
+  const price = PLAN_PRICES[plan] || 39000;
   const body  = {
     items: [{ title: PLAN_NAMES[plan]||"Lexora", unit_price: price, quantity: 1, currency_id: "ARS" }],
     payer: { email: user.email },

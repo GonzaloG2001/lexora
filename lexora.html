@@ -781,7 +781,7 @@ textarea.form-input{height:74px;resize:none;}
         <button class="btn btn-primary btn-full" onclick="goTo('register')">Empezar con equipo →</button>
       </div>
     </div>
-    <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:18px;">1 mes de prueba gratis · Sin tarjeta · Cancelás cuando quieras</p>
+    <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:18px;">🎉 Beta gratuita — acceso completo sin límites · Sin tarjeta requerida</p>
   </div>
   <div class="splash-footer-full">
     <div class="footer-grid">
@@ -847,125 +847,59 @@ textarea.form-input{height:74px;resize:none;}
   <div class="reg-box">
     <div class="reg-header">
       <div class="reg-logo">Lexora</div>
-      <div class="reg-subtitle">Crear nueva cuenta</div>
+      <div class="reg-subtitle">Crear nueva cuenta · Beta gratuita</div>
     </div>
-    <div class="steps-indicator" id="steps-ind"></div>
     <div class="reg-card">
-      <!-- STEP 1: Tipo -->
-      <div id="reg-step-1" class="reg-step active">
-        <div class="reg-step-title">¿Cómo vas a usar Lexora?</div>
-        <div class="reg-step-sub">Elegí el plan que se adapta a tu forma de trabajar.</div>
-        <div id="r-err-1" class="err-box"></div>
-        <div class="type-grid" style="grid-template-columns:1fr 1fr;">
-          <div class="type-card" id="type-ind" onclick="selectType('independiente')" style="position:relative;">
-            <div class="type-card-icon">🧍</div>
-            <div class="type-card-label">Independiente</div>
-            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--gold);margin:8px 0;">$39.000<span style="font-size:11px;color:var(--text-muted)">/mes</span></div>
-            <div class="type-card-desc">Abogado solo. Todo es personal. Sin funciones de equipo.</div>
-            <ul style="list-style:none;margin-top:10px;text-align:left;">
-              <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Clientes y expedientes ilimitados</li>
-              <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Prospectos y recordatorios</li>
-              <li style="font-size:11px;color:var(--text-muted);padding:3px 0;">✗ Equipo y roles</li>
-            </ul>
-          </div>
-          <div class="type-card" id="type-nueva" onclick="selectType('estudio')" style="position:relative;">
-            <div style="position:absolute;top:10px;right:10px;font-size:9px;font-family:'DM Mono',monospace;background:var(--gold);color:var(--bg);padding:2px 7px;border-radius:20px;letter-spacing:.1em;">POPULAR</div>
-            <div class="type-card-icon">🏢</div>
-            <div class="type-card-label">Estudio</div>
-            <div style="font-size:18px;font-family:'Cormorant Garamond',serif;color:var(--gold);margin:8px 0;">$59.000<span style="font-size:11px;color:var(--text-muted)">/mes</span></div>
-            <div class="type-card-desc">Firma con equipo. Roles, permisos y asignaciones.</div>
-            <ul style="list-style:none;margin-top:10px;text-align:left;">
-              <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Todo lo del Independiente</li>
-              <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Equipo ilimitado y roles</li>
-              <li style="font-size:11px;color:var(--text-dim);padding:3px 0;">✓ Asignación de casos y leads</li>
-            </ul>
-          </div>
-        </div>
-        <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
-          <div id="type-unirse-toggle" style="text-align:center;">
-            <span style="font-size:12px;color:var(--text-muted);">¿Tenés un código de invitación?</span>
-            <a style="font-size:12px;color:var(--gold-dim);cursor:pointer;margin-left:8px;text-decoration:underline;" onclick="selectType('unirse');document.getElementById('tipo-unirse-form').style.display='block';this.parentElement.style.display='none';">Unirme a una firma →</a>
-          </div>
-          <div id="tipo-unirse-form" style="display:none;">
-            <div class="form-group" style="margin-top:10px;">
-              <label class="form-label">Código de invitación</label>
-              <input id="r-invite-code-step1" class="form-input" placeholder="ABC123" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;" maxlength="6" oninput="this.value=this.value.toUpperCase()">
-            </div>
-          </div>
-        </div>
-        <div class="reg-nav" style="justify-content:flex-end;margin-top:16px;"><button class="btn btn-primary" onclick="regNextStep()">Siguiente →</button></div>
-      </div>
+      <div id="reg-err" class="err-box" style="margin-bottom:14px;"></div>
 
-      <!-- STEP 2: Datos personales -->
-      <div id="reg-step-2" class="reg-step">
-        <div class="reg-step-title">Tus datos personales</div>
-        <div class="reg-step-sub">Esta información identificará tu cuenta.</div>
-        <div id="r-err-2" class="err-box"></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Nombre *</label><input id="r-nombre" class="form-input" placeholder="Juan"></div>
-          <div class="form-group"><label class="form-label">Apellido *</label><input id="r-apellido" class="form-input" placeholder="García"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Email *</label><input id="r-email" class="form-input" type="email" placeholder="juan@estudio.com"></div>
-          <div class="form-group"><label class="form-label">Teléfono</label><input id="r-telefono" class="form-input" placeholder="011-xxxx-xxxx"></div>
-        </div>
-        <div class="form-group"><label class="form-label">Contraseña * (mín. 8 caracteres)</label><input id="r-pass" class="form-input" type="password" placeholder="••••••••"></div>
-        <div class="reg-nav">
-          <button class="btn btn-ghost" onclick="regPrevStep()">← Atrás</button>
-          <button class="btn btn-primary" onclick="regNextStep()">Siguiente →</button>
+      <!-- Plan -->
+      <div style="margin-bottom:18px;">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:10px;">Plan</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div id="rp-ind" class="type-card selected" onclick="regSelPlan('independiente')" style="padding:14px;cursor:pointer;">
+            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🧍 Independiente</div>
+            <div style="font-size:11px;color:var(--text-muted);">Abogado solo</div>
+          </div>
+          <div id="rp-est" class="type-card" onclick="regSelPlan('estudio')" style="padding:14px;cursor:pointer;position:relative;">
+            <div style="position:absolute;top:8px;right:8px;font-size:8px;font-family:'DM Mono',monospace;background:var(--gold);color:var(--bg);padding:1px 5px;border-radius:10px;">POPULAR</div>
+            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🏢 Estudio</div>
+            <div style="font-size:11px;color:var(--text-muted);">Con equipo y roles</div>
+          </div>
         </div>
       </div>
 
-      <!-- STEP 3: Datos del estudio/firma -->
-      <div id="reg-step-3" class="reg-step">
-        <div class="reg-step-title" id="step3-title">Datos de tu estudio</div>
-        <div class="reg-step-sub" id="step3-sub">Nombre con el que los clientes te conocen.</div>
-        <div id="r-err-3" class="err-box"></div>
-        <!-- Independiente / Nueva firma -->
-        <div id="step3-firma-form">
-          <div class="form-group"><label class="form-label" id="firma-name-label">Nombre del estudio *</label><input id="r-firma-nombre" class="form-input" placeholder="Estudio Jurídico García"></div>
-          <div class="form-group"><label class="form-label">País / Provincia</label>
-            <select id="r-provincia" class="form-input">
-              <option>Buenos Aires</option><option>Santa Cruz</option><option>Córdoba</option><option>Rosario</option><option>Mendoza</option><option>Tucumán</option><option>Otro</option>
-            </select>
-          </div>
-          <!-- Only for nueva_firma: invite code preview -->
-          <div id="step3-code-preview" style="display:none;">
-            <div class="invite-code-display">
-              <div class="invite-code-label">Código de invitación de tu firma</div>
-              <div class="invite-code-value" id="preview-code">------</div>
-              <div class="invite-code-hint">Compartí este código con tus colegas para que se unan a tu firma</div>
-            </div>
-          </div>
-        </div>
-        <!-- Unirse a firma -->
-        <div id="step3-invite-form" style="display:none;">
-          <div class="form-group"><label class="form-label">Código de invitación *</label><input id="r-invite-code" class="form-input" placeholder="ABC123" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;" maxlength="6" oninput="this.value=this.value.toUpperCase()"></div>
-          <div class="form-hint">Pedile a tu administrador el código de 6 caracteres de tu firma.</div>
-        </div>
-        <div class="reg-nav">
-          <button class="btn btn-ghost" onclick="regPrevStep()">← Atrás</button>
-          <button class="btn btn-primary" onclick="regNextStep()">Siguiente →</button>
+      <!-- Datos personales -->
+      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:10px;">Tus datos</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nombre *</label><input id="rf-nombre" class="form-input" placeholder="Juan" autocomplete="given-name"></div>
+        <div class="form-group"><label class="form-label">Apellido *</label><input id="rf-apellido" class="form-input" placeholder="García" autocomplete="family-name"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email *</label><input id="rf-email" class="form-input" type="email" placeholder="juan@estudio.com" autocomplete="email"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Contraseña * (mín. 8 caracteres)</label><input id="rf-pass" class="form-input" type="password" placeholder="••••••••" autocomplete="new-password"></div>
+        <div class="form-group"><label class="form-label">Teléfono</label><input id="rf-tel" class="form-input" placeholder="011-xxxx-xxxx" autocomplete="tel"></div>
+      </div>
+
+      <!-- Estudio -->
+      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin:14px 0 10px;">Tu estudio</div>
+      <div class="form-group"><label class="form-label">Nombre del estudio *</label><input id="rf-firma" class="form-input" placeholder="Estudio Jurídico García"></div>
+
+      <!-- Unirse a firma -->
+      <div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border);">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;color:var(--text-dim);">
+          <input type="checkbox" id="rf-unirse-check" onchange="regToggleUnirse(this.checked)" style="width:15px;height:15px;accent-color:var(--gold);">
+          Tengo un código de invitación (unirme a una firma existente)
+        </label>
+        <div id="rf-unirse-box" style="display:none;margin-top:10px;">
+          <input id="rf-codigo" class="form-input" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;" oninput="this.value=this.value.toUpperCase()">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-align:center;">El administrador de la firma te da este código de 6 letras</div>
         </div>
       </div>
 
-      <!-- STEP 4: Confirmar -->
-      <div id="reg-step-4" class="reg-step">
-        <div class="reg-step-title">Confirmar cuenta</div>
-        <div class="reg-step-sub">Revisá los datos antes de crear tu cuenta.</div>
-        <div id="r-err-4" class="err-box"></div>
-        <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:18px;margin-bottom:16px;" id="reg-summary">
-          <!-- Populated by JS -->
-        </div>
-        <div style="background:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:12px 16px;font-size:12.5px;color:var(--gold-dim);text-align:center;margin-bottom:16px;">
-          🎉 Primer mes gratis · Sin tarjeta de crédito
-        </div>
-        <div id="r-err-final" class="err-box" style="margin-top:14px;"></div>
-        <div class="reg-nav">
-          <button class="btn btn-ghost" onclick="regPrevStep()">← Atrás</button>
-          <button id="reg-submit-btn" class="btn btn-primary" onclick="submitRegistration()">Crear cuenta →</button>
-        </div>
-      </div>
+      <button id="rf-submit" class="btn btn-primary btn-full" style="margin-top:20px;padding:14px;font-size:14px;" onclick="doRegistro()">
+        Crear cuenta gratis →
+      </button>
+      <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:10px;">🎉 Beta gratuita · Sin tarjeta · Sin límites</p>
     </div>
     <div class="auth-footer" style="margin-top:14px;">¿Ya tenés cuenta? <a onclick="goTo('login')">Iniciá sesión</a></div>
   </div>
@@ -974,44 +908,12 @@ textarea.form-input{height:74px;resize:none;}
 <!-- ══════════════════════════════════════════════
      PENDING PAYMENT
 ══════════════════════════════════════════════ -->
-<div id="screen-pending" class="screen">
-  <div class="pending-box">
-    <span class="pending-icon">⏳</span>
-    <div class="pending-title">¡Cuenta creada!</div>
-    <div class="pending-sub">Tu estudio fue registrado exitosamente. Para comenzar a usar Lexora, completá el pago de tu plan.</div>
-    <div class="pending-plan-box">
-      <div class="pending-plan-row"><span class="pending-plan-key">Plan seleccionado</span><span class="pending-plan-val" id="pnd-plan">—</span></div>
-      <div class="pending-plan-row"><span class="pending-plan-key">Monto</span><span class="pending-plan-val" id="pnd-monto">—</span></div>
-      <div class="pending-plan-row"><span class="pending-plan-key">Período de prueba</span><span class="pending-plan-val" style="color:var(--green);">1 mes gratis</span></div>
-    </div>
-    <div class="pending-actions">
-      <button class="mp-btn" id="mp-pay-btn" onclick="initMercadoPago()">
-        <span class="mp-logo">mercadopago</span> Pagar con MercadoPago
-      </button>
-      <button class="btn btn-ghost" style="font-size:12px;" onclick="checkPaymentStatus()">Ya pagué — verificar estado</button>
-      <button class="btn btn-ghost" style="font-size:11px;" onclick="doLogout()">Cerrar sesión</button>
-    </div>
-    <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:16px;">Tu información está segura. El pago es procesado por MercadoPago Argentina.</p>
-  </div>
-</div>
+<!-- payment screens removed in beta -->
 
 <!-- ══════════════════════════════════════════════
      EXPIRED
 ══════════════════════════════════════════════ -->
-<div id="screen-expired" class="screen">
-  <div class="pending-box">
-    <span class="pending-icon">🔒</span>
-    <div class="pending-title">Suscripción vencida</div>
-    <div class="pending-sub">Tu suscripción venció el <strong id="exp-date">—</strong>. Renovala para recuperar el acceso a todos tus datos.</div>
-    <div class="pending-actions">
-      <button class="mp-btn" onclick="initMercadoPago()">
-        <span class="mp-logo">mercadopago</span> Renovar con MercadoPago
-      </button>
-      <button class="btn btn-ghost" style="font-size:12px;" onclick="checkPaymentStatus()">Ya pagué — verificar estado</button>
-      <button class="btn btn-ghost" style="font-size:11px;" onclick="doLogout()">Cerrar sesión</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- ══════════════════════════════════════════════
      APP PRINCIPAL
@@ -1055,10 +957,7 @@ textarea.form-input{height:74px;resize:none;}
       <div class="nav-item nav-equipo" onclick="showPage('equipo',this)"><span class="nav-icon">⊕</span>Equipo</div>
     </div>
     <div class="sidebar-footer">
-      <div id="trial-bar" style="display:none;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:5px;padding:8px 10px;margin-bottom:10px;font-size:11px;text-align:center;">
-        <div style="color:var(--gold-dim);font-family:'DM Mono',monospace;" id="trial-text">Trial activo</div>
-        <button class="btn btn-primary" onclick="initMercadoPago()" style="font-size:10px;padding:4px 10px;margin-top:4px;width:100%;">Activar plan →</button>
-      </div>
+
       <div class="user-chip" onclick="togglePerfilMenu(event)" id="user-chip-btn">
         <div class="u-avatar" id="sb-avatar">--</div>
         <div style="flex:1;min-width:0;">
@@ -1530,7 +1429,20 @@ let editId = null, curModal = 'default';
 ════════════════════════════════════════ */
 function goTo(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-'+id).classList.add('active');
+  document.getElementById('screen-'+id)?.classList.add('active');
+  // Reset register form when navigating to it
+  if(id==='register'){
+    ['rf-nombre','rf-apellido','rf-email','rf-pass','rf-tel','rf-firma','rf-codigo'].forEach(fid=>{
+      const el=document.getElementById(fid); if(el) el.value='';
+    });
+    const err=document.getElementById('reg-err'); if(err){err.textContent='';err.style.display='none';}
+    const cb=document.getElementById('rf-unirse-check'); if(cb) cb.checked=false;
+    const ub=document.getElementById('rf-unirse-box'); if(ub) ub.style.display='none';
+    const btn=document.getElementById('rf-submit'); if(btn){btn.disabled=false;btn.textContent='Crear cuenta gratis →';}
+    REG_PLAN='independiente';
+    document.getElementById('rp-ind')?.classList.add('selected');
+    document.getElementById('rp-est')?.classList.remove('selected');
+  }
 }
 
 /* ════════════════════════════════════════
@@ -1582,55 +1494,7 @@ async function loadUserSession(user){
   CF   = memb.firmas;
   CROL = memb.rol;
 
-  // Cargar suscripción
-  const { data: sub } = await _sb.from('suscripciones').select('*').eq('firma_id', CF.id).single();
-  CS = sub;
-
-  const hoy = today();
-
-  // ── LÓGICA DE TRIAL ──────────────────────────────────────────
-  if(CS && CS.estado === 'trial'){
-    if(CS.vencimiento && CS.vencimiento < hoy){
-      await _sb.from('suscripciones').update({ estado:'pendiente', updated_at: new Date().toISOString() }).eq('firma_id', CF.id);
-      await _sb.from('firmas').update({ activo: false }).eq('id', CF.id);
-      CS.estado = 'pendiente'; CF.activo = false;
-    } else {
-      enterApp(); return;
-    }
-  }
-
-  // ── LÓGICA DE GRACIA (3 días) ─────────────────────────────────
-  if(CS && CS.estado === 'activo' && CS.vencimiento && CS.vencimiento < hoy){
-    const venc    = new Date(CS.vencimiento);
-    const diffMs  = Date.now() - venc.getTime();
-    const diffDias = Math.floor(diffMs / 86400000);
-    if(diffDias <= 3){
-      showToast(`⚠ Tu suscripción venció hace ${diffDias} día(s). Tenés ${3 - diffDias} día(s) para renovar.`);
-      enterApp(); return;
-    } else {
-      await _sb.from('suscripciones').update({ estado:'vencido', updated_at: new Date().toISOString() }).eq('firma_id', CF.id);
-      await _sb.from('firmas').update({ activo: false }).eq('id', CF.id);
-      CS.estado = 'vencido'; CF.activo = false;
-    }
-  }
-
-  // ── CUENTA INACTIVA ───────────────────────────────────────────
-  if(!CF.activo){
-    if(CS && CS.estado === 'pendiente'){
-      document.getElementById('pnd-plan').textContent  = PLAN_NOMBRES[CF.plan] || CF.plan;
-      document.getElementById('pnd-monto').textContent = `$${(PLAN_PRICES[CF.plan]||0).toLocaleString('es-AR')} ARS / mes`;
-      goTo('pending'); return;
-    }
-    if(CS && CS.estado === 'vencido'){
-      document.getElementById('exp-date').textContent = CS.vencimiento || '—';
-      goTo('expired'); return;
-    }
-    document.getElementById('pnd-plan').textContent  = PLAN_NOMBRES[CF.plan] || CF.plan;
-    document.getElementById('pnd-monto').textContent = `$${(PLAN_PRICES[CF.plan]||0).toLocaleString('es-AR')} ARS / mes`;
-    goTo('pending'); return;
-  }
-
-  // ── TODO OK ───────────────────────────────────────────────────
+  // Versión beta — acceso gratuito sin verificar pago
   enterApp();
 }
 
@@ -1646,18 +1510,7 @@ function enterApp(){
   const esEstudio = isEstudioPlan();
   document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
   document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
-  // Trial banner
-  if(CS){
-    const trialBar = document.getElementById('trial-bar');
-    const trialText = document.getElementById('trial-text');
-    if(trialBar && CS.estado==='trial' && CS.vencimiento){
-      const diasRestantes = Math.ceil((new Date(CS.vencimiento)-new Date())/86400000);
-      if(diasRestantes>0){
-        trialBar.style.display='block';
-        if(trialText) trialText.textContent=`Trial: ${diasRestantes} días restantes`;
-      }
-    }
-  }
+
   goTo('app');
   loadAll();
 }
@@ -1695,154 +1548,126 @@ function selectType(t){
 
 function selectPlan(p){ REG.plan=p; }
 
-function regNextStep(){
-  hideErr('r-err-'+REG.step);
-  if(REG.step===1){
-    if(REG.tipo==='unirse'){
-      // validate invite code entered inline
-      const code=(document.getElementById('r-invite-code-step1')?.value||'').trim().toUpperCase();
-      if(code.length!==6){ showErr('r-err-1','El código de invitación debe tener 6 caracteres.'); return; }
-      REG.invite_code=code; REG.plan='estudio';
-      REG.step=2; showRegStep(2); return;
-    }
-    if(!REG.tipo){ showErr('r-err-1','Seleccioná un plan para continuar.'); return; }
-    REG.step++;
-  } else if(REG.step===2){
-    const n=document.getElementById('r-nombre').value.trim();
-    const a=document.getElementById('r-apellido').value.trim();
-    const e=document.getElementById('r-email').value.trim();
-    const p=document.getElementById('r-pass').value;
-    if(!n||!a||!e||!p){ showErr('r-err-2','Completá todos los campos obligatorios (*)'); return; }
-    if(p.length<8){ showErr('r-err-2','La contraseña debe tener al menos 8 caracteres.'); return; }
-    if(!/\S+@\S+\.\S+/.test(e)){ showErr('r-err-2','Email inválido.'); return; }
-    REG.nombre=n; REG.apellido=a; REG.email=e; REG.pass=p;
-    REG.telefono=document.getElementById('r-telefono').value.trim();
-    REG.matricula=document.getElementById('r-matricula').value.trim();
-    if(REG.tipo==='unirse'){ submitRegistration(); return; }
-    REG.step++; prepareStep3();
-  } else if(REG.step===3){
-    const fn=document.getElementById('r-firma-nombre').value.trim();
-    if(!fn){ showErr('r-err-3','Ingresá el nombre de tu estudio.'); return; }
-    REG.firma_nombre=fn;
-    REG.step++; prepareStep4();
-  }
-  showRegStep(REG.step);
+/* ════════════════════════════════════════
+   REGISTRO — formulario único
+════════════════════════════════════════ */
+let REG_PLAN = 'independiente';
+
+function regSelPlan(p){
+  REG_PLAN = p;
+  document.getElementById('rp-ind')?.classList.toggle('selected', p==='independiente');
+  document.getElementById('rp-est')?.classList.toggle('selected', p==='estudio');
+  const firmaGroup = document.getElementById('rf-firma')?.closest('.form-group');
+  if(firmaGroup) firmaGroup.style.display = p==='unirse' ? 'none' : '';
 }
 
-function regPrevStep(){
-  if(REG.step>1) REG.step--;
-  showRegStep(REG.step);
-}
-
-function showRegStep(n){
-  document.querySelectorAll('.reg-step').forEach(s=>s.classList.remove('active'));
-  document.getElementById('reg-step-'+n)?.classList.add('active');
-  renderSteps();
-}
-
-function prepareStep3(){
-  const isEstudio = REG.tipo==='estudio'||REG.tipo==='nueva_firma'||REG.plan==='estudio';
-  document.getElementById('step3-title').textContent = isEstudio ? 'Datos de tu estudio' : 'Tu estudio';
-  document.getElementById('step3-sub').textContent = 'El nombre con el que aparecerás en la plataforma.';
-  document.getElementById('firma-name-label').textContent = isEstudio ? 'Nombre del estudio *' : 'Tu nombre de trabajo *';
-  document.getElementById('step3-firma-form').style.display='block';
-  document.getElementById('step3-invite-form').style.display='none';
-  if(isEstudio){
-    document.getElementById('step3-code-preview').style.display='block';
-    document.getElementById('preview-code').textContent = REG.gen_code;
+function regToggleUnirse(checked){
+  const box = document.getElementById('rf-unirse-box');
+  const firmaGroup = document.getElementById('rf-firma')?.closest('.form-group');
+  if(box) box.style.display = checked ? 'block' : 'none';
+  if(firmaGroup) firmaGroup.style.display = checked ? 'none' : '';
+  if(checked){
+    document.getElementById('rp-ind')?.classList.remove('selected');
+    document.getElementById('rp-est')?.classList.remove('selected');
   } else {
-    document.getElementById('step3-code-preview').style.display='none';
+    regSelPlan(REG_PLAN);
   }
 }
 
-function prepareStep4(){
-  // Build summary
-  const planLabel = REG.plan==='estudio'?'🏢 Estudio — $59.000/mes':'🧍 Independiente — $39.000/mes';
-  const sumEl = document.getElementById('reg-summary');
-  if(sumEl) sumEl.innerHTML = `
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span style="color:var(--text-muted);">Plan</span><span style="color:var(--text);font-family:'DM Mono',monospace;">${planLabel}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span style="color:var(--text-muted);">Nombre</span><span style="color:var(--text);">${REG.nombre} ${REG.apellido}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span style="color:var(--text-muted);">Email</span><span style="color:var(--text);">${REG.email}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;">
-        <span style="color:var(--text-muted);">Estudio</span><span style="color:var(--text);">${REG.firma_nombre}</span>
-      </div>
-    </div>`;
-}
+async function doRegistro(){
+  const errEl = document.getElementById('reg-err');
+  const btn   = document.getElementById('rf-submit');
+  const showE = msg => { errEl.textContent=msg; errEl.style.display='block'; errEl.scrollIntoView({behavior:'smooth',block:'nearest'}); };
+  errEl.style.display='none';
 
-async function submitRegistration(){
-  const btnId='reg-submit-btn';
-  hideErr('r-err-4'); hideErr('r-err-final');
-  setBtn(btnId,'Creando cuenta...',true);
-  try{
-    let firmaId = null;
-    let firmaPlan = REG.plan;
-    if(REG.tipo==='unirse'){
-      // Find firma by invite code
-      const { data: firma, error: fe } = await _sb.rpc('get_firma_by_code',{ p_code: REG.invite_code });
-      if(fe || !firma || !firma.length) throw new Error('Código de invitación inválido o expirado.');
-      firmaId  = firma[0].id;
-      firmaPlan = firma[0].plan;
-      // Check firma is active
-      if(!firma[0].activo) throw new Error('Esta firma está suspendida. Contactá al administrador.');
+  // Read fields
+  const nombre  = document.getElementById('rf-nombre')?.value.trim()  || '';
+  const apellido= document.getElementById('rf-apellido')?.value.trim() || '';
+  const email   = document.getElementById('rf-email')?.value.trim()   || '';
+  const pass    = document.getElementById('rf-pass')?.value            || '';
+  const tel     = document.getElementById('rf-tel')?.value.trim()      || '';
+  const firma   = document.getElementById('rf-firma')?.value.trim()   || '';
+  const unirse  = document.getElementById('rf-unirse-check')?.checked  || false;
+  const codigo  = document.getElementById('rf-codigo')?.value.trim().toUpperCase() || '';
+
+  // Validate
+  if(!nombre)           return showE('El nombre es obligatorio.');
+  if(!apellido)         return showE('El apellido es obligatorio.');
+  if(!email || !/\S+@\S+\.\S+/.test(email)) return showE('Ingresá un email válido.');
+  if(pass.length < 8)   return showE('La contraseña debe tener al menos 8 caracteres.');
+  if(!unirse && !firma) return showE('Ingresá el nombre de tu estudio.');
+  if(unirse && codigo.length !== 6) return showE('El código de invitación debe tener 6 caracteres.');
+
+  btn.disabled = true;
+  btn.textContent = 'Creando cuenta...';
+
+  try {
+    let firmaId  = null;
+    let firmaPlan = REG_PLAN;
+
+    if(unirse){
+      // Look up firma by invite code
+      const { data: firmas, error: fe } = await _sb.rpc('get_firma_by_code', { p_code: codigo });
+      if(fe || !firmas?.length) throw new Error('Código de invitación inválido o no encontrado.');
+      if(!firmas[0].activo)     throw new Error('Esta firma está suspendida. Contactá al administrador.');
+      firmaId   = firmas[0].id;
+      firmaPlan = firmas[0].plan;
     }
+
     // Create auth user
     const { data: authData, error: authErr } = await _sb.auth.signUp({
-      email: REG.email, password: REG.pass,
-      options: { data: { nombre: REG.nombre, apellido: REG.apellido } }
+      email, password: pass,
+      options: { data: { nombre, apellido } }
     });
     if(authErr) throw authErr;
-    const uid = authData.user.id;
-    // Create profile
-    await _sb.from('perfiles').insert({
-      id: uid, nombre: REG.nombre, apellido: REG.apellido,
-      email: REG.email, telefono: REG.telefono, matricula: REG.matricula
-    });
-    if(REG.tipo!=='unirse'){
-      // Create firma — activa durante el trial
-      const tipoFirma = (REG.tipo==='estudio'||REG.tipo==='nueva_firma')?'estudio':'independiente';
-      const planFirma = tipoFirma==='estudio'?'estudio':'independiente';
+    const uid = authData.user?.id;
+    if(!uid) throw new Error('No se pudo crear el usuario. Intentá de nuevo.');
+
+    // Insert perfil (trigger may have already created it, so upsert)
+    await _sb.from('perfiles').upsert({
+      id: uid, nombre, apellido, email, telefono: tel
+    }, { onConflict: 'id' });
+
+    if(!unirse){
+      // Create firma
+      const code = Math.random().toString(36).substring(2,8).toUpperCase();
+      const tipoFirma = REG_PLAN === 'estudio' ? 'estudio' : 'independiente';
       const { data: firmaData, error: firmaErr } = await _sb.from('firmas').insert({
-        nombre: REG.firma_nombre,
-        tipo: tipoFirma,
-        codigo_invitacion: REG.gen_code,
-        plan: planFirma,
-        activo: true,
-        owner_id: uid
+        nombre: firma, tipo: tipoFirma, codigo_invitacion: code,
+        plan: tipoFirma, activo: true, owner_id: uid
       }).select().single();
       if(firmaErr) throw firmaErr;
       firmaId = firmaData.id;
-      // Create suscripcion — trial 1 mes gratis
-      const trialVenc = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+
+      // Trial 30 days
+      const venc = new Date(Date.now() + 30*86400000).toISOString().split('T')[0];
       await _sb.from('suscripciones').insert({
-        firma_id: firmaId, plan: REG.plan,
-        estado: 'trial',
-        monto_ars: PLAN_PRICES[REG.plan] || 0,
-        vencimiento: trialVenc
+        firma_id: firmaId, plan: tipoFirma, estado: 'activo',
+        monto_ars: PLAN_PRICES[tipoFirma] || 0, vencimiento: venc
       });
-      // Create miembro (admin)
       await _sb.from('miembros').insert({ firma_id: firmaId, perfil_id: uid, rol: 'admin' });
-      // Init contadores
-      await _sb.from('contadores').insert({ firma_id: firmaId, ultimo_cliente:0, ultimo_caso:0 });
+      await _sb.from('contadores').insert({ firma_id: firmaId, ultimo_cliente: 0, ultimo_caso: 0 });
     } else {
-      // Join firma as miembro
       await _sb.from('miembros').insert({ firma_id: firmaId, perfil_id: uid, rol: 'miembro' });
     }
-    // Sign in
-    await _sb.auth.signInWithPassword({ email: REG.email, password: REG.pass });
-    const { data: { user } } = await _sb.auth.getUser();
-    await loadUserSession(user);
-  } catch(e){
-    showErr('r-err-final', e.message || 'Error al crear la cuenta. Intentá de nuevo.');
-    setBtn(btnId,'Crear cuenta →',false);
+
+    // Sign in immediately
+    const { data: si, error: siErr } = await _sb.auth.signInWithPassword({ email, password: pass });
+    if(siErr) throw siErr;
+    await loadUserSession(si.user);
+
+  } catch(e) {
+    let msg = e.message || 'Error al crear la cuenta.';
+    if(msg.includes('already registered') || msg.includes('already been registered'))
+      msg = 'Este email ya tiene una cuenta. Iniciá sesión.';
+    if(msg.includes('Email not confirmed'))
+      msg = 'Revisá tu email para confirmar la cuenta antes de ingresar.';
+    showE(msg);
+    btn.disabled = false;
+    btn.textContent = 'Crear cuenta gratis →';
   }
 }
+
 
 /* ════════════════════════════════════════
    MERCADOPAGO

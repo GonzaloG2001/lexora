@@ -1577,24 +1577,29 @@ function regToggleUnirse(checked){
 async function doRegistro(){
   const errEl = document.getElementById('reg-err');
   const btn   = document.getElementById('rf-submit');
-  const showE = msg => { errEl.textContent=msg; errEl.style.display='block'; errEl.scrollIntoView({behavior:'smooth',block:'nearest'}); };
-  errEl.style.display='none';
+  const showE = msg => {
+    errEl.textContent = msg;
+    errEl.style.display = 'block';
+    errEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+    btn.disabled = false;
+    btn.textContent = 'Crear cuenta gratis →';
+  };
+  errEl.style.display = 'none';
 
-  // Read fields
-  const nombre  = document.getElementById('rf-nombre')?.value.trim()  || '';
-  const apellido= document.getElementById('rf-apellido')?.value.trim() || '';
-  const email   = document.getElementById('rf-email')?.value.trim()   || '';
-  const pass    = document.getElementById('rf-pass')?.value            || '';
-  const tel     = document.getElementById('rf-tel')?.value.trim()      || '';
-  const firma   = document.getElementById('rf-firma')?.value.trim()   || '';
-  const unirse  = document.getElementById('rf-unirse-check')?.checked  || false;
-  const codigo  = document.getElementById('rf-codigo')?.value.trim().toUpperCase() || '';
+  const nombre  = (document.getElementById('rf-nombre')?.value  || '').trim();
+  const apellido= (document.getElementById('rf-apellido')?.value || '').trim();
+  const email   = (document.getElementById('rf-email')?.value   || '').trim().toLowerCase();
+  const pass    = (document.getElementById('rf-pass')?.value    || '');
+  const tel     = (document.getElementById('rf-tel')?.value     || '').trim();
+  const firma   = (document.getElementById('rf-firma')?.value   || '').trim();
+  const unirse  = document.getElementById('rf-unirse-check')?.checked || false;
+  const codigo  = (document.getElementById('rf-codigo')?.value  || '').trim().toUpperCase();
 
   // Validate
-  if(!nombre)           return showE('El nombre es obligatorio.');
-  if(!apellido)         return showE('El apellido es obligatorio.');
-  if(!email || !/\S+@\S+\.\S+/.test(email)) return showE('Ingresá un email válido.');
-  if(pass.length < 8)   return showE('La contraseña debe tener al menos 8 caracteres.');
+  if(!nombre)   return showE('El nombre es obligatorio.');
+  if(!apellido) return showE('El apellido es obligatorio.');
+  if(!email || !email.includes('@')) return showE('Ingresá un email válido.');
+  if(pass.length < 8) return showE('La contraseña debe tener al menos 8 caracteres.');
   if(!unirse && !firma) return showE('Ingresá el nombre de tu estudio.');
   if(unirse && codigo.length !== 6) return showE('El código de invitación debe tener 6 caracteres.');
 
@@ -1602,69 +1607,53 @@ async function doRegistro(){
   btn.textContent = 'Creando cuenta...';
 
   try {
-    let firmaId  = null;
-    let firmaPlan = REG_PLAN;
-
-    if(unirse){
-      // Look up firma by invite code
-      const { data: firmas, error: fe } = await _sb.rpc('get_firma_by_code', { p_code: codigo });
-      if(fe || !firmas?.length) throw new Error('Código de invitación inválido o no encontrado.');
-      if(!firmas[0].activo)     throw new Error('Esta firma está suspendida. Contactá al administrador.');
-      firmaId   = firmas[0].id;
-      firmaPlan = firmas[0].plan;
-    }
-
-    // Create auth user
+    // 1. Crear usuario en Supabase Auth
     const { data: authData, error: authErr } = await _sb.auth.signUp({
       email, password: pass,
       options: { data: { nombre, apellido } }
     });
     if(authErr) throw authErr;
-    const uid = authData.user?.id;
+    const uid = authData?.user?.id;
     if(!uid) throw new Error('No se pudo crear el usuario. Intentá de nuevo.');
 
-    // Insert perfil (trigger may have already created it, so upsert)
-    await _sb.from('perfiles').upsert({
-      id: uid, nombre, apellido, email, telefono: tel
-    }, { onConflict: 'id' });
-
-    if(!unirse){
-      // Create firma
-      const code = Math.random().toString(36).substring(2,8).toUpperCase();
-      const tipoFirma = REG_PLAN === 'estudio' ? 'estudio' : 'independiente';
-      const { data: firmaData, error: firmaErr } = await _sb.from('firmas').insert({
-        nombre: firma, tipo: tipoFirma, codigo_invitacion: code,
-        plan: tipoFirma, activo: true, owner_id: uid
-      }).select().single();
-      if(firmaErr) throw firmaErr;
-      firmaId = firmaData.id;
-
-      // Trial 30 days
-      const venc = new Date(Date.now() + 30*86400000).toISOString().split('T')[0];
-      await _sb.from('suscripciones').insert({
-        firma_id: firmaId, plan: tipoFirma, estado: 'activo',
-        monto_ars: PLAN_PRICES[tipoFirma] || 0, vencimiento: venc
-      });
-      await _sb.from('miembros').insert({ firma_id: firmaId, perfil_id: uid, rol: 'admin' });
-      await _sb.from('contadores').insert({ firma_id: firmaId, ultimo_cliente: 0, ultimo_caso: 0 });
-    } else {
-      await _sb.from('miembros').insert({ firma_id: firmaId, perfil_id: uid, rol: 'miembro' });
+    // 2. Iniciar sesión para tener auth.uid() activo (necesario para SECURITY DEFINER)
+    const { data: si, error: siErr } = await _sb.auth.signInWithPassword({ email, password: pass });
+    if(siErr){
+      // Si requiere confirmación de email
+      if(siErr.message?.includes('Email not confirmed') || siErr.message?.includes('not confirmed')){
+        return showE('Revisá tu bandeja de entrada y confirmá tu email antes de continuar. Si no llega, revisá spam.');
+      }
+      throw siErr;
     }
 
-    // Sign in immediately
-    const { data: si, error: siErr } = await _sb.auth.signInWithPassword({ email, password: pass });
-    if(siErr) throw siErr;
+    // 3. Llamar función SECURITY DEFINER que bypasea RLS
+    if(unirse){
+      const { error: joinErr } = await _sb.rpc('unirse_a_firma', {
+        p_uid: uid, p_nombre: nombre, p_apellido: apellido,
+        p_email: email, p_telefono: tel, p_codigo: codigo
+      });
+      if(joinErr) throw joinErr;
+    } else {
+      const { error: createErr } = await _sb.rpc('crear_firma_completa', {
+        p_uid: uid, p_nombre: nombre, p_apellido: apellido,
+        p_email: email, p_telefono: tel,
+        p_firma_nombre: firma, p_plan: REG_PLAN
+      });
+      if(createErr) throw createErr;
+    }
+
+    // 4. Cargar sesión y entrar a la app
     await loadUserSession(si.user);
 
   } catch(e) {
-    let msg = e.message || 'Error al crear la cuenta.';
-    if(msg.includes('already registered') || msg.includes('already been registered'))
-      msg = 'Este email ya tiene una cuenta. Iniciá sesión.';
-    if(msg.includes('Email not confirmed'))
-      msg = 'Revisá tu email para confirmar la cuenta antes de ingresar.';
+    let msg = e.message || 'Error al crear la cuenta. Intentá de nuevo.';
+    if(msg.includes('already registered') || msg.includes('User already registered'))
+      msg = 'Este email ya tiene una cuenta registrada. Iniciá sesión.';
+    if(msg.includes('Password should be'))
+      msg = 'La contraseña debe tener al menos 6 caracteres.';
+    if(msg.includes('Invalid login'))
+      msg = 'Credenciales incorrectas. Si recién te registraste, confirmá tu email primero.';
     showE(msg);
-    btn.disabled = false;
-    btn.textContent = 'Crear cuenta gratis →';
   }
 }
 

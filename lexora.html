@@ -1450,10 +1450,12 @@ function goTo(id){
 ════════════════════════════════════════ */
 function genInviteCode(){ return Math.random().toString(36).substring(2,8).toUpperCase(); }
 const fmt = n => '$'+Number(n||0).toLocaleString('es-AR');
+// XSS prevention: escape all user-supplied strings before injecting into HTML
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const today = () => new Date().toISOString().split('T')[0];
-const cliName = id => id ? ((C.clientes.find(x=>x.id===id)||{}).nombre||'[Cliente eliminado]') : '—';
-const membName = uid => { const m=C.miembros.find(x=>x.perfil_id===uid); const p=m?.perfiles||{}; return p.nombre?(p.nombre+' '+p.apellido).trim():''; };
-const expTitle = id => (C.expedientes.find(x=>x.id===id)||{}).titulo||'—';
+const cliName = id => id ? esc((C.clientes.find(x=>x.id===id)||{}).nombre||'[Cliente eliminado]') : '—';
+const membName = uid => { const m=C.miembros.find(x=>x.perfil_id===uid); const p=m?.perfiles||{}; return p.nombre?esc((p.nombre+' '+p.apellido).trim()):''; };
+const expTitle = id => esc((C.expedientes.find(x=>x.id===id)||{}).titulo||'—');
 const stBadge = s => `<span class="status ${s||'pendiente'}">${s||'pendiente'}</span>`;
 const planPill = p => { const m={independiente:'pill-basic',estudio:'pill-pro',trial:'pill-trial'}; return `<span class="plan-pill ${m[p]||'pill-basic'}">${p}</span>`; };
 const PLAN_PRICES = { independiente:39000, estudio:59000, trial:0 };
@@ -1529,7 +1531,8 @@ async function doLogout(){
 const STEP_LABELS = ['Plan','Datos','Estudio','Confirmar'];
 
 function renderSteps(){
-  document.getElementById('steps-ind').innerHTML =
+  const si = document.getElementById('steps-ind'); if(!si) return;
+  si.innerHTML =
     STEP_LABELS.map((l,i) => {
       const n=i+1, cls = n<REG.step?'done':n===REG.step?'active':'';
       return `<div class="step-dot ${cls}">${n<REG.step?'✓':n}</div>${i<STEP_LABELS.length-1?'<div class="step-line"></div>':''}`;
@@ -1595,13 +1598,17 @@ async function doRegistro(){
   const unirse  = document.getElementById('rf-unirse-check')?.checked || false;
   const codigo  = (document.getElementById('rf-codigo')?.value  || '').trim().toUpperCase();
 
-  // Validate
-  if(!nombre)   return showE('El nombre es obligatorio.');
-  if(!apellido) return showE('El apellido es obligatorio.');
-  if(!email || !email.includes('@')) return showE('Ingresá un email válido.');
-  if(pass.length < 8) return showE('La contraseña debe tener al menos 8 caracteres.');
-  if(!unirse && !firma) return showE('Ingresá el nombre de tu estudio.');
+  // Validate & sanitize (length limits match DB constraints)
+  if(!nombre || nombre.length > 100)   return showE('Nombre inválido (máx. 100 caracteres).');
+  if(!apellido || apellido.length > 100) return showE('Apellido inválido (máx. 100 caracteres).');
+  if(!email || !email.includes('@') || email.length > 255) return showE('Email inválido.');
+  if(pass.length < 8 || pass.length > 72) return showE('Contraseña debe tener entre 8 y 72 caracteres.');
+  if(!unirse && (!firma || firma.length < 2 || firma.length > 200)) return showE('Nombre del estudio inválido (2-200 caracteres).');
   if(unirse && codigo.length !== 6) return showE('El código de invitación debe tener 6 caracteres.');
+  // Basic XSS check on free-text fields
+  const xssPattern = /<|>|script|javascript:/i;
+  if(xssPattern.test(nombre) || xssPattern.test(apellido) || xssPattern.test(firma))
+    return showE('El texto contiene caracteres no permitidos.');
 
   btn.disabled = true;
   btn.textContent = 'Creando cuenta...';
@@ -1612,7 +1619,10 @@ async function doRegistro(){
     const { data: authData, error: authErr } = await _sb.auth.signUp({
       email,
       password: pass,
-      options: { data: { nombre, apellido } }
+      options: {
+        data: { nombre, apellido },
+        emailRedirectTo: 'https://lexora-gonzalog2001s-projects.vercel.app'
+      }
     });
 
     if(authErr){
@@ -4339,19 +4349,126 @@ function showToast(msg){
 /* ════════════════════════════════════════
    INIT — Session restore
 ════════════════════════════════════════ */
-try { renderSteps(); } catch(e) { console.error('renderSteps error:', e); }
+// renderSteps() not needed — single-page register form
 
-// Session restore on page load
+// ── Session handling ──────────────────────────────────────────
+
+// Listen for auth state changes (includes email confirmation callback)
 _sb.auth.onAuthStateChange(async (event, session) => {
-  if(event === 'SIGNED_IN' && session && !CU){
-    await loadUserSession(session.user);
+  if((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && !CU){
+    await handleSignedInSession(session);
   }
-  if(event === 'SIGNED_OUT'){ goTo('splash'); }
+  if(event === 'SIGNED_OUT'){
+    CU=null; CP=null; CF=null; CS=null; CROL=null;
+    C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
+    goTo('splash');
+  }
 });
-// Check for existing session immediately
+
+// Check for existing session on page load
 _sb.auth.getSession().then(({ data: { session } }) => {
-  if(session && !CU) loadUserSession(session.user);
+  if(session && !CU) handleSignedInSession(session);
 });
+
+// Called whenever a session is established (login OR email confirmation link)
+async function handleSignedInSession(session){
+  const user = session.user;
+
+  // Check if this user has a firma already
+  try {
+    const { data: memb, error } = await _sb.from('miembros')
+      .select('id, firma_id, firmas(id, nombre, plan, activo, tipo, codigo_invitacion, owner_id)')
+      .eq('perfil_id', user.id)
+      .maybeSingle();
+
+    if(!error && memb && memb.firmas){
+      // Has firma — go straight to app
+      await loadUserSession(user);
+      return;
+    }
+
+    // No firma — user confirmed email but registration wasn't completed
+    // Show a lightweight completion form
+    showCompleteSetupScreen(user, session.access_token);
+
+  } catch(e){
+    // Fallback — try full loadUserSession
+    await loadUserSession(user);
+  }
+}
+
+// Screen shown after email confirmation when firma wasn't created yet
+function showCompleteSetupScreen(user, token){
+  const meta = user.user_metadata || {};
+  // Pre-fill register form with their data and go to register
+  goTo('register');
+
+  setTimeout(() => {
+    const ne = document.getElementById('rf-nombre');
+    const ae = document.getElementById('rf-apellido');
+    const ee = document.getElementById('rf-email');
+    if(ne) ne.value = meta.nombre || '';
+    if(ae) ae.value = meta.apellido || '';
+    if(ee) { ee.value = user.email || ''; ee.readOnly = true; }
+
+    // Show a notice at the top
+    const errEl = document.getElementById('reg-err');
+    if(errEl){
+      errEl.style.display = 'block';
+      errEl.style.background = 'rgba(76,186,132,.1)';
+      errEl.style.borderColor = 'var(--green)';
+      errEl.style.color = 'var(--green)';
+      errEl.innerHTML = '✅ Email confirmado. Completá el nombre de tu estudio para ingresar.';
+    }
+
+    // Override the submit to use the existing session token
+    const btn = document.getElementById('rf-submit');
+    if(btn){
+      btn.textContent = 'Completar registro →';
+      btn.onclick = async () => {
+        const firma = (document.getElementById('rf-firma')?.value || '').trim();
+        const unirse = document.getElementById('rf-unirse-check')?.checked || false;
+        const codigo = (document.getElementById('rf-codigo')?.value || '').trim().toUpperCase();
+        const tel    = (document.getElementById('rf-tel')?.value || '').trim();
+
+        if(!unirse && !firma){
+          const e = document.getElementById('reg-err');
+          if(e){ e.style.color='var(--red)'; e.style.borderColor='var(--red)'; e.style.background='rgba(201,76,76,.08)'; e.innerHTML='Ingresá el nombre de tu estudio.'; }
+          return;
+        }
+        if(unirse && codigo.length !== 6){
+          const e = document.getElementById('reg-err');
+          if(e){ e.style.color='var(--red)'; e.style.borderColor='var(--red)'; e.style.background='rgba(201,76,76,.08)'; e.innerHTML='El código de invitación debe tener 6 caracteres.'; }
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Configurando...';
+        try {
+          if(unirse){
+            const { error } = await _sb.rpc('unirse_a_firma', {
+              p_uid: user.id, p_nombre: meta.nombre || '', p_apellido: meta.apellido || '',
+              p_email: user.email, p_telefono: tel, p_codigo: codigo
+            });
+            if(error) throw error;
+          } else {
+            const { error } = await _sb.rpc('crear_firma_completa', {
+              p_uid: user.id, p_nombre: meta.nombre || '', p_apellido: meta.apellido || '',
+              p_email: user.email, p_telefono: tel, p_firma_nombre: firma, p_plan: REG_PLAN
+            });
+            if(error) throw error;
+          }
+          await loadUserSession(user);
+        } catch(e){
+          btn.disabled = false;
+          btn.textContent = 'Completar registro →';
+          const err = document.getElementById('reg-err');
+          if(err){ err.style.color='var(--red)'; err.style.borderColor='var(--red)'; err.style.background='rgba(201,76,76,.08)'; err.innerHTML = e.message || 'Error. Intentá de nuevo.'; }
+        }
+      };
+    }
+  }, 100);
+}
 </script>
 
 <!--

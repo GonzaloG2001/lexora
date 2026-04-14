@@ -1505,27 +1505,43 @@ async function doLogin(){
 
 async function loadUserSession(user){
   try {
-    // Cargar perfil
-    const { data: profile, error: profErr } = await _sb.from('perfiles').select('*').eq('id', user.id).single();
+    // Step 1: Load perfil
+    const { data: profile, error: profErr } = await _sb
+      .from('perfiles').select('*').eq('id', user.id).single();
     if(profErr || !profile){
       _sessionLoading = false;
-      showErr('l-err', 'Perfil no encontrado. Intentá de nuevo o contactá al administrador.');
+      showErr('l-err', 'Perfil no encontrado. Contactá al administrador.');
       setBtn('l-btn','Ingresar al panel',false);
       return;
     }
     CP = profile; CU = user;
 
-    // Cargar membresía y firma
-    const { data: memb, error: membErr } = await _sb.from('miembros').select('*, firmas(*)').eq('perfil_id', user.id).single();
-    if(membErr || !memb || !memb.firmas){
-      // User exists but has no firma — redirect to complete setup
+    // Step 2: Load miembro record (without join to avoid RLS issues)
+    const { data: memb, error: membErr } = await _sb
+      .from('miembros').select('id, firma_id, rol, rol_personalizado, permisos')
+      .eq('perfil_id', user.id).single();
+
+    if(membErr || !memb || !memb.firma_id){
+      _sessionLoading = false;
+      // No firma yet — show completion screen
       showCompleteSetupScreen(user, null);
       return;
     }
-    CF   = memb.firmas;
     CROL = memb.rol;
 
-    // Beta: acceso gratuito directo
+    // Step 3: Load firma separately
+    const { data: firma, error: firmaErr } = await _sb
+      .from('firmas').select('*').eq('id', memb.firma_id).single();
+
+    if(firmaErr || !firma){
+      _sessionLoading = false;
+      showErr('l-err', 'No se pudo cargar tu estudio. Intentá de nuevo.');
+      setBtn('l-btn','Ingresar al panel',false);
+      return;
+    }
+    CF = firma;
+
+    // All good — enter app
     enterApp();
   } catch(e) {
     _sessionLoading = false;
@@ -4632,25 +4648,19 @@ _sb.auth.getSession().then(({ data: { session } }) => {
 async function handleSignedInSession(session){
   const user = session.user;
 
-  // Check if this user has a firma already
+  // Check if this user has a firma
   try {
-    const { data: memb, error } = await _sb.from('miembros')
-      .select('id, firma_id, firmas(id, nombre, plan, activo, tipo, codigo_invitacion, owner_id)')
+    const { data: memb } = await _sb.from('miembros')
+      .select('id, firma_id')
       .eq('perfil_id', user.id)
       .maybeSingle();
 
-    if(!error && memb && memb.firmas){
-      // Has firma — go straight to app
+    if(memb && memb.firma_id){
       await loadUserSession(user);
-      return;
+    } else {
+      showCompleteSetupScreen(user, null);
     }
-
-    // No firma — user confirmed email but registration wasn't completed
-    // Show a lightweight completion form
-    showCompleteSetupScreen(user, session.access_token);
-
   } catch(e){
-    // Fallback — try full loadUserSession
     await loadUserSession(user);
   }
 }

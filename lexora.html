@@ -1484,20 +1484,33 @@ async function doLogin(){
 }
 
 async function loadUserSession(user){
-  // ── Supabase ──────────────────────────────────────
-  // Cargar perfil
-  const { data: profile } = await _sb.from('perfiles').select('*').eq('id', user.id).single();
-  if(!profile){ showErr('l-err','Perfil no encontrado. Contactá al administrador.'); setBtn('l-btn','Ingresar al panel',false); return; }
-  CP = profile; CU = user;
+  try {
+    // Cargar perfil
+    const { data: profile, error: profErr } = await _sb.from('perfiles').select('*').eq('id', user.id).single();
+    if(profErr || !profile){
+      showErr('l-err', 'Perfil no encontrado. Intentá de nuevo o contactá al administrador.');
+      setBtn('l-btn','Ingresar al panel',false);
+      return;
+    }
+    CP = profile; CU = user;
 
-  // Cargar membresía y firma
-  const { data: memb } = await _sb.from('miembros').select('*, firmas(*)').eq('perfil_id', user.id).single();
-  if(!memb){ showErr('l-err','No pertenecés a ninguna firma. Contactá al administrador.'); setBtn('l-btn','Ingresar al panel',false); return; }
-  CF   = memb.firmas;
-  CROL = memb.rol;
+    // Cargar membresía y firma
+    const { data: memb, error: membErr } = await _sb.from('miembros').select('*, firmas(*)').eq('perfil_id', user.id).single();
+    if(membErr || !memb || !memb.firmas){
+      // User exists but has no firma — redirect to complete setup
+      showCompleteSetupScreen(user, null);
+      return;
+    }
+    CF   = memb.firmas;
+    CROL = memb.rol;
 
-  // Versión beta — acceso gratuito sin verificar pago
-  enterApp();
+    // Beta: acceso gratuito directo
+    enterApp();
+  } catch(e) {
+    console.error('loadUserSession error:', e);
+    showErr('l-err', 'Error al cargar tu cuenta: ' + (e.message || 'Intentá de nuevo.'));
+    setBtn('l-btn','Ingresar al panel',false);
+  }
 }
 
 function isEstudioPlan(){ return CF?.plan==='estudio' || CF?.tipo==='estudio'; }
@@ -1518,7 +1531,7 @@ function enterApp(){
 }
 
 async function doLogout(){
-  await _sb.auth.signOut();
+  try { await _sb.auth.signOut(); } catch(e){ /* ignore */ }
   CU=null; CP=null; CF=null; CS=null; CROL=null;
   C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
   const lp=document.getElementById('l-pass'); if(lp) lp.value='';
@@ -1581,9 +1594,16 @@ async function doRegistro(){
   const errEl = document.getElementById('reg-err');
   const btn   = document.getElementById('rf-submit');
   const showE = msg => {
-    errEl.innerHTML = msg;
+    if(!errEl || !btn) return;
+    errEl.textContent = msg;
     errEl.style.display = 'block';
-    errEl.scrollIntoView({behavior:'smooth', block:'nearest'});
+    errEl.style.color = 'var(--red)';
+    errEl.style.background = 'rgba(201,76,76,.08)';
+    errEl.style.border = '1px solid rgba(201,76,76,.25)';
+    errEl.style.borderRadius = '5px';
+    errEl.style.padding = '10px 14px';
+    errEl.style.marginBottom = '12px';
+    try { errEl.scrollIntoView({behavior:'smooth', block:'nearest'}); } catch(e){}
     btn.disabled = false;
     btn.textContent = 'Crear cuenta gratis →';
   };
@@ -1676,11 +1696,14 @@ async function doRegistro(){
 
   } catch(e) {
     let msg = e.message || 'Error inesperado. Intentá de nuevo.';
-    // Make common errors more friendly
-        return showE('Este email ya tiene una cuenta. Iniciá sesión.');
-    if(msg.includes('Password should be') || msg.includes('weak password')) msg = 'La contraseña debe tener al menos 8 caracteres.';
-    if(msg.includes('Invalid API key') || msg.includes('apikey')) msg = 'Error de configuración. Contactá al administrador.';
-    if(msg.includes('Failed to fetch') || msg.includes('NetworkError')) msg = 'Sin conexión. Revisá tu internet e intentá de nuevo.';
+    if(msg.includes('already registered') || msg.includes('User already registered'))
+      msg = 'Este email ya tiene una cuenta. Iniciá sesión.';
+    if(msg.includes('Password should be') || msg.includes('weak password'))
+      msg = 'La contraseña debe tener al menos 8 caracteres.';
+    if(msg.includes('Invalid API key') || msg.includes('apikey'))
+      msg = 'Error de configuración. Contactá al administrador.';
+    if(msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('fetch'))
+      msg = 'Sin conexión. Revisá tu internet e intentá de nuevo.';
     showE(msg);
   }
 }
@@ -1739,20 +1762,24 @@ async function checkPaymentStatus(){
    DATA LAYER
 ════════════════════════════════════════ */
 async function dbGet(t){
-  const { data, error } = await _sb.from(t).select('*').eq('firma_id', CF.id).order('created_at',{ascending:false});
-  return error ? [] : data || [];
+  try {
+    const { data, error } = await _sb.from(t).select('*').eq('firma_id', CF.id).order('created_at',{ascending:false});
+    return error ? [] : data || [];
+  } catch(e){ console.warn('dbGet error:', t, e.message); return []; }
 }
 async function dbInsert(t, row){
   const { data, error } = await _sb.from(t).insert({...row, firma_id:CF.id, creado_por:CU.id}).select().single();
-  if(error) throw error; return data;
+  if(error) throw new Error(error.message || 'Error al guardar en '+t);
+  return data;
 }
 async function dbUpdate(t, id, row){
   const { data, error } = await _sb.from(t).update(row).eq('id',id).select().single();
-  if(error) throw error; return data;
+  if(error) throw new Error(error.message || 'Error al actualizar en '+t);
+  return data;
 }
 async function dbDelete(t, id){
   const { error } = await _sb.from(t).delete().eq('id',id);
-  if(error) throw error;
+  if(error) throw new Error(error.message || 'Error al eliminar en '+t);
 }
 async function nextSeq(type){
   // type: 'cliente' | 'caso'
@@ -3281,14 +3308,16 @@ async function cambiarEstadoLead(leadId, nuevoEstado){
   if(i<0) return;
   C.leads[i].estado=nuevoEstado;
   C.leads[i].ultimo_contacto=new Date().toISOString().split('T')[0];
-  await dbUpdate('leads',leadId,{estado:nuevoEstado,ultimo_contacto:C.leads[i].ultimo_contacto}).catch(()=>{});
+  try {
+    await dbUpdate('leads',leadId,{estado:nuevoEstado,ultimo_contacto:C.leads[i].ultimo_contacto});
+  } catch(e){ /* non-critical, local state already updated */ }
   if(nuevoEstado==='ganado'){
     showToast('🎉 Lead marcado como ganado. ¿Convertir a cliente?');
-    setTimeout(()=>{ if(confirm('¿Convertir este lead en cliente?')) convertirLeadCliente(leadId); },400);
+    setTimeout(()=>{ try{ if(confirm('¿Convertir este lead en cliente?')) convertirLeadCliente(leadId); }catch(e){} },400);
   } else {
-    showToast('✅ Estado actualizado: '+LEAD_ESTADOS.find(e=>e.key===nuevoEstado)?.label);
+    showToast('✅ Estado: '+(LEAD_ESTADOS.find(e=>e.key===nuevoEstado)?.label||nuevoEstado));
   }
-  openLeadPanel(leadId);
+  safeRun(()=>openLeadPanel(leadId),'openLeadPanel');
   safeRun(rLeads,'rLeads');
   safeRun(rDash,'rDash');
   rBadges();
@@ -3805,14 +3834,18 @@ let adminFirms = [];
 let adminSubs  = [];
 
 async function renderAdminAll(){
-  // Load from Supabase (requires service role or admin policy)
-  const { data: f } = await _sb.from('firmas').select('*').order('created_at',{ascending:false});
-  const { data: s } = await _sb.from('suscripciones').select('*').order('created_at',{ascending:false});
-  adminFirms = f || [];
-  adminSubs  = s || [];
-  renderAdminOverview();
-  renderAdminFirms();
-  renderAdminSubs();
+  try {
+    const { data: f } = await _sb.from('firmas').select('*').order('created_at',{ascending:false});
+    const { data: s } = await _sb.from('suscripciones').select('*').order('created_at',{ascending:false});
+    adminFirms = f || [];
+    adminSubs  = s || [];
+    renderAdminOverview();
+    renderAdminFirms();
+    renderAdminSubs();
+  } catch(e) {
+    console.error('renderAdminAll error:', e.message);
+    showToast('❌ Error cargando datos admin: ' + e.message);
+  }
 }
 
 function renderAdminOverview(){

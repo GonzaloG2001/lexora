@@ -1488,12 +1488,17 @@ async function doLogin(){
   const pass =document.getElementById('l-pass').value;
   if(!email||!pass){ showErr('l-err','Completá email y contraseña.'); return; }
   hideErr('l-err'); setBtn('l-btn','Ingresando...',true);
+  _sessionLoading = true;  // Prevent onAuthStateChange from double-firing
   try{
     const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
     if(error) throw error;
     await loadUserSession(data.user);
   } catch(e){
-    showErr('l-err', e.message || 'Email o contraseña incorrectos.');
+    _sessionLoading = false;
+    let msg = e.message || 'Email o contraseña incorrectos.';
+    if(msg.includes('Invalid login credentials')) msg = 'Email o contraseña incorrectos.';
+    if(msg.includes('Email not confirmed'))       msg = 'Debés confirmar tu email antes de ingresar. Revisá tu bandeja de entrada.';
+    showErr('l-err', msg);
     setBtn('l-btn','Ingresar al panel',false);
   }
 }
@@ -1503,6 +1508,7 @@ async function loadUserSession(user){
     // Cargar perfil
     const { data: profile, error: profErr } = await _sb.from('perfiles').select('*').eq('id', user.id).single();
     if(profErr || !profile){
+      _sessionLoading = false;
       showErr('l-err', 'Perfil no encontrado. Intentá de nuevo o contactá al administrador.');
       setBtn('l-btn','Ingresar al panel',false);
       return;
@@ -1522,6 +1528,7 @@ async function loadUserSession(user){
     // Beta: acceso gratuito directo
     enterApp();
   } catch(e) {
+    _sessionLoading = false;
     console.error('loadUserSession error:', e);
     showErr('l-err', 'Error al cargar tu cuenta: ' + (e.message || 'Intentá de nuevo.'));
     setBtn('l-btn','Ingresar al panel',false);
@@ -1531,6 +1538,7 @@ async function loadUserSession(user){
 function isEstudioPlan(){ return CF?.plan==='estudio' || CF?.tipo==='estudio'; }
 
 function enterApp(){
+  _sessionLoading = false;  // Login complete
   const ini = ((CP.nombre||'')[0]||'') + ((CP.apellido||'')[0]||'');
   document.getElementById('sb-avatar').textContent = ini.toUpperCase() || 'U';
   document.getElementById('sb-name').textContent   = `${CP.nombre} ${CP.apellido}`;
@@ -4596,20 +4604,28 @@ function showToast(msg){
 // ── Session handling ──────────────────────────────────────────
 
 // Listen for auth state changes (includes email confirmation callback)
+// Flag to prevent double-login from onAuthStateChange + doLogin race
+let _sessionLoading = false;
+
 _sb.auth.onAuthStateChange(async (event, session) => {
-  if((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session && !CU){
+  if(event === 'SIGNED_IN' && session && !CU && !_sessionLoading){
+    // Only handle if NOT triggered by our own doLogin (which sets _sessionLoading)
     await handleSignedInSession(session);
   }
+  if(event === 'TOKEN_REFRESHED' && session && CU){
+    // Just update the session token silently
+  }
   if(event === 'SIGNED_OUT'){
+    _sessionLoading = false;
     CU=null; CP=null; CF=null; CS=null; CROL=null;
     C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
     goTo('splash');
   }
 });
 
-// Check for existing session on page load
+// Check for existing session on page load (e.g. after email confirmation redirect)
 _sb.auth.getSession().then(({ data: { session } }) => {
-  if(session && !CU) handleSignedInSession(session);
+  if(session && !CU && !_sessionLoading) handleSignedInSession(session);
 });
 
 // Called whenever a session is established (login OR email confirmation link)

@@ -256,7 +256,7 @@ textarea.form-input{height:74px;resize:none;}
 .tbl-btn.del:hover{border-color:rgba(201,76,76,.4);color:var(--red);}
 .col-exp{grid-template-columns:100px 1fr 140px 90px 90px 80px;}
 .col-cli{grid-template-columns:80px 1fr 100px 130px 70px;}
-.col-rec{grid-template-columns:1fr 140px 100px 90px 70px;}
+.col-rec{grid-template-columns:1fr 130px 90px 70px;}
 
 
 /* ── CLIENTES GRID ── */
@@ -401,8 +401,10 @@ textarea.form-input{height:74px;resize:none;}
 .notif-empty{padding:28px;text-align:center;font-size:12.5px;color:var(--text-muted);}
 
 /* ── BUSCADOR CON RESULTADOS ── */
-.search-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 32px rgba(0,0,0,.5);z-index:400;overflow:hidden;display:none;min-width:320px;}
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 32px rgba(0,0,0,.5);z-index:400;overflow:hidden;display:none;min-width:340px;max-height:420px;overflow-y:auto;}
 .search-results.open{display:block;animation:fadeUp .15s ease;}
+.sr-section{font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);padding:8px 14px 4px;background:var(--surface2);}
+.sr-icon{width:22px;flex-shrink:0;font-size:13px;color:var(--text-muted);}
 .sr-section{padding:6px 0;}
 .sr-label{padding:5px 14px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);}
 .sr-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .12s;}
@@ -932,6 +934,7 @@ textarea.form-input{height:74px;resize:none;}
       <div class="mobile-nav-item" onclick="showPage('tareas',this);mobileNavActivate(this)"><span>✅</span>Tareas</div>
       <div class="mobile-nav-item" onclick="showPage('finanzas',this);mobileNavActivate(this)"><span>💰</span>Finanzas</div>
       <div class="mobile-nav-item" onclick="showPage('reportes',this);mobileNavActivate(this)"><span>📊</span>Reportes</div>
+      <div class="mobile-nav-item" onclick="showPage('plantillas',this);mobileNavActivate(this)"><span>📄</span>Plantillas</div>
       <div class="mobile-nav-item mobile-nav-equipo" onclick="showPage('equipo',this);mobileNavActivate(this)"><span>⊕</span>Equipo</div>
     </div>
   </nav>
@@ -953,6 +956,7 @@ textarea.form-input{height:74px;resize:none;}
       <div class="nav-section">Gestión</div>
       <div class="nav-item" onclick="showPage('finanzas',this)"><span class="nav-icon">💰</span>Finanzas</div>
       <div class="nav-item" onclick="showPage('reportes',this)"><span class="nav-icon">📊</span>Reportes</div>
+      <div class="nav-item" onclick="showPage('plantillas',this)"><span class="nav-icon">📄</span>Plantillas</div>
       <div class="nav-section nav-equipo">Firma</div>
       <div class="nav-item nav-equipo" onclick="showPage('equipo',this)"><span class="nav-icon">⊕</span>Equipo</div>
     </div>
@@ -1245,6 +1249,17 @@ textarea.form-input{height:74px;resize:none;}
       <div class="report-grid" id="report-grid"></div>
     </div>
 
+    <!-- PLANTILLAS -->
+    <div id="page-plantillas" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Plantillas de documentos</div>
+        <button class="btn btn-primary" onclick="nuevaPlantilla()">+ Nueva plantilla</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;" id="plantillas-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1523,8 +1538,9 @@ function enterApp(){
   document.getElementById('sb-firma-name').textContent = CF.nombre;
   // Show/hide Equipo nav based on plan
   const esEstudio = isEstudioPlan();
-  document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
-  document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
+  // Equipo tab visible for all plans — member features are hidden inside
+  document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = ''; });
+  document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = ''; });
 
   goTo('app');
   loadAll();
@@ -1828,6 +1844,7 @@ function renderAll(){
   safeRun(rFinanzas,'rFinanzas');
   safeRun(rTareas,  'rTareas');
   safeRun(rReportes,'rReportes');
+  safeRun(rPlantillas,'rPlantillas');
   if(isEstudioPlan()) safeRun(rEquipo,'rEquipo');
   safeRun(rBadges,  'rBadges');
 }
@@ -1851,13 +1868,36 @@ function rDash(){
       <div>${stBadge(e.estado)}</div>
     </div>`).join('') || `<div class="empty"><div class="ei">📋</div><p>Sin expedientes</p></div>`;
 
+  const hoy = today();
+  // Urgentes y vencidos
+  const urgentes = C.recordatorios.filter(r=>r.urgencia==='urgente'||
+    (r.fecha_limite && r.fecha_limite<=hoy)).sort((a,b)=>a.fecha_limite?.localeCompare(b.fecha_limite||'')||0);
+  // Tareas pendientes de hoy
+  const tareasHoy = tareasStore.filter(t=>!t.done && t.fecha_limite && t.fecha_limite<=hoy);
+  // Leads sin contacto hace +3 días
+  const leadsVencidos = C.leads.filter(l=>l.proximo_contacto && l.proximo_contacto<hoy && l.estado!=='ganado' && l.estado!=='perdido').length;
+
   const cols={urgente:'red',activo:'gold',pendiente:'blue'};
-  document.getElementById('d-alerts').innerHTML = C.recordatorios.slice(0,5).map(r=>`
-    <div class="tbl-row" style="grid-template-columns:14px 1fr;gap:10px;padding:11px 18px;">
-      <div class="alert-dot ${cols[r.urgencia]||'blue'}" style="margin-top:4px;"></div>
-      <div><div class="cp" style="font-size:12.5px;">${r.titulo}</div><div class="cs">${r.fecha_limite||'Sin fecha'}</div></div>
-    </div>`).join('') || `<div class="empty"><div class="ei">✅</div><p>Sin alertas</p></div>`;
-  document.getElementById('d-alert-count').textContent = C.recordatorios.length + ' activas';
+  document.getElementById('d-alerts').innerHTML = urgentes.slice(0,6).map(r=>{
+    const dias = r.fecha_limite ? Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/(86400000)) : null;
+    const late  = dias!==null && dias<0;
+    return `<div class="tbl-row" style="grid-template-columns:8px 1fr auto;gap:10px;padding:10px 18px;cursor:pointer;" onclick="showPage('recordatorios',null)">
+      <div class="alert-dot ${cols[r.urgencia]||'blue'}" style="margin-top:4px;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${late?'var(--red)':r.urgencia==='urgente'?'var(--red)':'var(--gold)'};"></div>
+      <div><div class="cp" style="font-size:12.5px;">${esc(r.titulo)}</div><div class="cs">${late?`⚠ Vencido hace ${Math.abs(dias)}d`:r.fecha_limite||'Sin fecha'}</div></div>
+      ${stBadge(r.urgencia)}
+    </div>`;
+  }).join('') || `<div class="empty"><div class="ei">✅</div><p>Todo al día</p></div>`;
+  document.getElementById('d-alert-count').textContent = urgentes.length + ' alertas';
+
+  // Leads sin contacto badge
+  const leadsEl = document.getElementById('d-leads-vencidos');
+  if(leadsEl) leadsEl.style.display = leadsVencidos>0?'':'none';
+  if(leadsEl) leadsEl.textContent   = leadsVencidos + ' prospecto(s) sin contactar';
+
+  // Tareas vencidas
+  const tareasEl = document.getElementById('d-tareas-vencidas');
+  if(tareasEl) tareasEl.style.display = tareasHoy.length>0?'':'none';
+  if(tareasEl) tareasEl.textContent   = tareasHoy.length + ' tarea(s) vencida(s)';
 }
 
 /* ════════════════════════════════════════
@@ -2125,6 +2165,16 @@ function openPanelExpediente(expId){
             <div class="nota-meta">${n.fecha}${n.tipo?' · '+n.tipo:''}</div>
           </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin entradas aún</div>'}</div>
       </div>
+      <!-- Resumen financiero -->
+      ${(()=>{const fs=C.facturas.filter(f=>f.expediente_id===e.id);if(!fs.length)return '';
+        const cob=fs.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
+        const pen=fs.filter(f=>f.estado==='pendiente').reduce((s,f)=>s+(f.monto||0),0);
+        return `<div class="panel-section"><div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">💰 Honorarios<button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="openModal('factura',{expediente_id:'${e.id}',cliente_id:'${e.cliente_id}'})">+ Agregar</button></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;">
+          <div style="text-align:center;padding:8px;background:var(--surface2);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">TOTAL</div><div style="font-family:'DM Mono',monospace;font-size:12px;">$${(cob+pen).toLocaleString('es-AR')}</div></div>
+          <div style="text-align:center;padding:8px;background:rgba(76,186,132,.08);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">COBRADO</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);">$${cob.toLocaleString('es-AR')}</div></div>
+          <div style="text-align:center;padding:8px;background:rgba(201,168,76,.06);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">PENDIENTE</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);">$${pen.toLocaleString('es-AR')}</div></div>
+        </div></div>`})()}
       <div class="panel-section">
         <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
           Fechas y recordatorios
@@ -2405,23 +2455,28 @@ function rRecConFiltro(lista){
   const hoy = today();
   const recRow=r=>{
     const dias = r.fecha_limite ? Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/86400000) : null;
-    const diasStr = dias===null?'—':dias<0?`<span style="color:var(--red)">Vencido hace ${Math.abs(dias)}d</span>`:dias===0?`<span style="color:var(--gold)">Hoy</span>`:dias===1?`<span style="color:var(--gold)">Mañana</span>`:`en ${dias}d`;
-    return `<div class="tbl-row col-rec">
-      <div><div class="cp">${r.titulo}</div><div class="cs">${r.nota||''}</div></div>
-      <div class="cm" style="font-size:11px;">${expTitle(r.expediente_id).slice(0,24)||'—'}</div>
-      <div class="cm">${r.fecha_limite||'—'}<br><span style="font-size:10px;">${diasStr}</span></div>
+    const late  = dias!==null && dias<0;
+    const diasStr = dias===null?'—':late?`<span style="color:var(--red)">⚠ Vencido hace ${Math.abs(dias)}d</span>`:dias===0?`<span style="color:var(--gold)">📅 Hoy</span>`:dias===1?`<span style="color:var(--gold)">📅 Mañana</span>`:`📅 En ${dias}d`;
+    const exp  = C.expedientes.find(e=>e.id===r.expediente_id);
+    const cli  = exp ? cliName(exp.cliente_id) : '';
+    return `<div class="tbl-row col-rec" style="${late?'background:rgba(201,76,76,.04);':''}" onclick="editItem('recordatorio','${r.id}')" style="cursor:pointer;">
+      <div>
+        <div class="cp">${esc(r.titulo)}</div>
+        ${exp?`<div class="cs" style="color:var(--blue);font-size:10.5px;">▤ ${esc(exp.titulo.slice(0,30))}${cli?' · '+esc(cli.split(' ')[0]):''}</div>`:'<div class="cs">Sin expediente</div>'}
+      </div>
+      <div class="cm" style="font-size:11px;">${r.fecha_limite||'—'}<br><span style="font-size:10px;">${diasStr}</span></div>
       <div>${stBadge(r.urgencia)}</div>
       <div class="act-btns">
-        <button class="tbl-btn" onclick="editItem('recordatorio','${r.id}')">✏️</button>
-        <button class="tbl-btn del" onclick="delItem('recordatorios','${r.id}','recordatorio')">✕</button>
+        <button class="tbl-btn" onclick="event.stopPropagation();editItem('recordatorio','${r.id}')">✏️</button>
+        <button class="tbl-btn del" onclick="event.stopPropagation();delItem('recordatorios','${r.id}','recordatorio')">✕</button>
       </div>
     </div>`;
   };
   const urg  = filtered.filter(r=>r.urgencia==='urgente');
   const rest = filtered.filter(r=>r.urgencia!=='urgente').sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||''));
   let h='';
-  if(urg.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">🔴 Urgentes (${urg.length})</div><div class="card" style="margin-bottom:18px;"><div class="tbl-hdr col-rec"><div class="th">Recordatorio</div><div class="th">Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${urg.map(recRow).join('')}</div>`; }
-  if(rest.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:9px;">Próximos (${rest.length})</div><div class="card"><div class="tbl-hdr col-rec"><div class="th">Recordatorio</div><div class="th">Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${rest.map(recRow).join('')}</div>`; }
+  if(urg.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">🔴 Urgentes (${urg.length})</div><div class="card" style="margin-bottom:18px;"><div class="tbl-hdr col-rec"><div class="th">Recordatorio + Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${urg.map(recRow).join('')}</div>`; }
+  if(rest.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:9px;">Próximos (${rest.length})</div><div class="card"><div class="tbl-hdr col-rec"><div class="th">Recordatorio + Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${rest.map(recRow).join('')}</div>`; }
   el.innerHTML=h;
 }
 
@@ -3362,7 +3417,7 @@ function editLead(id){
 /* ════════════════════════════════════════
    APP NAVIGATION
 ════════════════════════════════════════ */
-const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Expedientes',agenda:'Agenda',recordatorios:'Recordatorios',tareas:'Tareas',finanzas:'Finanzas',reportes:'Reportes',equipo:'Equipo'};
+const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Expedientes',agenda:'Agenda',recordatorios:'Recordatorios',tareas:'Tareas',finanzas:'Finanzas',reportes:'Reportes',plantillas:'Plantillas',equipo:'Equipo'};
 function showPage(p, el){
   // Guard: equipo only for estudio plan
   if(p==='equipo' && CF && !isEstudioPlan()){ p='dashboard'; el=null; }
@@ -3391,73 +3446,73 @@ function showPage(p, el){
 /* ── BUSCADOR GLOBAL CON RESULTADOS ── */
 function handleSearch(v){
   const res = document.getElementById('search-results');
-  if(!v || v.length < 2){ closeSearchResults(); return; }
-  const vc = v.toLowerCase();
-  const lr = C.leads.filter(l=> l.nombre?.toLowerCase().includes(vc) || (l.email||'').toLowerCase().includes(vc) || (l.origen||'').toLowerCase().includes(vc));
-  const cr = C.clientes.filter(c=> c.nombre?.toLowerCase().includes(vc) || (c.codigo_cliente||'').includes(vc) || (c.email||'').toLowerCase().includes(vc) || (c.dni||'').includes(vc));
-  const er = C.expedientes.filter(e=> e.titulo?.toLowerCase().includes(vc) || (e.codigo_caso||'').toLowerCase().includes(vc) || (e.descripcion||'').toLowerCase().includes(vc));
-  const rr = C.recordatorios.filter(r=> r.titulo?.toLowerCase().includes(vc));
+  if(!v || v.length < 2){ res.classList.remove('open'); return; }
+  const q = v.toLowerCase();
 
-  if(!lr.length && !cr.length && !er.length && !rr.length){
-    res.innerHTML = `<div class="sr-empty">Sin resultados para "${v}"</div>`;
-    res.classList.add('open'); return;
+  const leads = C.leads.filter(l=>
+    l.nombre?.toLowerCase().includes(q) ||
+    (l.email||'').toLowerCase().includes(q) ||
+    (l.telefono||'').toLowerCase().includes(q)
+  ).slice(0,3);
+
+  const clientes = C.clientes.filter(c=>
+    c.nombre?.toLowerCase().includes(q) ||
+    (c.email||'').toLowerCase().includes(q) ||
+    (c.dni||'').toLowerCase().includes(q) ||
+    (c.codigo_cliente||'').includes(q)
+  ).slice(0,3);
+
+  const expedientes = C.expedientes.filter(e=>
+    e.titulo?.toLowerCase().includes(q) ||
+    (e.codigo_caso||'').toLowerCase().includes(q) ||
+    (e.juzgado||'').toLowerCase().includes(q)
+  ).slice(0,3);
+
+  const recordatorios = C.recordatorios.filter(r=>
+    r.titulo?.toLowerCase().includes(q)
+  ).slice(0,2);
+
+  const facturas = C.facturas.filter(f=>
+    f.concepto?.toLowerCase().includes(q) ||
+    (f.numero||'').toLowerCase().includes(q)
+  ).slice(0,2);
+
+  if(!leads.length && !clientes.length && !expedientes.length && !recordatorios.length && !facturas.length){
+    res.innerHTML = `<div style="padding:14px 18px;font-size:12px;color:var(--text-muted);">Sin resultados para "${esc(v)}"</div>`;
+    res.classList.add('open');
+    return;
   }
 
-  let html = '';
-  if(lr.length){
-    html += `<div class="sr-section"><div class="sr-label">Leads (${lr.length})</div>`;
-    html += lr.slice(0,4).map(l=>`
-      <div class="sr-item" onclick="goToLead('${l.id}')">
-        <div class="sr-item-icon">◈</div>
-        <div class="sr-item-text">
-          <div class="sr-item-main">${l.nombre}</div>
-          <div class="sr-item-sub">${l.origen||'—'} · ${l.estado}</div>
-        </div>
-      </div>`).join('');
-    html += '</div>';
-  }
-  if(cr.length){
-    html += `<div class="sr-section"><div class="sr-label">Clientes (${cr.length})</div>`;
-    html += cr.slice(0,4).map(c=>`
-      <div class="sr-item" onclick="goToCliente('${c.id}')">
-        <div class="sr-item-icon">◎</div>
-        <div class="sr-item-text">
-          <div class="sr-item-main">${c.nombre}</div>
-          <div class="sr-item-sub">CLI-${c.codigo_cliente||'—'} · ${c.email||'—'}</div>
-        </div>
-      </div>`).join('');
-    html += '</div>';
-  }
-  if(er.length){
-    if(cr.length) html += '<div class="sr-divider"></div>';
-    html += `<div class="sr-section"><div class="sr-label">Expedientes (${er.length})</div>`;
-    html += er.slice(0,4).map(e=>`
-      <div class="sr-item" onclick="goToExpediente('${e.id}')">
-        <div class="sr-item-icon">▤</div>
-        <div class="sr-item-text">
-          <div class="sr-item-main">${e.titulo}</div>
-          <div class="sr-item-sub">${e.codigo_caso||'—'} · ${e.estado}</div>
-        </div>
-      </div>`).join('');
-    html += '</div>';
-  }
-  if(rr.length){
-    if(cr.length||er.length) html += '<div class="sr-divider"></div>';
-    html += `<div class="sr-section"><div class="sr-label">Recordatorios (${rr.length})</div>`;
-    html += rr.slice(0,3).map(r=>`
-      <div class="sr-item" onclick="closeSearchResults();showPage('recordatorios',null)">
-        <div class="sr-item-icon">◷</div>
-        <div class="sr-item-text">
-          <div class="sr-item-main">${r.titulo}</div>
-          <div class="sr-item-sub">${r.fecha_limite||'Sin fecha'} · ${r.urgencia}</div>
-        </div>
-      </div>`).join('');
-    html += '</div>';
-  }
-  res.innerHTML = html;
+  let html_parts = [];
+  if(leads.length) html_parts.push(`<div class="sr-section">Prospectos</div>` +
+    leads.map(l=>`<div class="sr-item" onclick="goToLead('${l.id}')">
+      <div class="sr-icon">◈</div>
+      <div><div class="sr-name">${esc(l.nombre)}</div><div class="sr-sub">${esc(l.origen||'—')} · ${LEAD_ESTADOS.find(e=>e.key===l.estado)?.label||l.estado}</div></div>
+    </div>`).join(''));
+  if(clientes.length) html_parts.push(`<div class="sr-section">Clientes</div>` +
+    clientes.map(c=>`<div class="sr-item" onclick="goToCliente('${c.id}')">
+      <div class="sr-icon">◎</div>
+      <div><div class="sr-name">${esc(c.nombre)}</div><div class="sr-sub">CLI-${c.codigo_cliente||'—'} · ${c.email||'Sin email'}</div></div>
+    </div>`).join(''));
+  if(expedientes.length) html_parts.push(`<div class="sr-section">Expedientes</div>` +
+    expedientes.map(e=>`<div class="sr-item" onclick="goToExpediente('${e.id}')">
+      <div class="sr-icon">▤</div>
+      <div><div class="sr-name">${esc(e.titulo)}</div><div class="sr-sub">${e.codigo_caso||'—'} · ${stBadge(e.estado)}</div></div>
+    </div>`).join(''));
+  if(recordatorios.length) html_parts.push(`<div class="sr-section">Recordatorios</div>` +
+    recordatorios.map(r=>`<div class="sr-item" onclick="showPage('recordatorios',null);closeSearchResults()">
+      <div class="sr-icon">◷</div>
+      <div><div class="sr-name">${esc(r.titulo)}</div><div class="sr-sub">📅 ${r.fecha_limite||'Sin fecha'}</div></div>
+    </div>`).join(''));
+  if(facturas.length) html_parts.push(`<div class="sr-section">Facturas</div>` +
+    facturas.map(f=>`<div class="sr-item" onclick="showPage('finanzas',null);closeSearchResults()">
+      <div class="sr-icon">💰</div>
+      <div><div class="sr-name">${esc(f.concepto||'—')}</div><div class="sr-sub">${f.numero||'—'} · $${(f.monto||0).toLocaleString('es-AR')}</div></div>
+    </div>`).join(''));
+
+  res.innerHTML = html_parts.join('');
   res.classList.add('open');
 }
-
 function handleSearchKey(e){
   if(e.key==='Escape') closeSearchResults();
 }
@@ -3650,14 +3705,20 @@ const selO    = (v,opts) => opts.map(o=>`<option${o===v?' selected':''}>${o}</op
 const FORMS = {
   cliente: d=>({title:d.id?'Editar cliente':'Nuevo cliente',body:`
     <div class="form-row"><div class="form-group"><label class="form-label">Nombre / Razón social *</label><input id="ff-nombre" class="form-input" placeholder="Juan García" value="${d.nombre||''}"></div><div class="form-group"><label class="form-label">Tipo</label><select id="ff-tipo" class="form-input"><option${(d.tipo||'')==='Persona física'?' selected':''}>Persona física</option><option${(d.tipo||'')==='Empresa'?' selected':''}>Empresa</option></select></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Email</label><input id="ff-email" class="form-input" type="email" placeholder="email@dominio.com" value="${d.email||''}"></div><div class="form-group"><label class="form-label">Teléfono</label><input id="ff-telefono" class="form-input" placeholder="011-xxxx-xxxx" value="${d.telefono||''}"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">DNI / CUIT</label><input id="ff-dni" class="form-input" placeholder="20-12345678-9" value="${d.dni||''}"></div><div class="form-group"><label class="form-label">Dirección</label><input id="ff-direccion" class="form-input" placeholder="Av. Corrientes 1234" value="${d.direccion||''}"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Email <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-email" class="form-input" type="email" placeholder="email@dominio.com" value="${d.email||''}"></div><div class="form-group"><label class="form-label">Teléfono <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-telefono" class="form-input" placeholder="011-xxxx-xxxx" value="${d.telefono||''}" oninput="fmtTel(this)"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">DNI / CUIT <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-dni" class="form-input" placeholder="20-12345678-9" value="${d.dni||''}" oninput="fmtCuit(this)"></div><div class="form-group"><label class="form-label">Dirección <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-direccion" class="form-input" placeholder="Av. Corrientes 1234" value="${d.direccion||''}"></div></div>
     ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Responsable</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:''}
     <div class="form-group"><label class="form-label">Notas internas</label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
   expediente: d=>({title:d.id?'Editar expediente':'Nuevo expediente',body:`
     <div class="form-group"><label class="form-label">Carátula *</label><input id="ff-titulo" class="form-input" placeholder="García c/ López s/ daños..." value="${d.titulo||''}"></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Cliente</label><select id="ff-cliente_id" class="form-input"><option value="">Seleccionar...</option>${cliOpts(d.cliente_id)}</select></div><div class="form-group"><label class="form-label">Tipo de causa</label><select id="ff-tipo" class="form-input">${selO(d.tipo||'Civil',['Civil','Comercial','Laboral','Familia','Penal','Administrativo'])}</select></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Juzgado / Tribunal</label><input id="ff-juzgado" class="form-input" placeholder="Juzgado Civil Nº 12" value="${d.juzgado||''}"></div><div class="form-group"><label class="form-label">Estado</label><select id="ff-estado" class="form-input"><option value="activo"${(d.estado||'')==='activo'?' selected':''}>activo</option><option value="pendiente"${(d.estado||'')==='pendiente'?' selected':''}>pendiente</option><option value="cerrado"${(d.estado||'')==='cerrado'?' selected':''}>cerrado</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Cliente</label>
+  <input id="ff-cliente_id_search" class="form-input" list="dl-clientes" placeholder="Buscar cliente..." value="${d.cliente_id?cliName(d.cliente_id):''}" oninput="syncCliId(this.value)">
+  <input type="hidden" id="ff-cliente_id" value="${d.cliente_id||''}">
+  <datalist id="dl-clientes">${C.clientes.map(c=>`<option value="${esc(c.nombre)}" data-id="${c.id}">${esc(c.nombre)}</option>`).join('')}</datalist>
+</div><div class="form-group"><label class="form-label">Tipo de causa</label><select id="ff-tipo" class="form-input">${selO(d.tipo||'Civil',['Civil','Comercial','Laboral','Familia','Penal','Administrativo'])}</select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Juzgado / Tribunal</label><input id="ff-juzgado" class="form-input" placeholder="Juzgado Civil Nº 12" value="${d.juzgado||''}"></div><div class="form-group"><label class="form-label">Estado</label><select id="ff-estado" class="form-input">
+  ${['activo','pendiente','en_sentencia','apelacion','mediacion','cerrado','archivado'].map(s=>`<option value="${s}"${(d.estado||'activo')===s?' selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}
+</select></div></div>
     ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Abogado a cargo</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:''}
     <div class="form-group"><label class="form-label">Descripción</label><textarea id="ff-descripcion" class="form-input">${d.descripcion||''}</textarea></div>`}),
   recordatorio: d=>({title:d.id?'Editar recordatorio':'Nuevo recordatorio',body:`
@@ -3673,32 +3734,32 @@ const FORMS = {
       <div class="form-group"><label class="form-label">Expediente</label><select id="ff-expediente_id_fac" class="form-input"><option value="">Sin expediente</option>${expOpts(d.expediente_id)}</select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Monto (ARS) *</label><input id="ff-monto" class="form-input" type="number" placeholder="85000" value="${d.monto||''}"></div>
+      <div class="form-group"><label class="form-label">Monto (ARS) *</label><input id="ff-monto" class="form-input" type="text" inputmode="decimal" placeholder="85000" value="${d.monto||''}" oninput="fmtMonto(this)"></div>
       <div class="form-group"><label class="form-label">Vencimiento</label><input id="ff-vencimiento_fac" class="form-input" type="date" value="${d.vencimiento||''}"></div>
     </div>
     <div class="form-group"><label class="form-label">Estado</label><select id="ff-estado_fac" class="form-input"><option value="pendiente"${(d.estado||'')!=='cobrado'&&(d.estado||'')!=='vencido'?' selected':''}>Pendiente</option><option value="cobrado"${(d.estado||'')==='cobrado'?' selected':''}>Cobrado</option><option value="vencido"${(d.estado||'')==='vencido'?' selected':''}>Vencido</option></select></div>`}),
     lead: d=>({title:d.id?'Editar prospecto':'Nuevo prospecto',body:`
     <div class="form-row">
       <div class="form-group"><label class="form-label">Nombre / Razón social *</label><input id="ff-nombre" class="form-input" placeholder="Juan García" value="${d.nombre||''}"></div>
-      <div class="form-group"><label class="form-label">Tipo</label><select id="ff-tipo" class="form-input"><option${(d.tipo||'')==='Persona física'?' selected':''}>Persona física</option><option${(d.tipo||'')==='Empresa'?' selected':''}>Empresa</option></select></div>
+      <div class="form-group"><label class="form-label">Tipo <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><select id="ff-tipo" class="form-input"><option${(d.tipo||'')==='Persona física'?' selected':''}>Persona física</option><option${(d.tipo||'')==='Empresa'?' selected':''}>Empresa</option></select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Teléfono</label><input id="ff-telefono" class="form-input" placeholder="011-xxxx-xxxx" value="${d.telefono||''}"></div>
-      <div class="form-group"><label class="form-label">Email</label><input id="ff-email" class="form-input" type="email" placeholder="email@dominio.com" value="${d.email||''}"></div>
+      <div class="form-group"><label class="form-label">Teléfono <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-telefono" class="form-input" placeholder="011-xxxx-xxxx" value="${d.telefono||''}" oninput="fmtTel(this)"></div>
+      <div class="form-group"><label class="form-label">Email <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-email" class="form-input" type="email" placeholder="email@dominio.com" value="${d.email||''}"></div>
     </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Origen *</label><select id="ff-origen" class="form-input"><option value="">Seleccionar...</option>${LEAD_ORIGENES.map(o=>`<option${(d.origen||'')===o?' selected':''}>${o}</option>`).join('')}</select></div>
       <div class="form-group"><label class="form-label">Estado</label><select id="ff-estado" class="form-input">${LEAD_ESTADOS.map(e=>`<option value="${e.key}"${(d.estado||'nuevo')===e.key?' selected':''}>${e.label}</option>`).join('')}</select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Interés / Tipo de caso</label><input id="ff-interes" class="form-input" placeholder="Laboral, Civil, Familia..." value="${d.interes||''}"></div>
+      <div class="form-group"><label class="form-label">Interés / Tipo de caso <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-interes" class="form-input" placeholder="Laboral, Civil, Familia..." value="${d.interes||''}"></div>
       <div class="form-group"><label class="form-label">Prioridad</label><select id="ff-prioridad" class="form-input">${LEAD_PRIORIDADES.map(p=>`<option${(d.prioridad||'media')===p?' selected':''}>${p}</option>`).join('')}</select></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Valor estimado (ARS)</label><input id="ff-valor_estimado" class="form-input" type="number" placeholder="50000" value="${d.valor_estimado||''}"></div>
-      <div class="form-group"><label class="form-label">Próximo contacto</label><input id="ff-proximo_contacto" class="form-input" type="date" value="${d.proximo_contacto||''}"></div>
+      <div class="form-group"><label class="form-label">Valor estimado (ARS) <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-valor_estimado" class="form-input" type="number" placeholder="50000" value="${d.valor_estimado||''}"></div>
+      <div class="form-group"><label class="form-label">Próximo contacto <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-proximo_contacto" class="form-input" type="date" value="${d.proximo_contacto||''}"></div>
     </div>
-    <div class="form-group"><label class="form-label">Notas</label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
+    <div class="form-group"><label class="form-label">Notas <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
     default: ()=>({title:'¿Qué querés crear?', noSave:true, body:`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       ${[['lead','Nuevo prospecto','Agregar al pipeline'],['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento judicial'],['factura','Nueva factura','Registrar honorario o cobro']].map(([t,l,s])=>`
@@ -3711,13 +3772,36 @@ const FORMS = {
 
 const TBL  = {cliente:'clientes',expediente:'expedientes',recordatorio:'recordatorios',lead:'leads',factura:'facturas'};
 const FV   = {
-  factura:      ()=>({concepto:gv('ff-concepto'),cliente_id:gv('ff-cliente_id_fac'),monto:parseFloat(gv('ff-monto'))||0,estado:gv('ff-estado_fac'),vencimiento:gv('ff-vencimiento_fac'),expediente_id:gv('ff-expediente_id_fac')||null}),
-  lead:         ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),telefono:gv('ff-telefono'),email:gv('ff-email'),origen:gv('ff-origen'),estado:gv('ff-estado'),interes:gv('ff-interes'),prioridad:gv('ff-prioridad'),valor_estimado:parseFloat(gv('ff-valor_estimado'))||0,proximo_contacto:gv('ff-proximo_contacto'),notas:gv('ff-notas'),ultimo_contacto:new Date().toISOString().split('T')[0]}),
+  factura:      ()=>({concepto:gv('ff-concepto'),cliente_id:gv('ff-cliente_id_fac')||null,monto:parseFloat(gv('ff-monto'))||0,estado:gv('ff-estado_fac'),vencimiento:gv('ff-vencimiento_fac')||null,expediente_id:gv('ff-expediente_id_fac')||null}),
+  lead:         ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),telefono:gv('ff-telefono'),email:gv('ff-email'),origen:gv('ff-origen'),estado:gv('ff-estado'),interes:gv('ff-interes'),prioridad:gv('ff-prioridad'),valor_estimado:parseFloat(gv('ff-valor_estimado'))||null,proximo_contacto:gv('ff-proximo_contacto')||null,notas:gv('ff-notas'),ultimo_contacto:new Date().toISOString().split('T')[0]}),
   cliente:      ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),email:gv('ff-email'),telefono:gv('ff-telefono'),dni:gv('ff-dni'),direccion:gv('ff-direccion'),notas:gv('ff-notas'),responsable_id:gv('ff-responsable_id')||null}),
   expediente:   ()=>({titulo:gv('ff-titulo'),cliente_id:gv('ff-cliente_id'),tipo:gv('ff-tipo'),juzgado:gv('ff-juzgado'),estado:gv('ff-estado'),descripcion:gv('ff-descripcion'),responsable_id:gv('ff-responsable_id')||null}),
-  recordatorio: ()=>({titulo:gv('ff-titulo'),expediente_id:gv('ff-expediente_id'),fecha_limite:gv('ff-fecha_limite'),urgencia:gv('ff-urgencia'),nota:gv('ff-nota'),responsable_id:gv('ff-responsable_id')||null}),
+  recordatorio: ()=>({titulo:gv('ff-titulo'),expediente_id:gv('ff-expediente_id')||null,fecha_limite:gv('ff-fecha_limite')||null,urgencia:gv('ff-urgencia'),nota:gv('ff-nota'),responsable_id:gv('ff-responsable_id')||null}),
 };
 const gv = id => document.getElementById(id)?.value || '';
+function syncCliId(name){
+  const opt = [...(document.querySelectorAll('#dl-clientes option'))].find(o=>o.value===name);
+  const hdEl = document.getElementById('ff-cliente_id');
+  if(hdEl) hdEl.value = opt ? opt.getAttribute('data-id') : '';
+}
+
+// Input formatters
+function fmtTel(el){
+  let v = el.value.replace(/\D/g,'').slice(0,10);
+  if(v.length > 6) v = v.slice(0,4)+'-'+v.slice(4,8)+'-'+v.slice(8);
+  else if(v.length > 4) v = v.slice(0,4)+'-'+v.slice(4);
+  el.value = v;
+}
+function fmtMonto(el){
+  // Only allow numbers and dot
+  el.value = el.value.replace(/[^0-9.]/g,'');
+}
+function fmtCuit(el){
+  let v = el.value.replace(/\D/g,'').slice(0,11);
+  if(v.length > 10) v = v.slice(0,2)+'-'+v.slice(2,10)+'-'+v.slice(10);
+  else if(v.length > 2) v = v.slice(0,2)+'-'+v.slice(2);
+  el.value = v;
+}
 
 function openModal(type='default', prefill={}){
   curModal=type; editId=prefill.id||null;
@@ -3739,10 +3823,19 @@ const VALIDACIONES = {
   lead: (v) => {
     if(!v.nombre?.trim()) return 'El nombre del prospecto es obligatorio.';
     if(!v.origen) return 'Seleccioná el origen del lead.';
+    if(v.email && v.email.trim()){
+      const dup = C.leads.find(l => l.email && l.email.toLowerCase()===v.email.toLowerCase() && l.id !== editId);
+      if(dup) return `Ya existe un prospecto con ese email (${dup.nombre}). Verificá que no sea duplicado.`;
+    }
     return null;
   },
   cliente: (v) => {
     if(!v.nombre?.trim()) return 'El nombre del cliente es obligatorio.';
+    // Check email duplicate
+    if(v.email && v.email.trim()){
+      const dup = C.clientes.find(c => c.email && c.email.toLowerCase()===v.email.toLowerCase() && c.id !== editId);
+      if(dup) return `Ya existe un cliente con el email ${v.email} (${dup.nombre}). ¿Es el mismo?`;
+    }
     return null;
   },
   expediente: (v) => {
@@ -3772,9 +3865,11 @@ async function saveModal(){
     if(editId){
       await dbUpdate(tbl,editId,vals);
       const i=C[tbl].findIndex(r=>r.id===editId);
+      const prevItem = i>=0 ? {...C[tbl][i]} : {};
       if(i>=0) C[tbl][i]={...C[tbl][i],...vals};
+      const label = vals.nombre||vals.titulo||vals.concepto||vals.numero||editId.slice(0,8);
       showToast('✅ Actualizado');
-      logActividad(`${CP?.nombre||'Alguien'} actualizó ${curModal}`, curModal);
+      logActividad(`${CP?.nombre||'Alguien'} editó ${curModal}: ${label}`, curModal);
     } else {
       if(curModal==='cliente')    vals.codigo_cliente = await genClientCode();
       if(curModal==='expediente') vals.codigo_caso    = await genCasoCode();
@@ -4366,6 +4461,120 @@ function rActividad(){
       </div>
     </div>`).join('')
   : `<div class="empty"><p>Sin actividad registrada</p></div>`;
+}
+
+/* ════════════════════════════════════════
+   PLANTILLAS DE DOCUMENTOS
+════════════════════════════════════════ */
+let plantillasStore = [
+  {id:'p1', nombre:'Carta documento', tipo:'carta', cuerpo:`Por medio de la presente, yo/nosotros, [NOMBRE_CLIENTE], CUIT/DNI [DNI], domiciliado en [DOMICILIO], intimo/intimamos a Ud. en el plazo de CUARENTA Y OCHO (48) horas de recibida la presente, a [CONTENIDO].
+
+En caso de no dar cumplimiento a lo intimado, quedaremos habilitados para iniciar las acciones legales que correspondan, con más costas y costos del proceso.
+
+[CIUDAD], [FECHA].`},
+  {id:'p2', nombre:'Poder notarial simple', tipo:'poder', cuerpo:`Yo, [NOMBRE_CLIENTE], DNI [DNI], domiciliado en [DOMICILIO], por medio de la presente otorgo PODER ESPECIAL al Dr./Dra. [NOMBRE_ABOGADO], matrícula [MATRICULA], para que en mi nombre y representación realice [OBJETO_DEL_PODER].
+
+El presente poder queda sujeto a las leyes de la República Argentina.
+
+[CIUDAD], [FECHA].`},
+  {id:'p3', nombre:'Nota de honorarios', tipo:'honorarios', cuerpo:`[CIUDAD], [FECHA]
+
+Sr./Sra. [NOMBRE_CLIENTE]
+Presente.-
+
+Ref.: Nota de honorarios profesionales - Caso [NUMERO_CASO]
+
+De mi mayor consideración:
+
+Tengo el agrado de dirigirme a Ud. a fin de informar que los honorarios profesionales correspondientes a [DESCRIPCION_TAREA] ascienden a la suma de PESOS [MONTO_LETRAS] ($[MONTO]).
+
+Quedo a su disposición ante cualquier consulta.
+
+Atentamente,
+[NOMBRE_ABOGADO]
+Matrícula: [MATRICULA]`},
+];
+
+function rPlantillas(){
+  const g = document.getElementById('plantillas-grid');
+  if(!g) return;
+  const tags = {carta:'📮',poder:'⚖️',honorarios:'💰',otro:'📄'};
+  g.innerHTML = plantillasStore.map(p=>`
+    <div class="card" style="padding:18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:12px;" onclick="abrirPlantilla('${p.id}')" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor=''">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="font-size:22px;">${tags[p.tipo]||'📄'}</div>
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);">${esc(p.nombre)}</div>
+          <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);text-transform:uppercase;">${p.tipo}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.5;white-space:pre-wrap;max-height:60px;overflow:hidden;">${esc(p.cuerpo.slice(0,120))}...</div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px;" onclick="event.stopPropagation();usarPlantilla('${p.id}')">Usar →</button>
+        <button class="tbl-btn del" onclick="event.stopPropagation();deletePlantilla('${p.id}')">✕</button>
+      </div>
+    </div>`).join('') + `
+    <div class="card" style="padding:18px;cursor:pointer;border:1px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:160px;" onclick="nuevaPlantilla()" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
+      <div style="font-size:28px;opacity:.3;">+</div>
+      <div style="font-size:12px;color:var(--text-muted);">Nueva plantilla</div>
+    </div>`;
+}
+
+function nuevaPlantilla(){
+  document.getElementById('m-title').textContent = 'Nueva plantilla';
+  document.getElementById('m-body').innerHTML = `
+    <div class="form-group"><label class="form-label">Nombre *</label><input id="pt-nombre" class="form-input" placeholder="Ej: Carta de intimación"></div>
+    <div class="form-group"><label class="form-label">Tipo</label>
+      <select id="pt-tipo" class="form-input"><option value="carta">📮 Carta documento</option><option value="poder">⚖️ Poder notarial</option><option value="honorarios">💰 Nota de honorarios</option><option value="otro">📄 Otro</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Contenido <span style="font-size:9px;color:var(--text-muted);">Use [NOMBRE_CLIENTE], [FECHA], [MONTO], etc. como variables</span></label>
+      <textarea id="pt-cuerpo" class="form-input" style="height:200px;font-family:'DM Mono',monospace;font-size:12px;" placeholder="Redactá el cuerpo de la plantilla..."></textarea>
+    </div>`;
+  document.getElementById('m-foot').style.display='flex';
+  document.getElementById('m-save').textContent='Guardar plantilla';
+  document.getElementById('m-save').onclick=()=>{
+    const nombre=(document.getElementById('pt-nombre')?.value||'').trim();
+    const tipo=document.getElementById('pt-tipo')?.value||'otro';
+    const cuerpo=(document.getElementById('pt-cuerpo')?.value||'').trim();
+    if(!nombre){ showToast('⚠ El nombre es obligatorio'); return; }
+    plantillasStore.push({id:'p'+Date.now(), nombre, tipo, cuerpo});
+    closeModal(); rPlantillas(); showToast('✅ Plantilla guardada');
+    document.getElementById('m-save').onclick=saveModal;
+  };
+  document.getElementById('overlay').classList.add('open');
+}
+
+function abrirPlantilla(id){
+  const p = plantillasStore.find(x=>x.id===id);
+  if(!p) return;
+  // Fill variables with current context if available
+  let cuerpo = p.cuerpo;
+  const now = new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  cuerpo = cuerpo.replace(/\[FECHA\]/g, now);
+  if(CF?.nombre) cuerpo = cuerpo.replace(/\[NOMBRE_ABOGADO\]/g, `${CP?.nombre||''} ${CP?.apellido||''}`);
+  if(CP?.matricula) cuerpo = cuerpo.replace(/\[MATRICULA\]/g, CP.matricula);
+
+  document.getElementById('m-title').textContent = p.nombre;
+  document.getElementById('m-body').innerHTML = `
+    <textarea id="pt-view" class="form-input" style="height:300px;font-family:'DM Mono',monospace;font-size:12px;">${esc(cuerpo)}</textarea>
+    <div style="margin-top:10px;display:flex;gap:8px;">
+      <button class="btn btn-primary" style="flex:1;" onclick="copiarPlantilla()">📋 Copiar texto</button>
+    </div>`;
+  document.getElementById('m-foot').style.display='none';
+  document.getElementById('overlay').classList.add('open');
+}
+
+function copiarPlantilla(){
+  const txt = document.getElementById('pt-view')?.value||'';
+  navigator.clipboard?.writeText(txt).then(()=>showToast('📋 Copiado al portapapeles'));
+}
+
+function usarPlantilla(id){ abrirPlantilla(id); }
+
+function deletePlantilla(id){
+  if(!confirm('¿Eliminar esta plantilla?')) return;
+  plantillasStore = plantillasStore.filter(x=>x.id!==id);
+  rPlantillas(); showToast('🗑 Plantilla eliminada');
 }
 
 /* ════════════════════════════════════════

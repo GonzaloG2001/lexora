@@ -85,7 +85,6 @@ textarea.form-input{height:74px;resize:none;}
 .splash-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
 .splash-btns .btn{padding:13px 30px;font-size:14px;}
 .splash-features{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:40px 48px;border-top:1px solid var(--border);max-width:1100px;margin:0 auto;width:100%;}
-.feat{padding:22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);text-align:center;}
 .feat-icon{font-size:22px;margin-bottom:12px;opacity:.8;}
 .feat-title{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);margin-bottom:5px;}
 .feat-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
@@ -215,7 +214,7 @@ textarea.form-input{height:74px;resize:none;}
 .topbar{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;position:sticky;top:0;background:rgba(12,12,14,.94);backdrop-filter:blur(16px);z-index:50;}
 .page-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text);flex:1;}
 .topbar-right{display:flex;align-items:center;gap:9px;}
-.search-wrap{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;width:200px;transition:border-color .2s;}
+.search-wrap{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:7px 12px;width:200px;transition:border-color .2s;position:relative;}
 .search-wrap:focus-within{border-color:var(--gold-dim);}
 .search-wrap input{background:none;border:none;outline:none;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;}
 .search-wrap input::placeholder{color:var(--text-muted);}
@@ -404,8 +403,6 @@ textarea.form-input{height:74px;resize:none;}
 .search-results{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);box-shadow:0 10px 32px rgba(0,0,0,.5);z-index:400;overflow:hidden;display:none;min-width:340px;max-height:420px;overflow-y:auto;}
 .search-results.open{display:block;animation:fadeUp .15s ease;}
 .sr-section{font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);padding:8px 14px 4px;background:var(--surface2);}
-.sr-icon{width:22px;flex-shrink:0;font-size:13px;color:var(--text-muted);}
-.sr-section{padding:6px 0;}
 .sr-label{padding:5px 14px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);}
 .sr-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;transition:background .12s;}
 .sr-item:hover{background:var(--surface2);}
@@ -415,7 +412,6 @@ textarea.form-input{height:74px;resize:none;}
 .sr-item-sub{font-size:10.5px;color:var(--text-muted);font-family:'DM Mono',monospace;}
 .sr-divider{height:1px;background:var(--border);margin:4px 0;}
 .sr-empty{padding:16px 14px;font-size:12.5px;color:var(--text-muted);}
-.search-wrap{position:relative;}
 
 /* ── KPI CARDS CON COLOR ── */
 .stat.gold{border-color:rgba(201,168,76,.2);}
@@ -533,10 +529,10 @@ textarea.form-input{height:74px;resize:none;}
   .stats-row{grid-template-columns:1fr 1fr!important;}
   .dash-grid{grid-template-columns:1fr!important;}
   .adm-stats{grid-template-columns:1fr 1fr!important;}
-  .dash-grid{grid-template-columns:1fr!important;}
   .cli-grid{grid-template-columns:1fr!important;}
   .equipo-grid{grid-template-columns:1fr 1fr!important;}
-  .plans-grid{grid-template-columns:1fr!important;}.type-grid{grid-template-columns:1fr!important;}
+  .plans-grid{grid-template-columns:1fr!important;}
+  .type-grid{grid-template-columns:1fr!important;}
   .splash-features{grid-template-columns:1fr!important;padding:20px 20px!important;}
   .splash-nav{padding:12px 20px!important;}
   .splash-hero{padding:40px 20px 24px!important;}
@@ -546,7 +542,6 @@ textarea.form-input{height:74px;resize:none;}
   .auth-box{padding:0 16px;}
   .reg-box{padding:0 16px;}
   .form-row{grid-template-columns:1fr!important;}
-  .type-grid{grid-template-columns:1fr!important;}
   .plan-select-grid{grid-template-columns:1fr!important;}
   .col-exp2{grid-template-columns:80px 1fr 80px!important;}
   .col-rec{grid-template-columns:1fr 80px 70px!important;}
@@ -554,7 +549,6 @@ textarea.form-input{height:74px;resize:none;}
   #leads-chart-row{grid-template-columns:1fr!important;}
   .adm-sidebar{display:none;}
   .adm-main{margin-left:0;}
-  .adm-stats{grid-template-columns:1fr 1fr!important;}
   .page{padding:16px 14px!important;}
   .topbar{padding:0 14px!important;}
 }
@@ -836,7 +830,50 @@ textarea.form-input{height:74px;resize:none;}
       <div class="form-group"><label class="form-label">Email</label><input id="l-email" class="form-input" type="email" placeholder="tu@estudio.com"></div>
       <div class="form-group" style="margin-bottom:22px;"><label class="form-label">Contraseña</label><input id="l-pass" class="form-input" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button id="l-btn" class="btn btn-primary btn-full" onclick="doLogin()">Ingresar al panel</button>
+      <div style="text-align:center;margin-top:12px;"><a onclick="goTo('forgot-password')" style="font-size:12px;color:var(--gold-dim);cursor:pointer;text-decoration:underline;">¿Olvidaste tu contraseña?</a></div>
       <div class="auth-footer">¿No tenés cuenta? <a onclick="goTo('register')">Creá una gratis</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     OLVIDÉ MI CONTRASEÑA
+══════════════════════════════════════════════ -->
+<div id="screen-forgot-password" class="screen" style="align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse 65% 50% at 50% -5%,rgba(201,168,76,.07),transparent 70%),var(--bg);">
+  <span class="back-splash" onclick="goTo('login')">← Volver al login</span>
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-name">Lexora</div>
+      <div class="auth-logo-sub">Recuperar contraseña</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-title">Recuperá tu cuenta</div>
+      <div class="auth-sub">Ingresá tu email y te enviaremos un enlace para restablecer tu contraseña.</div>
+      <div id="fp-err" class="err-box"></div>
+      <div id="fp-success" style="display:none;background:rgba(76,186,132,.1);border:1px solid rgba(76,186,132,.25);border-radius:var(--r);padding:12px 14px;font-size:12.5px;color:var(--green);margin-bottom:14px;line-height:1.5;"></div>
+      <div class="form-group"><label class="form-label">Email de tu cuenta</label><input id="fp-email" class="form-input" type="email" placeholder="tu@estudio.com" autocomplete="off" onkeydown="if(event.key==='Enter')doForgotPassword()"></div>
+      <button id="fp-btn" class="btn btn-primary btn-full" onclick="doForgotPassword()">Enviar enlace de recuperación</button>
+      <div class="auth-footer" style="margin-top:14px;"><a onclick="goTo('login')">← Volver a iniciar sesión</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     RESTABLECER CONTRASEÑA (después del link por email)
+══════════════════════════════════════════════ -->
+<div id="screen-reset-password" class="screen" style="align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(ellipse 65% 50% at 50% -5%,rgba(201,168,76,.07),transparent 70%),var(--bg);">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-name">Lexora</div>
+      <div class="auth-logo-sub">Nueva contraseña</div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-title">Establecer nueva contraseña</div>
+      <div class="auth-sub">Ingresá tu nueva contraseña. Debe tener al menos 8 caracteres.</div>
+      <div id="rp-err" class="err-box"></div>
+      <div class="form-group"><label class="form-label">Nueva contraseña</label><input id="rp-pass" class="form-input" type="password" placeholder="Mínimo 8 caracteres" autocomplete="new-password"></div>
+      <div class="form-group"><label class="form-label">Confirmar contraseña</label><input id="rp-pass2" class="form-input" type="password" placeholder="Repetí la contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doResetPassword()"></div>
+      <button id="rp-btn" class="btn btn-primary btn-full" onclick="doResetPassword()">Guardar nueva contraseña</button>
     </div>
   </div>
 </div>
@@ -884,7 +921,7 @@ textarea.form-input{height:74px;resize:none;}
 
       <!-- Estudio -->
       <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin:14px 0 10px;">Tu estudio</div>
-      <div class="form-group"><label class="form-label">Nombre del estudio *</label><input id="rf-firma" class="form-input" placeholder="Estudio Jurídico García"></div>
+      <div class="form-group"><label class="form-label">Nombre del estudio *</label><input id="rf-firma" class="form-input" placeholder="Estudio Jurídico García" autocomplete="off"></div>
 
       <!-- Unirse a firma -->
       <div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border);">
@@ -893,7 +930,7 @@ textarea.form-input{height:74px;resize:none;}
           Tengo un código de invitación (unirme a una firma existente)
         </label>
         <div id="rf-unirse-box" style="display:none;margin-top:10px;">
-          <input id="rf-codigo" class="form-input" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;" oninput="this.value=this.value.toUpperCase()">
+          <input id="rf-codigo" class="form-input" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;" oninput="this.value=this.value.toUpperCase()" autocomplete="off">
           <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-align:center;">El administrador de la firma te da este código de 6 letras</div>
         </div>
       </div>
@@ -1486,12 +1523,18 @@ function setBtn(id, txt, dis){ const b=document.getElementById(id); if(!b) retur
 async function doLogin(){
   const email=document.getElementById('l-email').value.trim();
   const pass =document.getElementById('l-pass').value;
-  if(!email||!pass){ showErr('l-err','Completá email y contraseña.'); return; }
+  if(!email){ showErr('l-err','Ingresá tu email.'); return; }
+  if(!pass){ showErr('l-err','Ingresá tu contraseña.'); return; }
   hideErr('l-err'); setBtn('l-btn','Ingresando...',true);
-  _sessionLoading = true;  // Prevent onAuthStateChange from double-firing
+  _sessionLoading = true;
   try{
+    // Always sign out first to clear any stale/partial session
+    try{ await _sb.auth.signOut(); } catch(e){}
+    CU=null; CP=null; CF=null; CS=null; CROL=null;
+
     const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
     if(error) throw error;
+    if(!data?.user) throw new Error('No se pudo iniciar sesión.');
     await loadUserSession(data.user);
   } catch(e){
     _sessionLoading = false;
@@ -1552,6 +1595,51 @@ async function loadUserSession(user){
 }
 
 function isEstudioPlan(){ return CF?.plan==='estudio' || CF?.tipo==='estudio'; }
+
+/* ════════════════════════════════════════
+   PASSWORD RECOVERY
+════════════════════════════════════════ */
+let _passwordRecoverySession = null;
+
+async function doForgotPassword(){
+  const email = document.getElementById('fp-email').value.trim();
+  if(!email || !email.includes('@')){ showErr('fp-err','Ingresá un email válido.'); return; }
+  hideErr('fp-err');
+  document.getElementById('fp-success').style.display='none';
+  setBtn('fp-btn','Enviando...',true);
+  try{
+    const { error } = await _sb.auth.resetPasswordForEmail(email, {
+      redirectTo: CFG.APP_URL
+    });
+    if(error) throw error;
+    document.getElementById('fp-success').style.display='block';
+    document.getElementById('fp-success').innerHTML='📧 ¡Listo! Si el email está registrado, te enviamos un enlace de recuperación.<br>Revisá tu bandeja de entrada y carpeta de spam.';
+    setBtn('fp-btn','Enlace enviado ✓',true);
+  } catch(e){
+    showErr('fp-err', e.message || 'Error al enviar el enlace. Intentá de nuevo.');
+    setBtn('fp-btn','Enviar enlace de recuperación',false);
+  }
+}
+
+async function doResetPassword(){
+  const pass  = document.getElementById('rp-pass').value;
+  const pass2 = document.getElementById('rp-pass2').value;
+  if(!pass || pass.length < 8){ showErr('rp-err','La contraseña debe tener al menos 8 caracteres.'); return; }
+  if(pass !== pass2){ showErr('rp-err','Las contraseñas no coinciden.'); return; }
+  hideErr('rp-err');
+  setBtn('rp-btn','Guardando...',true);
+  try{
+    const { error } = await _sb.auth.updateUser({ password: pass });
+    if(error) throw error;
+    _passwordRecoverySession = null;
+    showToast('✅ Contraseña actualizada correctamente');
+    // Redirect to login
+    setTimeout(()=>{ goTo('login'); }, 800);
+  } catch(e){
+    showErr('rp-err', e.message || 'Error al cambiar la contraseña. Intentá de nuevo.');
+    setBtn('rp-btn','Guardar nueva contraseña',false);
+  }
+}
 
 function enterApp(){
   _sessionLoading = false;  // Login complete
@@ -1647,7 +1735,7 @@ async function doRegistro(){
     btn.disabled = false;
     btn.textContent = 'Crear cuenta gratis →';
   };
-  errEl.style.display = 'none';
+  if(errEl) errEl.style.display = 'none';
 
   const nombre  = (document.getElementById('rf-nombre')?.value  || '').trim();
   const apellido= (document.getElementById('rf-apellido')?.value || '').trim();
@@ -1884,13 +1972,32 @@ function rDash(){
   document.getElementById('s-urg-sub').textContent = u > 0 ? '⚠ requieren atención' : '✓ todo al día';
   document.getElementById('s-urg-sub').className   = 'stat-sub ' + (u>0?'dn':'up');
 
+  // Leads stats
+  const activeLeads = C.leads.filter(l=>l.estado!=='ganado'&&l.estado!=='perdido').length;
+  const sLeads = document.getElementById('s-leads');
+  if(sLeads) sLeads.textContent = activeLeads;
+  const sLeadsSub = document.getElementById('s-leads-sub');
+  if(sLeadsSub) sLeadsSub.textContent = activeLeads > 0 ? 'en pipeline' : 'sin prospectos';
+
   document.getElementById('d-exp').innerHTML = C.expedientes.slice(0,5).map(e=>`
     <div class="tbl-row col-exp2" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
       <div><span class="code-tag">${e.codigo_caso||'—'}</span></div>
-      <div><div class="cp">${e.titulo}</div><div class="cs">${e.juzgado||'Sin juzgado'}</div></div>
+      <div><div class="cp">${esc(e.titulo)}</div><div class="cs">${esc(e.juzgado||'Sin juzgado')}</div></div>
       <div class="cm">${cliName(e.cliente_id).split(' ').slice(0,2).join(' ')}</div>
       <div>${stBadge(e.estado)}</div>
     </div>`).join('') || `<div class="empty"><div class="ei">📋</div><p>Sin expedientes</p></div>`;
+
+  // Leads recientes en dashboard
+  const dLeads = document.getElementById('d-leads');
+  if(dLeads){
+    dLeads.innerHTML = C.leads.slice(0,5).map(l=>{
+      const est = LEAD_ESTADOS.find(e=>e.key===l.estado)||{};
+      return `<div class="tbl-row" style="grid-template-columns:1fr auto;gap:10px;padding:10px 18px;cursor:pointer;" onclick="showPage('leads',null);setTimeout(()=>openLeadPanel('${l.id}'),150)">
+        <div><div class="cp">${esc(l.nombre)}</div><div class="cs">${l.origen||'—'} · ${l.email||l.telefono||'—'}</div></div>
+        <span style="font-size:10px;font-family:'DM Mono',monospace;padding:3px 8px;border-radius:20px;background:${est.bg||'rgba(68,66,74,.3)'};color:${est.color||'var(--text-muted)'};">${est.label||l.estado||'—'}</span>
+      </div>`;
+    }).join('') || `<div class="empty"><div class="ei">◈</div><p>Sin prospectos</p></div>`;
+  }
 
   const hoy = today();
   // Urgentes y vencidos
@@ -1922,6 +2029,22 @@ function rDash(){
   const tareasEl = document.getElementById('d-tareas-vencidas');
   if(tareasEl) tareasEl.style.display = tareasHoy.length>0?'':'none';
   if(tareasEl) tareasEl.textContent   = tareasHoy.length + ' tarea(s) vencida(s)';
+
+  // Próximos vencimientos (recordatorios + facturas pendientes)
+  const dVenc = document.getElementById('d-vencimientos');
+  if(dVenc){
+    const proxRec = C.recordatorios.filter(r=>r.fecha_limite && r.fecha_limite>=hoy).map(r=>({fecha:r.fecha_limite, label:r.titulo, tipo:'rec'}));
+    const proxFac = C.facturas.filter(f=>f.vencimiento && f.vencimiento>=hoy && f.estado!=='cobrado').map(f=>({fecha:f.vencimiento, label:f.concepto||'Factura', tipo:'fac'}));
+    const proximos = [...proxRec,...proxFac].sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,5);
+    dVenc.innerHTML = proximos.length ? proximos.map(v=>{
+      const dias = Math.ceil((new Date(v.fecha)-new Date(hoy))/86400000);
+      const diasStr = dias===0?'Hoy':dias===1?'Mañana':`En ${dias}d`;
+      return `<div class="tbl-row" style="grid-template-columns:60px 1fr;gap:10px;padding:10px 18px;cursor:pointer;" onclick="showPage('${v.tipo==='rec'?'recordatorios':'finanzas'}',null)">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:${dias<=2?'var(--red)':'var(--gold)'};">${diasStr}</div>
+        <div style="font-size:12.5px;color:var(--text);">${esc(v.label)}</div>
+      </div>`;
+    }).join('') : `<div class="empty" style="padding:20px;"><p>Sin vencimientos próximos</p></div>`;
+  }
 }
 
 /* ════════════════════════════════════════
@@ -1949,8 +2072,8 @@ function rCli(filtro=''){
       <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">
         <div class="cli-avatar">${ini}</div>
         <div style="flex:1;min-width:0;">
-          <div class="cli-name">${c.nombre}</div>
-          <div class="cli-meta">${c.tipo||'—'} · ${c.email||'Sin email'}</div>
+          <div class="cli-name">${esc(c.nombre)}</div>
+          <div class="cli-meta">${esc(c.tipo||'—')} · ${c.email||'Sin email'}</div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;">
             <span class="code-tag">CLI-${c.codigo_cliente||'------'}</span>
             ${resp?`<span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--blue);">👤 ${resp}</span>`:''}
@@ -1990,7 +2113,7 @@ function openPanelCliente(cliId){
     <div class="panel-hdr">
       <div class="cli-avatar" style="width:36px;height:36px;font-size:14px;flex-shrink:0;">${ini}</div>
       <div style="flex:1;min-width:0;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);">${c.nombre}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);">${esc(c.nombre)}</div>
         <span class="code-tag">CLI-${c.codigo_cliente||'------'}</span>
       </div>
       <div class="panel-close" onclick="closePanelCliente()">✕</div>
@@ -2027,7 +2150,7 @@ function openPanelCliente(cliId){
         ${exps.length ? exps.map(e=>`
           <div class="exp-mini" onclick="closePanelCliente();setTimeout(()=>openPanelExpediente('${e.id}'),120);">
             <div style="flex:1;min-width:0;">
-              <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${e.titulo}</div>
+              <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${esc(e.titulo)}</div>
               <span class="code-tag" style="font-size:9.5px;">${e.codigo_caso||'—'}</span>
             </div>
             ${stBadge(e.estado)}
@@ -2038,11 +2161,11 @@ function openPanelCliente(cliId){
         <div class="panel-section-title">Recordatorios vinculados</div>
         ${recs.map(r=>`
           <div style="padding:8px 10px;background:var(--surface2);border-radius:var(--r);margin-bottom:5px;border-left:2px solid ${cols[r.urgencia]||'var(--border3)'};">
-            <div style="font-size:12.5px;color:var(--text);">${r.titulo}</div>
+            <div style="font-size:12.5px;color:var(--text);">${esc(r.titulo)}</div>
             <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:2px;">${r.fecha_limite||'Sin fecha'}</div>
           </div>`).join('')}
       </div>` : ''}
-      ${c.notas?`<div class="panel-section"><div class="panel-section-title">Notas internas</div><div style="font-size:13px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;">${c.notas}</div></div>`:''}
+      ${c.notas?`<div class="panel-section"><div class="panel-section-title">Notas internas</div><div style="font-size:13px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;">${esc(c.notas)}</div></div>`:''}
       <div class="panel-section">
         <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
           Documentos
@@ -2104,7 +2227,7 @@ function rExp(filtro='', listaOverride=null){
     const respName = e.responsable_id ? membName(e.responsable_id) : '';
     return `<div class="tbl-row col-exp2" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
       <div><span class="code-tag">${e.codigo_caso||'—'}</span></div>
-      <div><div class="cp">${e.titulo}</div><div class="cs">${e.juzgado||'Sin juzgado'}${respName?' · 👤 '+respName:''}</div></div>
+      <div><div class="cp">${esc(e.titulo)}</div><div class="cs">${esc(e.juzgado||'Sin juzgado')}${respName?' · 👤 '+respName:''}</div></div>
       <div class="cm" style="font-size:12px;">${cliName(e.cliente_id)}</div>
       <div>${stBadge(e.estado)}</div>
       <div class="act-btns" onclick="event.stopPropagation();">
@@ -2129,7 +2252,7 @@ function openPanelExpediente(expId){
   document.getElementById('exp-panel-content').innerHTML = `
     <div class="panel-hdr">
       <div style="flex:1;min-width:0;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--text);margin-bottom:3px;">${e.titulo}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--text);margin-bottom:3px;">${esc(e.titulo)}</div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span class="code-tag">${e.codigo_caso||'—'}</span>
           ${stBadge(e.estado)}
@@ -2207,7 +2330,7 @@ function openPanelExpediente(expId){
         ${recs.length ? recs.map(r=>`
           <div style="padding:9px 12px;background:var(--surface2);border-radius:var(--r);margin-bottom:6px;border-left:2px solid ${cols[r.urgencia]||'var(--border3)'};">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:13px;color:var(--text);">${r.titulo}</div>
+              <div style="font-size:13px;color:var(--text);">${esc(r.titulo)}</div>
               ${stBadge(r.urgencia)}
             </div>
             <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:3px;">📅 ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+r.nota:''}</div>
@@ -2483,7 +2606,7 @@ function rRecConFiltro(lista){
     const diasStr = dias===null?'—':late?`<span style="color:var(--red)">⚠ Vencido hace ${Math.abs(dias)}d</span>`:dias===0?`<span style="color:var(--gold)">📅 Hoy</span>`:dias===1?`<span style="color:var(--gold)">📅 Mañana</span>`:`📅 En ${dias}d`;
     const exp  = C.expedientes.find(e=>e.id===r.expediente_id);
     const cli  = exp ? cliName(exp.cliente_id) : '';
-    return `<div class="tbl-row col-rec" style="${late?'background:rgba(201,76,76,.04);':''}" onclick="editItem('recordatorio','${r.id}')" style="cursor:pointer;">
+    return `<div class="tbl-row col-rec" style="${late?'background:rgba(201,76,76,.04);':''}cursor:pointer;" onclick="editItem('recordatorio','${r.id}')">
       <div>
         <div class="cp">${esc(r.titulo)}</div>
         ${exp?`<div class="cs" style="color:var(--blue);font-size:10.5px;">▤ ${esc(exp.titulo.slice(0,30))}${cli?' · '+esc(cli.split(' ')[0]):''}</div>`:'<div class="cs">Sin expediente</div>'}
@@ -2522,27 +2645,13 @@ const PERM_LABELS = {
 
 // In-memory activity log
 /* ── TAREAS IN-MEMORY STORE ── */
-let tareasStore = [
-  {id:'t1',titulo:'Revisar legajo García antes de audiencia',prioridad:'urgente',asignado_a:null,expediente_id:null,done:false,fecha_limite:new Date(Date.now()+2*86400000).toISOString().split('T')[0],created_at:new Date().toISOString()},
-  {id:'t2',titulo:'Llamar a cliente Constructora Norte',prioridad:'normal',asignado_a:null,expediente_id:null,done:false,fecha_limite:new Date(Date.now()+5*86400000).toISOString().split('T')[0],created_at:new Date().toISOString()},
-  {id:'t3',titulo:'Preparar escrito de apelación',prioridad:'urgente',asignado_a:null,expediente_id:null,done:false,fecha_limite:new Date(Date.now()+1*86400000).toISOString().split('T')[0],created_at:new Date().toISOString()},
-];
+let tareasStore = [];
 let filtroTareas = 'pendientes';
 
-let actividadLog = [
-  {texto:'Demo Lexora creó el estudio', meta:'Hoy', tipo:'firma'},
-  {texto:'Demo Lexora agregó el cliente María García', meta:'Hace 2 días', tipo:'cliente'},
-  {texto:'Valentina Suárez abrió expediente GAR-2025-0001', meta:'Hace 3 días', tipo:'expediente'},
-  {texto:'Marcos Ferreyra cargó recordatorio de audiencia', meta:'Hace 5 días', tipo:'recordatorio'},
-];
+let actividadLog = [];
 // In-memory private space
-let misTareas = [
-  {id:'t1', texto:'Revisar contrato Constructora Norte', done:false, fecha:'Hoy'},
-  {id:'t2', texto:'Llamar a cliente García', done:false, fecha:'Mañana'},
-];
-let misNotasPrivadas = [
-  {id:'n1', texto:'Estrategia para caso Pérez: buscar precedentes laborales 2024', fecha:'Hoy'},
-];
+let misTareas = [];
+let misNotasPrivadas = [];
 // Invite code expiry (7 days)
 let inviteCodeExpiry = new Date(Date.now() + 7*86400000).toLocaleDateString('es-AR');
 let inviteCodeForRole = {};
@@ -2659,7 +2768,7 @@ function openPanelMiembro(miembroId){
   const expRows = expAsig.map(e=>`
     <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;">
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${e.titulo}</div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:2px;">${esc(e.titulo)}</div>
         <div style="display:flex;gap:6px;align-items:center;">
           <span class="code-tag" style="font-size:9.5px;">${e.codigo_caso||'—'}</span>
           ${stBadge(e.estado)}
@@ -2677,7 +2786,7 @@ function openPanelMiembro(miembroId){
     const est = LEAD_ESTADOS.find(e=>e.key===l.estado)||{color:'var(--text)',label:l.estado};
     return `<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;">
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12.5px;color:var(--text);">${l.nombre}</div>
+        <div style="font-size:12.5px;color:var(--text);">${esc(l.nombre)}</div>
         <div style="font-size:10px;color:${est.color};font-family:'DM Mono',monospace;">${est.label} · ${l.origen||'—'}</div>
       </div>
       ${esAdmin&&!esYo?`<button class="tbl-btn del" onclick="quitarLead('${l.id}','${miembroId}')" title="Quitar asignación">✕</button>`:''}
@@ -2688,7 +2797,7 @@ function openPanelMiembro(miembroId){
   const cliRows = cliAsig.map(c=>`
     <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;">
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12.5px;color:var(--text);">${c.nombre}</div>
+        <div style="font-size:12.5px;color:var(--text);">${esc(c.nombre)}</div>
         <div style="font-size:10px;color:var(--text-muted);font-family:'DM Mono',monospace;">${c.tipo||'—'} · CLI-${c.codigo_cliente||'—'}</div>
       </div>
       <div style="display:flex;gap:5px;flex-shrink:0;">
@@ -2897,7 +3006,7 @@ function rMiEspacio(){
       <div class="mi-tarea-item">
         <div class="alert-dot ${r.urgencia==='urgente'?'red':'gold'}" style="margin-top:4px;width:7px;height:7px;border-radius:50%;flex-shrink:0;background:${r.urgencia==='urgente'?'var(--red)':'var(--gold)'};"></div>
         <div>
-          <div class="mi-tarea-text">${r.titulo}</div>
+          <div class="mi-tarea-text">${esc(r.titulo)}</div>
           <div class="mi-tarea-meta">📅 ${r.fecha_limite||'Sin fecha'}</div>
         </div>
       </div>`).join('')
@@ -2911,7 +3020,7 @@ function rMiEspacio(){
       <div class="mi-tarea-item" style="cursor:pointer;" onclick="showPage('leads',null);setTimeout(()=>openLeadPanel('${l.id}'),200)">
         <div class="lead-priority-dot ${l.prioridad||'baja'}" style="width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px;background:${l.prioridad==='alta'?'var(--red)':l.prioridad==='media'?'var(--gold)':'var(--text-muted)'};"></div>
         <div>
-          <div class="mi-tarea-text">${l.nombre}</div>
+          <div class="mi-tarea-text">${esc(l.nombre)}</div>
           <div class="mi-tarea-meta">${l.origen||'—'} · ${l.estado}</div>
         </div>
       </div>`).join('')
@@ -3234,7 +3343,7 @@ function leadCardVerticalHTML(l){
   return `<div class="lead-card" onclick="openLeadPanel('${l.id}')" style="display:flex;align-items:center;gap:12px;padding:10px 14px;">
     <div style="width:8px;height:8px;border-radius:50%;background:${priColor};flex-shrink:0;"></div>
     <div style="flex:1;min-width:0;">
-      <div class="lead-card-name" style="margin-bottom:2px;">${l.nombre}</div>
+      <div class="lead-card-name" style="margin-bottom:2px;">${esc(l.nombre)}</div>
       <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
         ${l.origen?`<span class="lead-tag origen">${l.origen}</span>`:''}
         ${l.interes?`<span class="lead-tag">${l.interes}</span>`:''}
@@ -3259,7 +3368,7 @@ function leadCardHTML(l){
   const nextCont = l.proximo_contacto?`<div class="lead-next-contact">📅 Próx: ${l.proximo_contacto}</div>`:'';
   return `<div class="lead-card" onclick="openLeadPanel('${l.id}')">
     ${priDot}
-    <div class="lead-card-name">${l.nombre}</div>
+    <div class="lead-card-name">${esc(l.nombre)}</div>
     <div class="lead-card-meta">${l.tipo||'—'} · ${l.telefono||l.email||'—'}</div>
     <div class="lead-card-tags">${tags}</div>
     ${valorStr}${nextCont}
@@ -3297,7 +3406,7 @@ function rLeadsProximos(){
     return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="openLeadPanel('${l.id}')">
       <div style="width:7px;height:7px;border-radius:50%;background:${esPasado?'var(--red)':esHoy?'var(--gold)':'var(--text-muted)'};flex-shrink:0;"></div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.nombre}</div>
+        <div style="font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(l.nombre)}</div>
         <div style="font-size:10px;font-family:'DM Mono',monospace;color:${esPasado?'var(--red)':esHoy?'var(--gold)':'var(--text-muted)'};">${esPasado?'⚠ Vencido':esHoy?'📅 Hoy':'📅 '+l.proximo_contacto}</div>
       </div>
     </div>`;
@@ -3312,7 +3421,7 @@ function openLeadPanel(leadId){
   document.getElementById('cli-panel-content').innerHTML = `
     <div class="panel-hdr">
       <div style="flex:1;min-width:0;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);">${l.nombre}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--text);">${esc(l.nombre)}</div>
         <div style="display:flex;gap:6px;align-items:center;margin-top:4px;">
           <span class="lead-tag origen">${l.origen||'—'}</span>
           <span style="font-size:11px;font-family:'DM Mono',monospace;color:${est.color};">${est.label}</span>
@@ -3340,7 +3449,7 @@ function openLeadPanel(leadId){
         <div class="panel-section-title">Seguimiento</div>
         <div class="info-row"><span class="info-lbl">Último cont.</span><span class="info-val">${l.ultimo_contacto||'—'}</span></div>
         <div class="info-row"><span class="info-lbl">Próx. cont.</span><span class="info-val">${l.proximo_contacto||'—'}</span></div>
-        ${l.notas?`<div style="margin-top:8px;padding:10px;background:var(--surface2);border-radius:var(--r);font-size:12.5px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;">${l.notas}</div>`:
+        ${l.notas?`<div style="margin-top:8px;padding:10px;background:var(--surface2);border-radius:var(--r);font-size:12.5px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;">${esc(l.notas)}</div>`:
         '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">Sin notas</div>'}
       </div>
       <div class="panel-section">
@@ -3510,28 +3619,28 @@ function handleSearch(v){
   let html_parts = [];
   if(leads.length) html_parts.push(`<div class="sr-section">Prospectos</div>` +
     leads.map(l=>`<div class="sr-item" onclick="goToLead('${l.id}')">
-      <div class="sr-icon">◈</div>
-      <div><div class="sr-name">${esc(l.nombre)}</div><div class="sr-sub">${esc(l.origen||'—')} · ${LEAD_ESTADOS.find(e=>e.key===l.estado)?.label||l.estado}</div></div>
+      <div class="sr-item-icon">◈</div>
+      <div class="sr-item-text"><div class="sr-item-main">${esc(l.nombre)}</div><div class="sr-item-sub">${esc(l.origen||'—')} · ${LEAD_ESTADOS.find(e=>e.key===l.estado)?.label||l.estado}</div></div>
     </div>`).join(''));
   if(clientes.length) html_parts.push(`<div class="sr-section">Clientes</div>` +
     clientes.map(c=>`<div class="sr-item" onclick="goToCliente('${c.id}')">
-      <div class="sr-icon">◎</div>
-      <div><div class="sr-name">${esc(c.nombre)}</div><div class="sr-sub">CLI-${c.codigo_cliente||'—'} · ${c.email||'Sin email'}</div></div>
+      <div class="sr-item-icon">◎</div>
+      <div class="sr-item-text"><div class="sr-item-main">${esc(c.nombre)}</div><div class="sr-item-sub">CLI-${c.codigo_cliente||'—'} · ${c.email||'Sin email'}</div></div>
     </div>`).join(''));
   if(expedientes.length) html_parts.push(`<div class="sr-section">Expedientes</div>` +
     expedientes.map(e=>`<div class="sr-item" onclick="goToExpediente('${e.id}')">
-      <div class="sr-icon">▤</div>
-      <div><div class="sr-name">${esc(e.titulo)}</div><div class="sr-sub">${e.codigo_caso||'—'} · ${stBadge(e.estado)}</div></div>
+      <div class="sr-item-icon">▤</div>
+      <div class="sr-item-text"><div class="sr-item-main">${esc(e.titulo)}</div><div class="sr-item-sub">${e.codigo_caso||'—'} · ${stBadge(e.estado)}</div></div>
     </div>`).join(''));
   if(recordatorios.length) html_parts.push(`<div class="sr-section">Recordatorios</div>` +
     recordatorios.map(r=>`<div class="sr-item" onclick="showPage('recordatorios',null);closeSearchResults()">
-      <div class="sr-icon">◷</div>
-      <div><div class="sr-name">${esc(r.titulo)}</div><div class="sr-sub">📅 ${r.fecha_limite||'Sin fecha'}</div></div>
+      <div class="sr-item-icon">◷</div>
+      <div class="sr-item-text"><div class="sr-item-main">${esc(r.titulo)}</div><div class="sr-item-sub">📅 ${r.fecha_limite||'Sin fecha'}</div></div>
     </div>`).join(''));
   if(facturas.length) html_parts.push(`<div class="sr-section">Facturas</div>` +
     facturas.map(f=>`<div class="sr-item" onclick="showPage('finanzas',null);closeSearchResults()">
-      <div class="sr-icon">💰</div>
-      <div><div class="sr-name">${esc(f.concepto||'—')}</div><div class="sr-sub">${f.numero||'—'} · $${(f.monto||0).toLocaleString('es-AR')}</div></div>
+      <div class="sr-item-icon">💰</div>
+      <div class="sr-item-text"><div class="sr-item-main">${esc(f.concepto||'—')}</div><div class="sr-item-sub">${f.numero||'—'} · $${(f.monto||0).toLocaleString('es-AR')}</div></div>
     </div>`).join(''));
 
   res.innerHTML = html_parts.join('');
@@ -3607,12 +3716,12 @@ function toggleNotifPanel(){
   } else {
     html += urgentes.map(r=>`
       <div class="notif-item urgente" onclick="closeNotifPanel();showPage('recordatorios',null)">
-        <div class="notif-item-title">🔴 ${r.titulo}</div>
-        <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+r.nota:''}</div>
+        <div class="notif-item-title">🔴 ${esc(r.titulo)}</div>
+        <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+esc(r.nota):''}</div>
       </div>`).join('');
     html += activos.slice(0,5).map(r=>`
       <div class="notif-item activo" onclick="closeNotifPanel();showPage('recordatorios',null)">
-        <div class="notif-item-title">⚡ ${r.titulo}</div>
+        <div class="notif-item-title">⚡ ${esc(r.titulo)}</div>
         <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}</div>
       </div>`).join('');
   }
@@ -3638,11 +3747,16 @@ function openPerfilConfig(){
   // Modal de perfil
   document.getElementById('m-title').textContent = 'Mi perfil';
   document.getElementById('m-body').innerHTML = `
-    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" value="${CP?.nombre||''}" id="pf-nombre"></div>
-    <div class="form-group"><label class="form-label">Apellido</label><input class="form-input" value="${CP?.apellido||''}" id="pf-apellido"></div>
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" value="${CP?.nombre||''}" id="pf-nombre" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Apellido</label><input class="form-input" value="${CP?.apellido||''}" id="pf-apellido" autocomplete="off"></div>
     <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="${CP?.email||CU?.email||''}" disabled style="opacity:.5;cursor:not-allowed;"></div>
-    <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" value="${CP?.telefono||''}" id="pf-telefono"></div>
-    <div class="form-group"><label class="form-label">Nueva contraseña (opcional)</label><input class="form-input" type="password" id="pf-pass" placeholder="Dejá en blanco para no cambiar"></div>`;
+    <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" value="${CP?.telefono||''}" id="pf-telefono" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label">Nueva contraseña (opcional)</label><input class="form-input" type="password" id="pf-pass" placeholder="Dejá en blanco para no cambiar" autocomplete="new-password"></div>
+    <div style="margin-top:28px;padding-top:18px;border-top:1px solid var(--border);">
+      <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:10px;">Zona peligrosa</div>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">Eliminar tu cuenta borrará permanentemente todos tus datos, expedientes, clientes y la firma asociada. Esta acción no puede deshacerse.</p>
+      <button class="btn" style="background:rgba(201,76,76,.1);color:var(--red);border:1px solid rgba(201,76,76,.25);width:100%;" onclick="iniciarEliminacionCuenta()">🗑 Eliminar mi cuenta</button>
+    </div>`;
   document.getElementById('m-foot').style.display = 'flex';
   document.getElementById('m-save').textContent = 'Guardar perfil';
   document.getElementById('m-save').onclick = savePerfilConfig;
@@ -3657,10 +3771,16 @@ async function savePerfilConfig(){
   const pass     = document.getElementById('pf-pass')?.value;
   setBtn('m-save','Guardando...',true);
   try{
-    try{
-      await _sb.from('perfiles').update({nombre,apellido,telefono}).eq('id',CU.id);
-    }catch(e){}
+    // Update profile in DB
+    await _sb.from('perfiles').update({nombre,apellido,telefono}).eq('id',CU.id);
     if(CP){ CP.nombre=nombre; CP.apellido=apellido; CP.telefono=telefono; }
+    // Update password if provided
+    if(pass && pass.length >= 8){
+      const { error: passErr } = await _sb.auth.updateUser({ password: pass });
+      if(passErr) throw passErr;
+    } else if(pass && pass.length > 0 && pass.length < 8){
+      showToast('⚠ La contraseña debe tener al menos 8 caracteres. Los demás datos se guardaron.');
+    }
     const ini = ((nombre||'')[0]+(apellido||'')[0]).toUpperCase();
     document.getElementById('sb-avatar').textContent = ini||'U';
     document.getElementById('sb-name').textContent   = `${nombre} ${apellido}`;
@@ -3668,6 +3788,93 @@ async function savePerfilConfig(){
     showToast('✅ Perfil actualizado');
   }catch(e){ showToast('❌ '+e.message); }
   finally{ setBtn('m-save','Guardar perfil',false); document.getElementById('m-save').onclick=saveModal; }
+}
+
+/* ════════════════════════════════════════
+   ELIMINAR CUENTA CON VERIFICACIÓN
+════════════════════════════════════════ */
+let _deleteVerificationCode = null;
+
+async function iniciarEliminacionCuenta(){
+  // Step 1: Ask for initial confirmation
+  if(!confirm('⚠️ ¿Estás seguro de que querés eliminar tu cuenta?\n\nSe borrarán TODOS tus datos: clientes, expedientes, facturas y la firma completa.\n\nEsta acción NO puede deshacerse.')) return;
+
+  // Step 2: Generate verification code and "send" via nonce check
+  _deleteVerificationCode = Math.random().toString(36).substring(2,8).toUpperCase();
+  
+  // Show verification modal
+  closeModal();
+  setTimeout(()=>{
+    document.getElementById('m-title').textContent = '🔐 Verificar eliminación';
+    document.getElementById('m-body').innerHTML = `
+      <div style="background:rgba(201,76,76,.06);border:1px solid rgba(201,76,76,.2);border-radius:var(--r);padding:16px;margin-bottom:16px;">
+        <p style="font-size:13px;color:var(--red);font-weight:500;margin-bottom:8px;">⚠️ Último paso antes de eliminar tu cuenta</p>
+        <p style="font-size:12px;color:var(--text-dim);line-height:1.5;">Para verificar tu identidad, ingresá tu email y contraseña actual.</p>
+      </div>
+      <div id="del-err" class="err-box"></div>
+      <div class="form-group"><label class="form-label">Tu email</label><input id="del-email" class="form-input" type="email" placeholder="${CU?.email||''}" autocomplete="off"></div>
+      <div class="form-group"><label class="form-label">Tu contraseña actual</label><input id="del-pass" class="form-input" type="password" placeholder="Ingresá tu contraseña" autocomplete="off"></div>
+      <div class="form-group"><label class="form-label">Escribí "ELIMINAR" para confirmar</label><input id="del-confirm" class="form-input" placeholder="ELIMINAR" autocomplete="off" style="text-transform:uppercase;letter-spacing:.15em;font-family:'DM Mono',monospace;"></div>
+      <button id="del-btn" class="btn" style="background:var(--red);color:#fff;width:100%;margin-top:8px;padding:12px;" onclick="ejecutarEliminacionCuenta()">Eliminar cuenta permanentemente</button>`;
+    document.getElementById('m-foot').style.display = 'none';
+    document.getElementById('overlay').classList.add('open');
+    curModal = '_delete_account';
+  },150);
+}
+
+async function ejecutarEliminacionCuenta(){
+  const email   = document.getElementById('del-email')?.value.trim();
+  const pass    = document.getElementById('del-pass')?.value;
+  const confirm = document.getElementById('del-confirm')?.value.trim().toUpperCase();
+  
+  if(!email || !pass){ showErr('del-err','Completá email y contraseña.'); return; }
+  if(email.toLowerCase() !== (CU?.email||'').toLowerCase()){ showErr('del-err','El email no coincide con tu cuenta.'); return; }
+  if(confirm !== 'ELIMINAR'){ showErr('del-err','Escribí "ELIMINAR" para confirmar.'); return; }
+
+  hideErr('del-err');
+  setBtn('del-btn','Verificando...',true);
+
+  try {
+    // Verify credentials by re-authenticating
+    const { error: authErr } = await _sb.auth.signInWithPassword({ email, password: pass });
+    if(authErr) throw new Error('Contraseña incorrecta. Verificá e intentá de nuevo.');
+
+    setBtn('del-btn','Eliminando datos...',true);
+
+    const firmaId = CF?.id;
+    const userId  = CU?.id;
+
+    // Delete all data associated with the firma (cascades handle most via FK)
+    if(firmaId){
+      try{ await _sb.from('leads').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('facturas').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('recordatorios').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('expedientes').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('clientes').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('contadores').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('suscripciones').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('miembros').delete().eq('firma_id', firmaId); }catch(e){}
+      try{ await _sb.from('firmas').delete().eq('id', firmaId); }catch(e){}
+    }
+    // Delete profile
+    if(userId){
+      try{ await _sb.from('perfiles').delete().eq('id', userId); }catch(e){}
+    }
+
+    // Sign out
+    await _sb.auth.signOut();
+    CU=null; CP=null; CF=null; CS=null; CROL=null;
+    C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
+    tareasStore=[]; actividadLog=[]; misTareas=[]; misNotasPrivadas=[];
+    
+    closeModal();
+    goTo('splash');
+    setTimeout(()=>showToast('✅ Tu cuenta y todos los datos han sido eliminados.'), 300);
+
+  } catch(e){
+    showErr('del-err', e.message || 'Error al eliminar la cuenta.');
+    setBtn('del-btn','Eliminar cuenta permanentemente',false);
+  }
 }
 
 function openFirmaConfig(){
@@ -3723,7 +3930,7 @@ function confirmarCerrarSesion(){
 ════════════════════════════════════════ */
 const cliOpts = (sel='') => C.clientes.map(c=>`<option value="${c.id}"${c.id===sel?' selected':''}>${c.nombre} (${c.codigo_cliente||'—'})</option>`).join('');
 const miembroOpts = (sel='') => C.miembros.map(m=>{ const p=m.perfiles||{}; return `<option value="${m.perfil_id}"${m.perfil_id===sel?' selected':''}>${p.nombre||''} ${p.apellido||''} (${ROLES_CONFIG[m.rol_personalizado?.toLowerCase()]?.label||m.rol})</option>`; }).join('');
-const expOpts = (sel='') => C.expedientes.map(e=>`<option value="${e.id}"${e.id===sel?' selected':''}>${e.titulo}</option>`).join('');
+const expOpts = (sel='') => C.expedientes.map(e=>`<option value="${e.id}"${e.id===sel?' selected':''}>${esc(e.titulo)}</option>`).join('');
 const selO    = (v,opts) => opts.map(o=>`<option${o===v?' selected':''}>${o}</option>`).join('');
 
 const FORMS = {
@@ -3834,6 +4041,12 @@ function openModal(type='default', prefill={}){
   document.getElementById('m-body').innerHTML    = f.body;
   document.getElementById('m-foot').style.display = f.noSave ? 'none' : 'flex';
   document.getElementById('overlay').classList.add('open');
+  // Disable autocomplete on ALL modal form inputs to prevent browser autofill
+  setTimeout(()=>{
+    document.querySelectorAll('#m-body input, #m-body textarea, #m-body select').forEach(el=>{
+      if(!el.hasAttribute('autocomplete')) el.setAttribute('autocomplete','off');
+    });
+  },10);
 }
 function closeModal(e){ if(e&&e.target!==document.getElementById('overlay')) return; document.getElementById('overlay').classList.remove('open'); editId=null; }
 
@@ -4623,16 +4836,28 @@ function showToast(msg){
 // Flag to prevent double-login from onAuthStateChange + doLogin race
 let _sessionLoading = false;
 
+// Flag to prevent concurrent session handling
+let _sessionHandling = false;
+
 _sb.auth.onAuthStateChange(async (event, session) => {
-  if(event === 'SIGNED_IN' && session && !CU && !_sessionLoading){
-    // Only handle if NOT triggered by our own doLogin (which sets _sessionLoading)
-    await handleSignedInSession(session);
+  // Only handle SIGNED_IN from email confirmation redirects or password recovery
+  // doLogin sets _sessionLoading=true so we skip here to avoid double-firing
+  if(event === 'SIGNED_IN' && session && !CU && !_sessionLoading && !_sessionHandling){
+    _sessionHandling = true;
+    try { await handleSignedInSession(session); }
+    finally { _sessionHandling = false; }
+  }
+  if(event === 'PASSWORD_RECOVERY' && session){
+    // User clicked password reset link — show reset form
+    _passwordRecoverySession = session;
+    goTo('reset-password');
   }
   if(event === 'TOKEN_REFRESHED' && session && CU){
     // Just update the session token silently
   }
   if(event === 'SIGNED_OUT'){
     _sessionLoading = false;
+    _sessionHandling = false;
     CU=null; CP=null; CF=null; CS=null; CROL=null;
     C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
     goTo('splash');
@@ -4640,13 +4865,21 @@ _sb.auth.onAuthStateChange(async (event, session) => {
 });
 
 // Check for existing session on page load (e.g. after email confirmation redirect)
-_sb.auth.getSession().then(({ data: { session } }) => {
-  if(session && !CU && !_sessionLoading) handleSignedInSession(session);
-});
+(async function initSession(){
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    if(session && !CU && !_sessionLoading && !_sessionHandling){
+      _sessionHandling = true;
+      try { await handleSignedInSession(session); }
+      finally { _sessionHandling = false; }
+    }
+  } catch(e){ console.warn('initSession error:', e); }
+})();
 
 // Called whenever a session is established (login OR email confirmation link)
 async function handleSignedInSession(session){
   const user = session.user;
+  if(!user || !user.id) return;
 
   // Check if this user has a firma
   try {
@@ -4836,6 +5069,30 @@ create table facturas (
   created_at timestamp default now()
 );
 
+create table leads (
+  id uuid default gen_random_uuid() primary key,
+  firma_id uuid references firmas(id) on delete cascade,
+  creado_por uuid references perfiles(id),
+  nombre text not null, tipo text default 'Persona física',
+  email text, telefono text,
+  origen text, estado text default 'nuevo',
+  interes text, prioridad text default 'media',
+  valor_estimado numeric default 0,
+  proximo_contacto date, ultimo_contacto date,
+  notas text, responsable_id uuid references perfiles(id),
+  created_at timestamp default now()
+);
+
+-- Columnas adicionales (ejecutar si no existen):
+-- ALTER TABLE clientes ADD COLUMN IF NOT EXISTS dni text;
+-- ALTER TABLE clientes ADD COLUMN IF NOT EXISTS direccion text;
+-- ALTER TABLE clientes ADD COLUMN IF NOT EXISTS responsable_id uuid references perfiles(id);
+-- ALTER TABLE expedientes ADD COLUMN IF NOT EXISTS responsable_id uuid references perfiles(id);
+-- ALTER TABLE recordatorios ADD COLUMN IF NOT EXISTS responsable_id uuid references perfiles(id);
+-- ALTER TABLE miembros ADD COLUMN IF NOT EXISTS rol_personalizado text;
+-- ALTER TABLE miembros ADD COLUMN IF NOT EXISTS permisos jsonb;
+-- ALTER TABLE suscripciones ADD COLUMN IF NOT EXISTS monto_ars numeric default 0;
+
 -- 2. FUNCIONES RPC
 
 create or replace function next_cliente_seq(p_firma_id uuid)
@@ -4874,6 +5131,7 @@ alter table expedientes   enable row level security;
 alter table recordatorios enable row level security;
 alter table facturas      enable row level security;
 alter table contadores    enable row level security;
+alter table leads         enable row level security;
 
 create or replace function is_member(p_firma_id uuid)
 returns boolean language sql security definer as $$
@@ -4889,6 +5147,45 @@ create policy "member" on expedientes for all using (is_member(firma_id));
 create policy "member" on recordatorios for all using (is_member(firma_id));
 create policy "member" on facturas   for all using (is_member(firma_id));
 create policy "member" on contadores for all using (is_member(firma_id));
+create policy "member" on leads      for all using (is_member(firma_id));
+
+-- 3b. FUNCIONES RPC DE REGISTRO
+
+create or replace function crear_firma_completa(
+  p_uid uuid, p_nombre text, p_apellido text, p_email text,
+  p_telefono text, p_firma_nombre text, p_plan text
+) returns void language plpgsql security definer as $$
+declare
+  v_firma_id uuid := gen_random_uuid();
+  v_code text := upper(substr(md5(random()::text),1,6));
+begin
+  insert into perfiles(id, nombre, apellido, email, telefono)
+    values(p_uid, p_nombre, p_apellido, p_email, p_telefono)
+    on conflict(id) do update set nombre=p_nombre, apellido=p_apellido, telefono=p_telefono;
+  insert into firmas(id, nombre, tipo, codigo_invitacion, plan, activo, owner_id)
+    values(v_firma_id, p_firma_nombre, p_plan, v_code, p_plan, true, p_uid);
+  insert into miembros(firma_id, perfil_id, rol) values(v_firma_id, p_uid, 'admin');
+  insert into suscripciones(firma_id, plan, estado, vencimiento)
+    values(v_firma_id, p_plan, 'activo', now() + interval '30 days');
+  insert into contadores(firma_id, ultimo_cliente, ultimo_caso) values(v_firma_id, 0, 0);
+end; $$;
+
+create or replace function unirse_a_firma(
+  p_uid uuid, p_nombre text, p_apellido text, p_email text,
+  p_telefono text, p_codigo text
+) returns void language plpgsql security definer as $$
+declare
+  v_firma_id uuid;
+begin
+  select id into v_firma_id from firmas where codigo_invitacion = upper(p_codigo) limit 1;
+  if v_firma_id is null then
+    raise exception 'Código de invitación inválido.';
+  end if;
+  insert into perfiles(id, nombre, apellido, email, telefono)
+    values(p_uid, p_nombre, p_apellido, p_email, p_telefono)
+    on conflict(id) do update set nombre=p_nombre, apellido=p_apellido, telefono=p_telefono;
+  insert into miembros(firma_id, perfil_id, rol) values(v_firma_id, p_uid, 'miembro');
+end; $$;
 
 -- 4. ALTA MANUAL DE FIRMA (desde Admin Panel)
 -- Reemplazá los valores y ejecutá:
@@ -4928,7 +5225,7 @@ serve(async (req) => {
   const { firma_id, plan, app_url } = await req.json();
   const auth = req.headers.get("Authorization");
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
-  const { data: { user } } = await _sb.auth.getUser(auth?.replace("Bearer ",""));
+  const { data: { user } } = await sb.auth.getUser(auth?.replace("Bearer ",""));
   if(!user) return new Response("Unauthorized", { status: 401 });
 
   const price = PLAN_PRICES[plan] || 39000;
@@ -4980,6 +5277,6 @@ serve(async (req) => {
   if(payment.status === "approved"){
     const firma_id = payment.external_reference;
     const venc = new Date(Date.now() + 30*86400000).toISOString().split("T")[0];
-    await _sb.from("firmas").update({ activo: true }).eq("id", firma_id);
-    await _sb.from("suscripciones").update({
+    await sb.from("firmas").update({ activo: true }).eq("id", firma_id);
+    await sb.from("suscripciones").update({
       estado

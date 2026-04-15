@@ -1518,31 +1518,36 @@ function hideErr(id){ const e=document.getElementById(id); if(e) e.style.display
 function setBtn(id, txt, dis){ const b=document.getElementById(id); if(!b) return; b.textContent=txt; b.disabled=dis; }
 
 /* ════════════════════════════════════════
-   AUTH — LOGIN
+   AUTH — LOGIN (rewritten clean)
 ════════════════════════════════════════ */
+// Single flag: true while doLogin or doRegistro is actively running
+let _manualAuthInProgress = false;
+
 async function doLogin(){
-  const email=document.getElementById('l-email').value.trim();
-  const pass =document.getElementById('l-pass').value;
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
   if(!email){ showErr('l-err','Ingresá tu email.'); return; }
   if(!pass){ showErr('l-err','Ingresá tu contraseña.'); return; }
-  hideErr('l-err'); setBtn('l-btn','Ingresando...',true);
-  _sessionLoading = true;
-  try{
-    // Always sign out first to clear any stale/partial session
-    try{ await _sb.auth.signOut(); } catch(e){}
-    CU=null; CP=null; CF=null; CS=null; CROL=null;
 
+  hideErr('l-err');
+  setBtn('l-btn','Ingresando...',true);
+  _manualAuthInProgress = true;
+
+  try {
     const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
     if(error) throw error;
     if(!data?.user) throw new Error('No se pudo iniciar sesión.');
+
+    // Success — load user data and enter app
     await loadUserSession(data.user);
-  } catch(e){
-    _sessionLoading = false;
+  } catch(e) {
     let msg = e.message || 'Email o contraseña incorrectos.';
     if(msg.includes('Invalid login credentials')) msg = 'Email o contraseña incorrectos.';
     if(msg.includes('Email not confirmed'))       msg = 'Debés confirmar tu email antes de ingresar. Revisá tu bandeja de entrada.';
     showErr('l-err', msg);
     setBtn('l-btn','Ingresar al panel',false);
+  } finally {
+    _manualAuthInProgress = false;
   }
 }
 
@@ -1550,34 +1555,32 @@ async function loadUserSession(user){
   try {
     // Step 1: Load perfil
     const { data: profile, error: profErr } = await _sb
-      .from('perfiles').select('*').eq('id', user.id).single();
+      .from('perfiles').select('*').eq('id', user.id).maybeSingle();
+
     if(profErr || !profile){
-      _sessionLoading = false;
       showErr('l-err', 'Perfil no encontrado. Contactá al administrador.');
       setBtn('l-btn','Ingresar al panel',false);
       return;
     }
     CP = profile; CU = user;
 
-    // Step 2: Load miembro record (without join to avoid RLS issues)
+    // Step 2: Load miembro record
     const { data: memb, error: membErr } = await _sb
       .from('miembros').select('id, firma_id, rol, rol_personalizado, permisos')
-      .eq('perfil_id', user.id).single();
+      .eq('perfil_id', user.id).maybeSingle();
 
     if(membErr || !memb || !memb.firma_id){
-      _sessionLoading = false;
       // No firma yet — show completion screen
       showCompleteSetupScreen(user, null);
       return;
     }
     CROL = memb.rol;
 
-    // Step 3: Load firma separately
+    // Step 3: Load firma
     const { data: firma, error: firmaErr } = await _sb
-      .from('firmas').select('*').eq('id', memb.firma_id).single();
+      .from('firmas').select('*').eq('id', memb.firma_id).maybeSingle();
 
     if(firmaErr || !firma){
-      _sessionLoading = false;
       showErr('l-err', 'No se pudo cargar tu estudio. Intentá de nuevo.');
       setBtn('l-btn','Ingresar al panel',false);
       return;
@@ -1587,7 +1590,6 @@ async function loadUserSession(user){
     // All good — enter app
     enterApp();
   } catch(e) {
-    _sessionLoading = false;
     console.error('loadUserSession error:', e);
     showErr('l-err', 'Error al cargar tu cuenta: ' + (e.message || 'Intentá de nuevo.'));
     setBtn('l-btn','Ingresar al panel',false);
@@ -1633,7 +1635,6 @@ async function doResetPassword(){
     if(error) throw error;
     _passwordRecoverySession = null;
     showToast('✅ Contraseña actualizada correctamente');
-    // Redirect to login
     setTimeout(()=>{ goTo('login'); }, 800);
   } catch(e){
     showErr('rp-err', e.message || 'Error al cambiar la contraseña. Intentá de nuevo.');
@@ -1642,15 +1643,12 @@ async function doResetPassword(){
 }
 
 function enterApp(){
-  _sessionLoading = false;  // Login complete
+  _manualAuthInProgress = false;
   const ini = ((CP.nombre||'')[0]||'') + ((CP.apellido||'')[0]||'');
   document.getElementById('sb-avatar').textContent = ini.toUpperCase() || 'U';
   document.getElementById('sb-name').textContent   = `${CP.nombre} ${CP.apellido}`;
   document.getElementById('sb-role').textContent   = CROL === 'admin' ? 'Admin' : 'Miembro';
   document.getElementById('sb-firma-name').textContent = CF.nombre;
-  // Show/hide Equipo nav based on plan
-  const esEstudio = isEstudioPlan();
-  // Equipo tab visible for all plans — member features are hidden inside
   document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = ''; });
   document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = ''; });
 
@@ -1760,6 +1758,7 @@ async function doRegistro(){
 
   btn.disabled = true;
   btn.textContent = 'Creando cuenta...';
+  _manualAuthInProgress = true;
 
   try {
     // STEP 1: Crear usuario en Supabase Auth
@@ -1823,6 +1822,7 @@ async function doRegistro(){
     await loadUserSession(si.user);
 
   } catch(e) {
+    _manualAuthInProgress = false;
     let msg = e.message || 'Error inesperado. Intentá de nuevo.';
     if(msg.includes('already registered') || msg.includes('User already registered'))
       msg = 'Este email ya tiene una cuenta. Iniciá sesión.';
@@ -4703,34 +4703,7 @@ function rActividad(){
 /* ════════════════════════════════════════
    PLANTILLAS DE DOCUMENTOS
 ════════════════════════════════════════ */
-let plantillasStore = [
-  {id:'p1', nombre:'Carta documento', tipo:'carta', cuerpo:`Por medio de la presente, yo/nosotros, [NOMBRE_CLIENTE], CUIT/DNI [DNI], domiciliado en [DOMICILIO], intimo/intimamos a Ud. en el plazo de CUARENTA Y OCHO (48) horas de recibida la presente, a [CONTENIDO].
-
-En caso de no dar cumplimiento a lo intimado, quedaremos habilitados para iniciar las acciones legales que correspondan, con más costas y costos del proceso.
-
-[CIUDAD], [FECHA].`},
-  {id:'p2', nombre:'Poder notarial simple', tipo:'poder', cuerpo:`Yo, [NOMBRE_CLIENTE], DNI [DNI], domiciliado en [DOMICILIO], por medio de la presente otorgo PODER ESPECIAL al Dr./Dra. [NOMBRE_ABOGADO], matrícula [MATRICULA], para que en mi nombre y representación realice [OBJETO_DEL_PODER].
-
-El presente poder queda sujeto a las leyes de la República Argentina.
-
-[CIUDAD], [FECHA].`},
-  {id:'p3', nombre:'Nota de honorarios', tipo:'honorarios', cuerpo:`[CIUDAD], [FECHA]
-
-Sr./Sra. [NOMBRE_CLIENTE]
-Presente.-
-
-Ref.: Nota de honorarios profesionales - Caso [NUMERO_CASO]
-
-De mi mayor consideración:
-
-Tengo el agrado de dirigirme a Ud. a fin de informar que los honorarios profesionales correspondientes a [DESCRIPCION_TAREA] ascienden a la suma de PESOS [MONTO_LETRAS] ($[MONTO]).
-
-Quedo a su disposición ante cualquier consulta.
-
-Atentamente,
-[NOMBRE_ABOGADO]
-Matrícula: [MATRICULA]`},
-];
+let plantillasStore = [];
 
 function rPlantillas(){
   const g = document.getElementById('plantillas-grid');
@@ -4830,73 +4803,64 @@ function showToast(msg){
 ════════════════════════════════════════ */
 // renderSteps() not needed — single-page register form
 
-// ── Session handling ──────────────────────────────────────────
+// ── Session handling (clean rewrite) ──────────────────────────
 
-// Listen for auth state changes (includes email confirmation callback)
-// Flag to prevent double-login from onAuthStateChange + doLogin race
-let _sessionLoading = false;
-
-// Flag to prevent concurrent session handling
-let _sessionHandling = false;
-
-_sb.auth.onAuthStateChange(async (event, session) => {
-  // Only handle SIGNED_IN from email confirmation redirects or password recovery
-  // doLogin sets _sessionLoading=true so we skip here to avoid double-firing
-  if(event === 'SIGNED_IN' && session && !CU && !_sessionLoading && !_sessionHandling){
-    _sessionHandling = true;
-    try { await handleSignedInSession(session); }
-    finally { _sessionHandling = false; }
-  }
+// onAuthStateChange: ONLY handles special browser-redirect events
+// Normal login is handled entirely by doLogin() → loadUserSession() → enterApp()
+_sb.auth.onAuthStateChange((event, session) => {
+  // PASSWORD_RECOVERY: user clicked reset link from email
   if(event === 'PASSWORD_RECOVERY' && session){
-    // User clicked password reset link — show reset form
     _passwordRecoverySession = session;
     goTo('reset-password');
+    return;
   }
-  if(event === 'TOKEN_REFRESHED' && session && CU){
-    // Just update the session token silently
-  }
-  if(event === 'SIGNED_OUT'){
-    _sessionLoading = false;
-    _sessionHandling = false;
+
+  // SIGNED_OUT: only redirect if user is currently logged in (not during login flow)
+  if(event === 'SIGNED_OUT' && !_manualAuthInProgress){
     CU=null; CP=null; CF=null; CS=null; CROL=null;
     C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
-    goTo('splash');
+    // Only redirect to splash if we were inside the app
+    if(document.getElementById('screen-app')?.classList.contains('active')){
+      goTo('splash');
+    }
   }
 });
 
-// Check for existing session on page load (e.g. after email confirmation redirect)
+// On page load: check if there's a valid session to auto-restore
+// This ONLY runs once, on initial page load
 (async function initSession(){
+  // Skip if user is already being logged in manually
+  if(_manualAuthInProgress) return;
+
   try {
     const { data: { session } } = await _sb.auth.getSession();
-    if(session && !CU && !_sessionLoading && !_sessionHandling){
-      _sessionHandling = true;
-      try { await handleSignedInSession(session); }
-      finally { _sessionHandling = false; }
-    }
-  } catch(e){ console.warn('initSession error:', e); }
-})();
 
-// Called whenever a session is established (login OR email confirmation link)
-async function handleSignedInSession(session){
-  const user = session.user;
-  if(!user || !user.id) return;
+    // No session stored → stay on splash (user must log in manually)
+    if(!session || !session.user) return;
 
-  // Check if this user has a firma
-  try {
+    const user = session.user;
+
+    // Verify the session is still valid by checking if the user has a profile + firma
     const { data: memb } = await _sb.from('miembros')
       .select('id, firma_id')
       .eq('perfil_id', user.id)
       .maybeSingle();
 
     if(memb && memb.firma_id){
+      // Valid session with complete setup → auto-restore into app
       await loadUserSession(user);
-    } else {
+    } else if(memb && !memb.firma_id){
+      // User exists but no firma → show setup screen
       showCompleteSetupScreen(user, null);
     }
+    // If no memb record at all → do nothing, let user log in manually
+    // (the session might be stale or the profile was deleted)
+
   } catch(e){
-    await loadUserSession(user);
+    console.warn('initSession: could not restore session', e.message);
+    // Don't redirect, don't show errors — just let the user log in
   }
-}
+})();
 
 // Screen shown after email confirmation when firma wasn't created yet
 function showCompleteSetupScreen(user, token){

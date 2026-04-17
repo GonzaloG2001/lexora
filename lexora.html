@@ -755,24 +755,26 @@ textarea.form-input{height:74px;resize:none;}
       <div class="plan-card">
         <div class="plan-name">🧍 Independiente</div>
         <div class="plan-price" style="font-size:32px;">$39.000<span style="font-size:14px;">/mes</span></div>
-        <div class="plan-period">ARS · 1 abogado · todo personal</div>
+        <div class="plan-period">ARS · 1 abogado · uso personal</div>
         <ul class="plan-features">
           <li>Clientes y expedientes ilimitados</li>
           <li>Prospectos y recordatorios</li>
-          <li>Organización personal completa</li>
-          <li>Sin funciones de equipo</li>
+          <li>Agenda, tareas y facturación</li>
+          <li>Plantillas de documentos</li>
         </ul>
         <button class="btn btn-ghost btn-full" onclick="goTo('register')">Empezar solo →</button>
       </div>
       <div class="plan-card featured">
         <div class="plan-name">🏢 Estudio ★</div>
-        <div class="plan-price" style="font-size:32px;">$59.000<span style="font-size:14px;">/mes</span></div>
-        <div class="plan-period">ARS · equipo ilimitado</div>
+        <div class="plan-price" style="font-size:32px;">$49.000<span style="font-size:14px;">/mes</span></div>
+        <div class="plan-period">ARS · incluye hasta 3 usuarios</div>
         <ul class="plan-features">
           <li>Todo lo del plan Independiente</li>
-          <li>Miembros y roles del equipo</li>
-          <li>Asignación de casos y leads</li>
-          <li>Código de invitación y permisos</li>
+          <li>Hasta 3 usuarios incluidos</li>
+          <li>Adicional: $10.000/mes por usuario extra</li>
+          <li>Roles: Administrador, Abogado, Asistente</li>
+          <li>Permisos personalizables por módulo</li>
+          <li>Asignación de casos, clientes y leads</li>
         </ul>
         <button class="btn btn-primary btn-full" onclick="goTo('register')">Empezar con equipo →</button>
       </div>
@@ -1177,11 +1179,9 @@ textarea.form-input{height:74px;resize:none;}
             <div class="invite-box-title">Código de invitación</div>
             <div class="invite-box-sub">Seleccioná el rol y compartí el código con el nuevo miembro.</div>
             <select class="invite-role-sel" id="invite-role-select">
-              <option value="admin">Socio / Admin</option>
+              <option value="admin">Administrador</option>
               <option value="abogado" selected>Abogado</option>
               <option value="asistente">Asistente</option>
-              <option value="administrativo">Administrativo</option>
-              <option value="solo_lectura">Solo lectura</option>
             </select>
             <div class="invite-code-box">
               <div class="invite-code-lbl">Código de acceso</div>
@@ -1417,7 +1417,7 @@ textarea.form-input{height:74px;resize:none;}
           <div class="form-row">
             <div class="form-group"><label class="form-label">Plan</label>
               <select id="nf-plan" class="form-input" style="background:#0e0e14;border-color:#1e1e28;">
-                <option value="trial">Trial 1 mes (gratis)</option><option value="independiente">🧍 Independiente — $39.000/mes</option><option value="estudio" selected>🏢 Estudio — $59.000/mes</option>
+                <option value="trial">Trial 1 mes (gratis)</option><option value="independiente">🧍 Independiente — $39.000/mes</option><option value="estudio" selected>🏢 Estudio — $49.000/mes (3 usuarios)</option>
               </select>
             </div>
             <div class="form-group"><label class="form-label">Activar inmediatamente</label>
@@ -1510,8 +1510,9 @@ const membName = uid => { const m=C.miembros.find(x=>x.perfil_id===uid); const p
 const expTitle = id => esc((C.expedientes.find(x=>x.id===id)||{}).titulo||'—');
 const stBadge = s => `<span class="status ${s||'pendiente'}">${s||'pendiente'}</span>`;
 const planPill = p => { const m={independiente:'pill-basic',estudio:'pill-pro',trial:'pill-trial'}; return `<span class="plan-pill ${m[p]||'pill-basic'}">${p}</span>`; };
-const PLAN_PRICES = { independiente:39000, estudio:59000, trial:0 };
+const PLAN_PRICES = { independiente:39000, estudio:49000, trial:0, estudio_extra_usuario:10000 };
 const PLAN_NOMBRES = { independiente:'Independiente', estudio:'Estudio', trial:'Trial gratuito' };
+const ESTUDIO_USUARIOS_INCLUIDOS = 3;
 
 function showErr(id, msg){ const e=document.getElementById(id); if(!e) return; e.textContent=msg; e.style.display='block'; }
 function hideErr(id){ const e=document.getElementById(id); if(e) e.style.display='none'; }
@@ -1649,8 +1650,8 @@ function enterApp(){
   document.getElementById('sb-name').textContent   = `${CP.nombre} ${CP.apellido}`;
   document.getElementById('sb-role').textContent   = CROL === 'admin' ? 'Admin' : 'Miembro';
   document.getElementById('sb-firma-name').textContent = CF.nombre;
-  document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = ''; });
-  document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = ''; });
+  document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = isEstudioPlan() ? '' : 'none'; });
+  document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = isEstudioPlan() ? '' : 'none'; });
 
   goTo('app');
   loadAll();
@@ -1767,8 +1768,8 @@ async function doRegistro(){
       email,
       password: pass,
       options: {
-        data: { nombre, apellido },
-        emailRedirectTo: 'https://lexora-gonzalog2001s-projects.vercel.app'
+        data: { nombre, apellido, telefono: tel, firma_nombre: firma, plan: REG_PLAN },
+        emailRedirectTo: CFG.APP_URL
       }
     });
 
@@ -2630,18 +2631,56 @@ function rRecConFiltro(lista){
 /* ════════════════════════════════════════
    RENDER — EQUIPO
 ════════════════════════════════════════ */
-/* ── ROLES CONFIG ── */
+/* ── ROLES & PERMISSIONS CONFIG ── */
 const ROLES_CONFIG = {
-  admin:         { label:'Socio / Admin',   color:'admin',         permisos:{ ver_todo:true,  editar_todo:true,  editar_expedientes:true,  ver_finanzas:true,  cargar_info:true,  gestionar_equipo:true } },
-  abogado:       { label:'Abogado',         color:'abogado',       permisos:{ ver_todo:false, editar_todo:false, editar_expedientes:true,  ver_finanzas:false, cargar_info:true,  gestionar_equipo:false } },
-  asistente:     { label:'Asistente',       color:'asistente',     permisos:{ ver_todo:false, editar_todo:false, editar_expedientes:false, ver_finanzas:false, cargar_info:true,  gestionar_equipo:false } },
-  administrativo:{ label:'Administrativo',  color:'administrativo',permisos:{ ver_todo:true,  editar_todo:false, editar_expedientes:false, ver_finanzas:true,  cargar_info:true,  gestionar_equipo:false } },
-  solo_lectura:  { label:'Solo lectura',    color:'solo_lectura',  permisos:{ ver_todo:true,  editar_todo:false, editar_expedientes:false, ver_finanzas:false, cargar_info:false, gestionar_equipo:false } },
+  admin: {
+    label:'Administrador', color:'admin',
+    permisos:{
+      casos_ver_propios:true, casos_ver_equipo:true, casos_ver_todos:true, casos_crud:true,
+      clientes_crud:true,
+      documentos_crud:true,
+      agenda_crud:true,
+      facturacion_ver:true, facturacion_editar:true,
+      equipo_invitar:true, equipo_roles:true, equipo_eliminar:true
+    }
+  },
+  abogado: {
+    label:'Abogado', color:'abogado',
+    permisos:{
+      casos_ver_propios:true, casos_ver_equipo:true, casos_ver_todos:false, casos_crud:true,
+      clientes_crud:true,
+      documentos_crud:true,
+      agenda_crud:true,
+      facturacion_ver:false, facturacion_editar:false,
+      equipo_invitar:false, equipo_roles:false, equipo_eliminar:false
+    }
+  },
+  asistente: {
+    label:'Asistente', color:'asistente',
+    permisos:{
+      casos_ver_propios:true, casos_ver_equipo:false, casos_ver_todos:false, casos_crud:false,
+      clientes_crud:false,
+      documentos_crud:true,
+      agenda_crud:true,
+      facturacion_ver:false, facturacion_editar:false,
+      equipo_invitar:false, equipo_roles:false, equipo_eliminar:false
+    }
+  }
 };
-const PERM_LABELS = {
-  ver_todo:'👁 Ver todo', editar_todo:'✏️ Editar todo', editar_expedientes:'▤ Editar exptes.',
-  ver_finanzas:'💰 Finanzas', cargar_info:'📋 Cargar info', gestionar_equipo:'⊕ Gestionar equipo'
+
+// Permission modules for display & editing
+const PERM_MODULES = {
+  'Casos':       { casos_ver_propios:'Ver casos propios', casos_ver_equipo:'Ver casos del equipo', casos_ver_todos:'Ver todos los casos', casos_crud:'Crear, editar y eliminar' },
+  'Clientes':    { clientes_crud:'Ver, crear, editar y eliminar' },
+  'Documentos':  { documentos_crud:'Subir, descargar y eliminar' },
+  'Agenda':      { agenda_crud:'Ver, crear y editar eventos' },
+  'Facturación': { facturacion_ver:'Ver ingresos', facturacion_editar:'Editar honorarios' },
+  'Equipo':      { equipo_invitar:'Invitar usuarios', equipo_roles:'Modificar roles', equipo_eliminar:'Eliminar miembros' }
 };
+
+// Flat label map (for backward compat)
+const PERM_LABELS = {};
+Object.values(PERM_MODULES).forEach(mod=>{ Object.entries(mod).forEach(([k,v])=>{ PERM_LABELS[k]=v; }); });
 
 // In-memory activity log
 /* ── TAREAS IN-MEMORY STORE ── */
@@ -2657,11 +2696,7 @@ let inviteCodeExpiry = new Date(Date.now() + 7*86400000).toLocaleDateString('es-
 let inviteCodeForRole = {};
 
 function rEquipo(){
-  if(!isEstudioPlan()){ 
-    // For independiente, redirect to dashboard
-    showPage('dashboard',null); 
-    return; 
-  }
+  if(!isEstudioPlan()) return;
   rEquipoGrid();
   rEquipoSidebar();
   const btn = document.getElementById('btn-invitar');
@@ -2705,7 +2740,6 @@ function rEquipoGrid(){
         </div>
         <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
           ${Object.entries(perms).filter(([,v])=>v).map(([k])=>`<span class="perm-badge on">${PERM_LABELS[k]||k}</span>`).join('')}
-          ${Object.entries(perms).filter(([,v])=>!v).map(([k])=>`<span class="perm-badge">${PERM_LABELS[k]||k}</span>`).join('')}
         </div>
         ${CROL==='admin' && !esYo ? `
         <div class="member-actions">
@@ -2720,22 +2754,51 @@ function rEquipoGrid(){
 function rEquipoSidebar(){
   const invSec = document.getElementById('invite-section');
   if(invSec){
-    invSec.style.display = (CROL==='admin') ? 'block' : 'none';
-    if(CROL==='admin'){
+    invSec.style.display = (isEstudioPlan() && CROL==='admin') ? 'block' : 'none';
+    if(CROL==='admin' && isEstudioPlan()){
       const codeEl = document.getElementById('firma-invite-code');
       if(codeEl) codeEl.textContent = CF?.codigo_invitacion || '------';
       const expEl = document.getElementById('invite-exp-date');
       if(expEl) expEl.textContent = 'Válido 7 días · Rol: ' + (document.getElementById('invite-role-select')?.options[document.getElementById('invite-role-select')?.selectedIndex]?.text||'');
     }
   }
+  // Update invite role select options to match new roles
+  const rolSel = document.getElementById('invite-role-select');
+  if(rolSel){
+    rolSel.innerHTML = Object.entries(ROLES_CONFIG).map(([k,v])=>
+      `<option value="${k}"${k==='abogado'?' selected':''}>${v.label}</option>`
+    ).join('');
+  }
+
   const panel = document.getElementById('roles-info-panel');
   if(!panel) return;
-  panel.innerHTML = Object.entries(ROLES_CONFIG).map(([key,cfg])=>`
-    <div style="margin-bottom:12px;">
-      <div style="margin-bottom:5px;"><span class="role-pill ${cfg.color}">${cfg.label}</span></div>
-      <div style="display:flex;gap:4px;flex-wrap:wrap;">
-        ${Object.entries(cfg.permisos).map(([k,v])=>`<span class="perm-badge ${v?'on':''}">${PERM_LABELS[k]||k}</span>`).join('')}
+
+  // Show pricing info for estudio plan
+  const pricingHtml = isEstudioPlan() ? `
+    <div style="margin-bottom:16px;padding:14px;background:var(--gold-light);border:1px solid rgba(201,168,76,.15);border-radius:var(--r);">
+      <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:6px;">PLAN ESTUDIO</div>
+      <div style="font-size:12.5px;color:var(--text-dim);line-height:1.5;">
+        $49.000/mes · Incluye hasta 3 usuarios<br>
+        Usuarios adicionales: $10.000/mes c/u<br>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">Miembros actuales: ${C.miembros.length}/${ESTUDIO_USUARIOS_INCLUIDOS}${C.miembros.length>ESTUDIO_USUARIOS_INCLUIDOS?' · +$'+(((C.miembros.length-ESTUDIO_USUARIOS_INCLUIDOS)*10000).toLocaleString('es-AR'))+'/mes':''}</span>
       </div>
+    </div>` : '';
+
+  // Render roles with module-based permissions
+  panel.innerHTML = pricingHtml + Object.entries(ROLES_CONFIG).map(([key,cfg])=>`
+    <div style="margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+      <div style="margin-bottom:8px;"><span class="role-pill ${cfg.color}">${cfg.label}</span></div>
+      ${Object.entries(PERM_MODULES).map(([modName,perms])=>{
+        const modPerms = Object.entries(perms);
+        const anyOn = modPerms.some(([k])=>cfg.permisos[k]);
+        if(!anyOn) return '';
+        return `<div style="margin-bottom:4px;">
+          <div style="font-size:9.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:3px;">${modName}</div>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;">
+            ${modPerms.filter(([k])=>cfg.permisos[k]).map(([,lbl])=>`<span class="perm-badge on">${lbl}</span>`).join('')}
+          </div>
+        </div>`;
+      }).filter(Boolean).join('')}
     </div>`).join('');
 }
 
@@ -2859,9 +2922,16 @@ function openPanelMiembro(miembroId){
           Permisos
           ${esAdmin&&!esYo?`<button class="tbl-btn" onclick="closePanelMiembro();setTimeout(()=>openEditMiembro('${m.id}'),120);">✏️ Editar rol</button>`:''}
         </div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
-          ${Object.entries(perms).map(([k,v])=>`<span class="perm-badge ${v?'on':''}">${PERM_LABELS[k]||k}</span>`).join('')}
-        </div>
+        ${Object.entries(PERM_MODULES).map(([modName,modPerms])=>{
+          const entries = Object.entries(modPerms);
+          const anyOn = entries.some(([k])=>perms[k]);
+          return `<div style="margin-bottom:8px;">
+            <div style="font-size:9px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:3px;">${modName}</div>
+            <div style="display:flex;gap:3px;flex-wrap:wrap;">
+              ${entries.map(([k,lbl])=>`<span class="perm-badge ${perms[k]?'on':''}">${lbl}</span>`).join('')}
+            </div>
+          </div>`;
+        }).join('')}
       </div>
 
       <!-- Resumen stats -->
@@ -3111,29 +3181,38 @@ function openEditMiembro(miembroId){
   const m = C.miembros.find(x=>x.id===miembroId);
   if(!m) return;
   const p = m.perfiles || {};
-  const rolKey = m.rol_personalizado?.toLowerCase().replace(' ','_') || (m.rol==='admin'?'admin':'abogado');
+  const rolKey = m.rol_personalizado?.toLowerCase().replace(/\s+/g,'_') || (m.rol==='admin'?'admin':'abogado');
   const permsActuales = m.permisos || ROLES_CONFIG[rolKey]?.permisos || {};
+
+  // Build module-based permission checkboxes
+  const modulesHtml = Object.entries(PERM_MODULES).map(([modName, perms])=>`
+    <div style="margin-bottom:14px;">
+      <div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border);">${modName}</div>
+      ${Object.entries(perms).map(([k,lbl])=>`
+        <label style="display:flex;align-items:center;gap:8px;padding:5px 8px;cursor:pointer;font-size:12px;color:var(--text-dim);border-radius:4px;transition:background .15s;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='transparent'">
+          <input type="checkbox" id="perm-${k}" ${permsActuales[k]?'checked':''} style="width:15px;height:15px;accent-color:var(--green);cursor:pointer;">
+          ${lbl}
+        </label>`).join('')}
+    </div>`).join('');
+
   document.getElementById('m-title').textContent = 'Editar rol y permisos';
   document.getElementById('m-body').innerHTML = `
     <div class="form-group">
       <label class="form-label">Miembro</label>
-      <div style="font-size:14px;color:var(--text);font-weight:500;">${p.nombre} ${p.apellido}</div>
-      <div style="font-size:12px;color:var(--text-dim);">${p.email}</div>
+      <div style="font-size:14px;color:var(--text);font-weight:500;">${esc(p.nombre||'')} ${esc(p.apellido||'')}</div>
+      <div style="font-size:12px;color:var(--text-dim);">${esc(p.email||'')}</div>
     </div>
     <div class="form-group">
-      <label class="form-label">Rol</label>
+      <label class="form-label">Rol base</label>
       <select id="edit-rol" class="form-input" onchange="previewPermisos(this.value,'${miembroId}')">
         ${Object.entries(ROLES_CONFIG).map(([k,v])=>`<option value="${k}"${rolKey===k?' selected':''}>${v.label}</option>`).join('')}
       </select>
+      <div style="font-size:10.5px;color:var(--text-muted);margin-top:4px;">Al cambiar el rol, los permisos se ajustan automáticamente. Después podés personalizarlos.</div>
     </div>
     <div class="form-group">
-      <label class="form-label">Permisos personalizados</label>
-      <div class="perms-grid" id="perms-edit-grid">
-        ${Object.entries(PERM_LABELS).map(([k,lbl])=>`
-          <div class="perm-toggle">
-            <span style="font-size:11px;">${lbl}</span>
-            <div class="toggle-sw ${permsActuales[k]?'on':''}" id="toggle-${k}" onclick="this.classList.toggle('on')"></div>
-          </div>`).join('')}
+      <label class="form-label">Permisos por módulo</label>
+      <div id="perms-edit-grid" style="margin-top:6px;">
+        ${modulesHtml}
       </div>
     </div>`;
   document.getElementById('m-foot').style.display='flex';
@@ -3145,9 +3224,10 @@ function openEditMiembro(miembroId){
 function previewPermisos(rolKey, miembroId){
   const cfg = ROLES_CONFIG[rolKey];
   if(!cfg) return;
-  Object.entries(cfg.permisos).forEach(([k,v])=>{
-    const el=document.getElementById('toggle-'+k);
-    if(el){ el.classList.toggle('on',v); }
+  // Update all checkboxes based on the selected role's default permissions
+  Object.entries(PERM_LABELS).forEach(([k])=>{
+    const el = document.getElementById('perm-'+k);
+    if(el) el.checked = !!cfg.permisos[k];
   });
 }
 
@@ -3155,19 +3235,25 @@ async function saveMiembroEdit(miembroId){
   const nuevoRol = document.getElementById('edit-rol')?.value;
   const perms = {};
   Object.keys(PERM_LABELS).forEach(k=>{
-    perms[k] = document.getElementById('toggle-'+k)?.classList.contains('on')||false;
+    perms[k] = document.getElementById('perm-'+k)?.checked || false;
   });
   const i = C.miembros.findIndex(x=>x.id===miembroId);
   if(i>=0){
     C.miembros[i].rol_personalizado = nuevoRol;
     C.miembros[i].permisos = perms;
-    try{ await dbUpdate('miembros',miembroId,{rol:nuevoRol==='admin'?'admin':'miembro'}); }catch(e){}
+    try{
+      await dbUpdate('miembros', miembroId, {
+        rol: nuevoRol==='admin'?'admin':'miembro',
+        rol_personalizado: nuevoRol,
+        permisos: perms
+      });
+    }catch(e){ console.warn('saveMiembroEdit DB error:', e.message); }
   }
-  const m=C.miembros[i];
+  const m = C.miembros[i];
   logActividad(`${CP?.nombre} cambió el rol de ${m?.perfiles?.nombre||''} a ${ROLES_CONFIG[nuevoRol]?.label||nuevoRol}`, 'firma');
   closeModal();
   rEquipo();
-  document.getElementById('m-save').onclick=saveModal;
+  document.getElementById('m-save').onclick = saveModal;
   showToast('✅ Rol y permisos actualizados');
 }
 
@@ -3552,7 +3638,6 @@ function editLead(id){
 ════════════════════════════════════════ */
 const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Expedientes',agenda:'Agenda',recordatorios:'Recordatorios',tareas:'Tareas',finanzas:'Finanzas',reportes:'Reportes',plantillas:'Plantillas',equipo:'Equipo'};
 function showPage(p, el){
-  // Guard: equipo only for estudio plan
   if(p==='equipo' && CF && !isEstudioPlan()){ p='dashboard'; el=null; }
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
@@ -3744,7 +3829,43 @@ function closePerfilMenu(){ document.getElementById('perfil-menu').style.display
 
 function openPerfilConfig(){
   closePerfilMenu();
-  // Modal de perfil
+  const esAdmin = CROL === 'admin';
+  const planActual = CF?.plan || 'independiente';
+  const esEstudio = isEstudioPlan();
+
+  // Plan switch section (only for admin/owner)
+  const planSection = esAdmin ? `
+    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+      <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:12px;">Tu plan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span class="plan-pill ${esEstudio?'pill-pro':'pill-basic'}" style="font-size:12px;padding:4px 12px;">${esEstudio?'🏢 Estudio':'🧍 Independiente'}</span>
+        <span style="font-size:12px;color:var(--text-dim);">${esEstudio?'$49.000/mes · hasta 3 usuarios':'$39.000/mes · 1 usuario'}</span>
+      </div>
+      ${esEstudio ? `
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;">
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+            <strong style="color:var(--text);">Plan Estudio</strong> · Incluye ${ESTUDIO_USUARIOS_INCLUIDOS} usuarios<br>
+            Miembros actuales: <span style="font-family:'DM Mono',monospace;color:var(--gold);">${C.miembros.length}</span>${C.miembros.length>ESTUDIO_USUARIOS_INCLUIDOS?` · <span style="color:var(--gold);">+$${((C.miembros.length-ESTUDIO_USUARIOS_INCLUIDOS)*PLAN_PRICES.estudio_extra_usuario).toLocaleString('es-AR')}/mes extras</span>`:''}
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:12px;" onclick="confirmarCambioPlan('independiente')">
+          Cambiar a plan Independiente →
+        </button>
+        <div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;line-height:1.4;">⚠ Al bajar de plan se deshabilitarán las funciones de equipo. Los miembros existentes perderán acceso.</div>
+      ` : `
+        <div style="background:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:14px;margin-bottom:12px;">
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+            <strong style="color:var(--gold);">🏢 Plan Estudio</strong> — $49.000/mes<br>
+            Incluye hasta 3 usuarios · $10.000/mes por usuario extra<br>
+            Roles (Admin, Abogado, Asistente) · Permisos por módulo · Asignación de casos
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;font-size:13px;" onclick="confirmarCambioPlan('estudio')">
+          ⬆ Pasar a Plan Estudio →
+        </button>
+      `}
+    </div>` : '';
+
   document.getElementById('m-title').textContent = 'Mi perfil';
   document.getElementById('m-body').innerHTML = `
     <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" value="${CP?.nombre||''}" id="pf-nombre" autocomplete="off"></div>
@@ -3752,6 +3873,7 @@ function openPerfilConfig(){
     <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="${CP?.email||CU?.email||''}" disabled style="opacity:.5;cursor:not-allowed;"></div>
     <div class="form-group"><label class="form-label">Teléfono</label><input class="form-input" value="${CP?.telefono||''}" id="pf-telefono" autocomplete="off"></div>
     <div class="form-group"><label class="form-label">Nueva contraseña (opcional)</label><input class="form-input" type="password" id="pf-pass" placeholder="Dejá en blanco para no cambiar" autocomplete="new-password"></div>
+    ${planSection}
     <div style="margin-top:28px;padding-top:18px;border-top:1px solid var(--border);">
       <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:10px;">Zona peligrosa</div>
       <p style="font-size:12px;color:var(--text-dim);margin-bottom:12px;line-height:1.5;">Eliminar tu cuenta borrará permanentemente todos tus datos, expedientes, clientes y la firma asociada. Esta acción no puede deshacerse.</p>
@@ -3790,6 +3912,94 @@ async function savePerfilConfig(){
   finally{ setBtn('m-save','Guardar perfil',false); document.getElementById('m-save').onclick=saveModal; }
 }
 
+/* ════════════════════════════════════════
+   CAMBIO DE PLAN
+════════════════════════════════════════ */
+function confirmarCambioPlan(nuevoPlan){
+  closeModal();
+  const esUpgrade = nuevoPlan === 'estudio';
+
+  setTimeout(()=>{
+    document.getElementById('m-title').textContent = esUpgrade ? '⬆ Pasar a Plan Estudio' : '⬇ Cambiar a Plan Independiente';
+    document.getElementById('m-body').innerHTML = esUpgrade ? `
+      <div style="background:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:18px;margin-bottom:16px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:8px;">🏢 Plan Estudio</div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.6;">
+          $49.000/mes · Incluye hasta 3 usuarios<br>
+          Usuarios adicionales: $10.000/mes c/u<br><br>
+          <strong style="color:var(--text);">Incluye:</strong><br>
+          ✓ Roles: Administrador, Abogado, Asistente<br>
+          ✓ Permisos personalizables por módulo<br>
+          ✓ Código de invitación para equipo<br>
+          ✓ Asignación de casos, clientes y leads<br>
+          ✓ Todo lo del plan Independiente
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">Al cambiar, tu estudio podrá invitar miembros y gestionar roles. Solo el titular realiza el pago.</p>
+      <button id="plan-switch-btn" class="btn btn-primary" style="width:100%;padding:13px;font-size:14px;" onclick="ejecutarCambioPlan('estudio')">Confirmar cambio a Plan Estudio →</button>
+    ` : `
+      <div style="background:rgba(201,76,76,.06);border:1px solid rgba(201,76,76,.2);border-radius:var(--r);padding:18px;margin-bottom:16px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:8px;">🧍 Plan Independiente</div>
+        <div style="font-size:13px;color:var(--text-dim);line-height:1.6;">
+          $39.000/mes · 1 usuario<br><br>
+          <strong style="color:var(--red);">⚠ Al bajar de plan:</strong><br>
+          • Se deshabilitarán las funciones de equipo<br>
+          • Los miembros existentes perderán acceso<br>
+          • No se eliminan datos — podés volver al plan Estudio en cualquier momento
+        </div>
+      </div>
+      ${C.miembros.length > 1 ? `<p style="font-size:12px;color:var(--red);margin-bottom:16px;line-height:1.5;">⚠ Tenés ${C.miembros.length - 1} miembro(s) en tu equipo. Al cambiar a Independiente, perderán acceso al estudio.</p>` : ''}
+      <button id="plan-switch-btn" class="btn" style="background:rgba(201,76,76,.1);color:var(--red);border:1px solid rgba(201,76,76,.25);width:100%;padding:13px;font-size:14px;" onclick="ejecutarCambioPlan('independiente')">Confirmar cambio a Independiente</button>
+    `;
+    document.getElementById('m-foot').style.display = 'none';
+    document.getElementById('overlay').classList.add('open');
+    curModal = '_plan_switch';
+  }, 150);
+}
+
+async function ejecutarCambioPlan(nuevoPlan){
+  setBtn('plan-switch-btn','Cambiando plan...',true);
+  try {
+    // Update firma plan and tipo in DB
+    const { error } = await _sb.from('firmas').update({
+      plan: nuevoPlan,
+      tipo: nuevoPlan
+    }).eq('id', CF.id);
+
+    if(error) throw error;
+
+    // Update suscripcion
+    try {
+      await _sb.from('suscripciones').update({
+        plan: nuevoPlan
+      }).eq('firma_id', CF.id);
+    } catch(e){}
+
+    // Update local state
+    CF.plan = nuevoPlan;
+    CF.tipo = nuevoPlan;
+
+    // Update UI
+    const esEstudio = isEstudioPlan();
+    document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
+    document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
+
+    closeModal();
+    renderAll();
+
+    if(nuevoPlan === 'estudio'){
+      showToast('✅ ¡Plan actualizado a Estudio! Ya podés invitar a tu equipo.');
+      showPage('equipo', null);
+    } else {
+      showToast('✅ Plan cambiado a Independiente.');
+      showPage('dashboard', null);
+    }
+
+  } catch(e){
+    showToast('❌ Error al cambiar el plan: ' + (e.message || 'Intentá de nuevo.'));
+    setBtn('plan-switch-btn', nuevoPlan === 'estudio' ? 'Confirmar cambio a Plan Estudio →' : 'Confirmar cambio a Independiente', false);
+  }
+}
 /* ════════════════════════════════════════
    ELIMINAR CUENTA CON VERIFICACIÓN
 ════════════════════════════════════════ */
@@ -4185,7 +4395,7 @@ function renderAdminOverview(){
   const suspend  = adminFirms.filter(f=>!f.activo).length;
   const plans    = {independiente:0,estudio:0,trial:0};
   adminFirms.filter(f=>f.activo).forEach(f=>{ if(plans[f.plan]!==undefined) plans[f.plan]++; });
-  const mrr = plans.independiente*39000 + plans.estudio*59000;
+  const mrr = plans.independiente*39000 + plans.estudio*49000;
   document.getElementById('adm-stats-overview').innerHTML=[
     {l:'Firmas activas',v:activas,s:'pagando'},
     {l:'MRR (ARS)',v:'$'+mrr.toLocaleString('es-AR'),s:'mensual recurrente'},
@@ -4233,7 +4443,7 @@ function renderAdminSubs(){
   adminFirms.filter(f=>f.activo).forEach(f=>{if(bp[f.plan]!==undefined)bp[f.plan]++;});
   document.getElementById('adm-plan-stats').innerHTML=[
     {l:'Independiente ($39.000/mes)',n:bp.independiente,t:bp.independiente*39000},
-    {l:'Estudio ($59.000/mes)',n:bp.estudio,t:bp.estudio*59000},
+    {l:'Estudio ($49.000/mes + extras)',n:bp.estudio,t:bp.estudio*49000},
   ].map(x=>`<div class="adm-stat"><div class="adm-stat-lbl">${x.l}</div><div class="adm-stat-val">${x.n}</div><div class="adm-stat-sub">= $${x.t.toLocaleString('es-AR')}/mes</div></div>`).join('');
   const firma_map={};
   adminFirms.forEach(f=>firma_map[f.id]=f);
@@ -4807,58 +5017,97 @@ function showToast(msg){
 
 // onAuthStateChange: ONLY handles special browser-redirect events
 // Normal login is handled entirely by doLogin() → loadUserSession() → enterApp()
-_sb.auth.onAuthStateChange((event, session) => {
+_sb.auth.onAuthStateChange(async (event, session) => {
+  // SIGNED_IN: handles email verification redirect
+  // Only fires when no manual login/register is in progress and user isn't already loaded
+  if(event === 'SIGNED_IN' && session && !CU && !_manualAuthInProgress){
+    await autoRestoreOrCreateSession(session.user);
+  }
   // PASSWORD_RECOVERY: user clicked reset link from email
   if(event === 'PASSWORD_RECOVERY' && session){
     _passwordRecoverySession = session;
     goTo('reset-password');
-    return;
   }
-
-  // SIGNED_OUT: only redirect if user is currently logged in (not during login flow)
+  // SIGNED_OUT: only redirect if user was inside the app
   if(event === 'SIGNED_OUT' && !_manualAuthInProgress){
     CU=null; CP=null; CF=null; CS=null; CROL=null;
     C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};
-    // Only redirect to splash if we were inside the app
     if(document.getElementById('screen-app')?.classList.contains('active')){
       goTo('splash');
     }
   }
 });
 
-// On page load: check if there's a valid session to auto-restore
-// This ONLY runs once, on initial page load
-(async function initSession(){
-  // Skip if user is already being logged in manually
-  if(_manualAuthInProgress) return;
+// Shared function: tries to load existing session or auto-create firma from signup metadata
+async function autoRestoreOrCreateSession(user){
+  if(!user || !user.id || CU) return; // already logged in or no user
 
   try {
-    const { data: { session } } = await _sb.auth.getSession();
-
-    // No session stored → stay on splash (user must log in manually)
-    if(!session || !session.user) return;
-
-    const user = session.user;
-
-    // Verify the session is still valid by checking if the user has a profile + firma
+    // Check if user has complete setup (perfil + miembro + firma)
     const { data: memb } = await _sb.from('miembros')
       .select('id, firma_id')
       .eq('perfil_id', user.id)
       .maybeSingle();
 
     if(memb && memb.firma_id){
-      // Valid session with complete setup → auto-restore into app
+      // ✅ Everything exists — go straight into the app
+      showToast('✅ ¡Cuenta verificada!');
       await loadUserSession(user);
-    } else if(memb && !memb.firma_id){
-      // User exists but no firma → show setup screen
-      showCompleteSetupScreen(user, null);
+      return;
     }
-    // If no memb record at all → do nothing, let user log in manually
-    // (the session might be stale or the profile was deleted)
+
+    // No miembro record → user registered but RPC never ran (email wasn't confirmed yet)
+    // Now that email is confirmed, auto-create firma using signup metadata
+    const meta = user.user_metadata || {};
+    const nombre = meta.nombre || '';
+    const apellido = meta.apellido || '';
+
+    if(!nombre){
+      showCompleteSetupScreen(user, null);
+      return;
+    }
+
+    const { error } = await _sb.rpc('crear_firma_completa', {
+      p_uid: user.id,
+      p_nombre: nombre,
+      p_apellido: apellido,
+      p_email: user.email,
+      p_telefono: meta.telefono || '',
+      p_firma_nombre: meta.firma_nombre || (nombre + ' ' + apellido).trim(),
+      p_plan: meta.plan || 'independiente'
+    });
+
+    if(error){
+      // RPC failed — retry check in case of race condition
+      const { data: memb2 } = await _sb.from('miembros')
+        .select('id, firma_id').eq('perfil_id', user.id).maybeSingle();
+      if(memb2 && memb2.firma_id){
+        await loadUserSession(user);
+        return;
+      }
+      showCompleteSetupScreen(user, null);
+      return;
+    }
+
+    // ✅ Firma created — enter app
+    showToast('✅ ¡Cuenta verificada! Bienvenido a Lexora.');
+    await loadUserSession(user);
 
   } catch(e){
-    console.warn('initSession: could not restore session', e.message);
-    // Don't redirect, don't show errors — just let the user log in
+    console.warn('autoRestoreOrCreateSession failed:', e.message);
+    showCompleteSetupScreen(user, null);
+  }
+}
+
+// On page load: check existing session
+(async function initSession(){
+  if(_manualAuthInProgress) return;
+  try {
+    const { data: { session } } = await _sb.auth.getSession();
+    if(!session || !session.user) return;
+    await autoRestoreOrCreateSession(session.user);
+  } catch(e){
+    console.warn('initSession error:', e.message);
   }
 })();
 

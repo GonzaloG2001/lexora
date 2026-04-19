@@ -894,9 +894,9 @@ textarea.form-input{height:74px;resize:none;}
       <div id="reg-err" class="err-box" style="margin-bottom:14px;"></div>
 
       <!-- Plan -->
-      <div style="margin-bottom:18px;">
+      <div style="margin-bottom:14px;">
         <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:10px;">Plan</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div id="rf-plan-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div id="rp-ind" class="type-card selected" onclick="regSelPlan('independiente')" style="padding:14px;cursor:pointer;">
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🧍 Independiente</div>
             <div style="font-size:11px;color:var(--text-muted);">Abogado solo</div>
@@ -906,6 +906,19 @@ textarea.form-input{height:74px;resize:none;}
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🏢 Estudio</div>
             <div style="font-size:11px;color:var(--text-muted);">Con equipo y roles</div>
           </div>
+        </div>
+      </div>
+
+      <!-- Unirse a firma (debajo de planes) -->
+      <div style="padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;color:var(--text-dim);">
+          <input type="checkbox" id="rf-unirse-check" onchange="regToggleUnirse(this.checked)" style="width:15px;height:15px;accent-color:var(--gold);">
+          Tengo un código de invitación (unirme a una firma existente)
+        </label>
+        <div id="rf-unirse-box" style="display:none;margin-top:10px;">
+          <input id="rf-codigo" class="form-input" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;" oninput="this.value=this.value.toUpperCase()" autocomplete="off">
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-align:center;">El administrador del estudio te da este código de 6 letras</div>
+          <div style="font-size:10.5px;color:var(--text-dim);margin-top:6px;text-align:center;line-height:1.5;background:var(--surface2);border-radius:var(--r);padding:8px 12px;">Al unirte como miembro no necesitás pagar un plan individual. Tu acceso queda cubierto por la suscripción del estudio.</div>
         </div>
       </div>
 
@@ -921,20 +934,10 @@ textarea.form-input{height:74px;resize:none;}
         <div class="form-group"><label class="form-label">Teléfono</label><input id="rf-tel" class="form-input" placeholder="011-xxxx-xxxx" autocomplete="tel"></div>
       </div>
 
-      <!-- Estudio -->
-      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin:14px 0 10px;">Tu estudio</div>
-      <div class="form-group"><label class="form-label">Nombre del estudio *</label><input id="rf-firma" class="form-input" placeholder="Estudio Jurídico García" autocomplete="off"></div>
-
-      <!-- Unirse a firma -->
-      <div style="margin-top:10px;padding-top:12px;border-top:1px solid var(--border);">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;color:var(--text-dim);">
-          <input type="checkbox" id="rf-unirse-check" onchange="regToggleUnirse(this.checked)" style="width:15px;height:15px;accent-color:var(--gold);">
-          Tengo un código de invitación (unirme a una firma existente)
-        </label>
-        <div id="rf-unirse-box" style="display:none;margin-top:10px;">
-          <input id="rf-codigo" class="form-input" placeholder="ABC123" maxlength="6" style="text-transform:uppercase;letter-spacing:.2em;font-family:'DM Mono',monospace;font-size:18px;text-align:center;" oninput="this.value=this.value.toUpperCase()" autocomplete="off">
-          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;text-align:center;">El administrador de la firma te da este código de 6 letras</div>
-        </div>
+      <!-- Estudio (oculto cuando se une por código) -->
+      <div id="rf-firma-section">
+        <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin:14px 0 10px;">Tu estudio</div>
+        <div class="form-group"><label class="form-label">Nombre del estudio *</label><input id="rf-firma" class="form-input" placeholder="Estudio Jurídico García" autocomplete="off"></div>
       </div>
 
       <button id="rf-submit" class="btn btn-primary btn-full" style="margin-top:20px;padding:14px;font-size:14px;" onclick="doRegistro()">
@@ -1485,12 +1488,14 @@ function goTo(id){
   // Reset register form when navigating to it
   if(id==='register'){
     ['rf-nombre','rf-apellido','rf-email','rf-pass','rf-tel','rf-firma','rf-codigo'].forEach(fid=>{
-      const el=document.getElementById(fid); if(el) el.value='';
+      const el=document.getElementById(fid); if(el){ el.value=''; el.readOnly=false; }
     });
     const err=document.getElementById('reg-err'); if(err){err.textContent='';err.style.display='none';}
     const cb=document.getElementById('rf-unirse-check'); if(cb) cb.checked=false;
     const ub=document.getElementById('rf-unirse-box'); if(ub) ub.style.display='none';
-    const btn=document.getElementById('rf-submit'); if(btn){btn.disabled=false;btn.textContent='Crear cuenta gratis →';}
+    const fs=document.getElementById('rf-firma-section'); if(fs) fs.style.display='';
+    const pg=document.getElementById('rf-plan-grid'); if(pg) pg.style.display='';
+    const btn=document.getElementById('rf-submit'); if(btn){btn.disabled=false;btn.textContent='Crear cuenta gratis →';btn.onclick=()=>doRegistro();}
     REG_PLAN='independiente';
     document.getElementById('rp-ind')?.classList.add('selected');
     document.getElementById('rp-est')?.classList.remove('selected');
@@ -1519,9 +1524,8 @@ function hideErr(id){ const e=document.getElementById(id); if(e) e.style.display
 function setBtn(id, txt, dis){ const b=document.getElementById(id); if(!b) return; b.textContent=txt; b.disabled=dis; }
 
 /* ════════════════════════════════════════
-   AUTH — LOGIN (rewritten clean)
+   AUTH — LOGIN
 ════════════════════════════════════════ */
-// Single flag: true while doLogin or doRegistro is actively running
 let _manualAuthInProgress = false;
 
 async function doLogin(){
@@ -1535,20 +1539,27 @@ async function doLogin(){
   _manualAuthInProgress = true;
 
   try {
-    const { data, error } = await _sb.auth.signInWithPassword({ email, password: pass });
-    if(error) throw error;
-    if(!data?.user) throw new Error('No se pudo iniciar sesión.');
+    // Step 1: Authenticate
+    const { data: authData, error: authErr } = await _sb.auth.signInWithPassword({ email, password: pass });
+    if(authErr) throw authErr;
 
-    // Success — load user data and enter app
-    await loadUserSession(data.user);
+    const user = authData?.user;
+    if(!user) throw new Error('No se pudo iniciar sesión.');
+
+    // Step 2: Wait for session to be fully established
+    // This ensures the auth token is ready for subsequent DB queries
+    await new Promise(r => setTimeout(r, 150));
+
+    // Step 3: Load profile + firma + enter app
+    await loadUserSession(user);
+
   } catch(e) {
+    _manualAuthInProgress = false;
     let msg = e.message || 'Email o contraseña incorrectos.';
     if(msg.includes('Invalid login credentials')) msg = 'Email o contraseña incorrectos.';
     if(msg.includes('Email not confirmed'))       msg = 'Debés confirmar tu email antes de ingresar. Revisá tu bandeja de entrada.';
     showErr('l-err', msg);
     setBtn('l-btn','Ingresar al panel',false);
-  } finally {
-    _manualAuthInProgress = false;
   }
 }
 
@@ -1559,6 +1570,7 @@ async function loadUserSession(user){
       .from('perfiles').select('*').eq('id', user.id).maybeSingle();
 
     if(profErr || !profile){
+      _manualAuthInProgress = false;
       showErr('l-err', 'Perfil no encontrado. Contactá al administrador.');
       setBtn('l-btn','Ingresar al panel',false);
       return;
@@ -1571,7 +1583,7 @@ async function loadUserSession(user){
       .eq('perfil_id', user.id).maybeSingle();
 
     if(membErr || !memb || !memb.firma_id){
-      // No firma yet — show completion screen
+      _manualAuthInProgress = false;
       showCompleteSetupScreen(user, null);
       return;
     }
@@ -1582,6 +1594,7 @@ async function loadUserSession(user){
       .from('firmas').select('*').eq('id', memb.firma_id).maybeSingle();
 
     if(firmaErr || !firma){
+      _manualAuthInProgress = false;
       showErr('l-err', 'No se pudo cargar tu estudio. Intentá de nuevo.');
       setBtn('l-btn','Ingresar al panel',false);
       return;
@@ -1591,6 +1604,7 @@ async function loadUserSession(user){
     // All good — enter app
     enterApp();
   } catch(e) {
+    _manualAuthInProgress = false;
     console.error('loadUserSession error:', e);
     showErr('l-err', 'Error al cargar tu cuenta: ' + (e.message || 'Intentá de nuevo.'));
     setBtn('l-btn','Ingresar al panel',false);
@@ -1650,8 +1664,10 @@ function enterApp(){
   document.getElementById('sb-name').textContent   = `${CP.nombre} ${CP.apellido}`;
   document.getElementById('sb-role').textContent   = CROL === 'admin' ? 'Admin' : 'Miembro';
   document.getElementById('sb-firma-name').textContent = CF.nombre;
-  document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = isEstudioPlan() ? '' : 'none'; });
-  document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = isEstudioPlan() ? '' : 'none'; });
+  // Show equipo for estudio plans (owner or invited member)
+  const showEquipo = isEstudioPlan();
+  document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = showEquipo ? '' : 'none'; });
+  document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = showEquipo ? '' : 'none'; });
 
   goTo('app');
   loadAll();
@@ -1700,15 +1716,15 @@ function regSelPlan(p){
   REG_PLAN = p;
   document.getElementById('rp-ind')?.classList.toggle('selected', p==='independiente');
   document.getElementById('rp-est')?.classList.toggle('selected', p==='estudio');
-  const firmaGroup = document.getElementById('rf-firma')?.closest('.form-group');
-  if(firmaGroup) firmaGroup.style.display = p==='unirse' ? 'none' : '';
 }
 
 function regToggleUnirse(checked){
   const box = document.getElementById('rf-unirse-box');
-  const firmaGroup = document.getElementById('rf-firma')?.closest('.form-group');
+  const firmaSection = document.getElementById('rf-firma-section');
+  const planGrid = document.getElementById('rf-plan-grid');
   if(box) box.style.display = checked ? 'block' : 'none';
-  if(firmaGroup) firmaGroup.style.display = checked ? 'none' : '';
+  if(firmaSection) firmaSection.style.display = checked ? 'none' : '';
+  if(planGrid) planGrid.style.display = checked ? 'none' : '';
   if(checked){
     document.getElementById('rp-ind')?.classList.remove('selected');
     document.getElementById('rp-est')?.classList.remove('selected');
@@ -5013,22 +5029,15 @@ function showToast(msg){
 ════════════════════════════════════════ */
 // renderSteps() not needed — single-page register form
 
-// ── Session handling (clean rewrite) ──────────────────────────
+// ── Session handling ──────────────────────────
 
-// onAuthStateChange: ONLY handles special browser-redirect events
-// Normal login is handled entirely by doLogin() → loadUserSession() → enterApp()
-_sb.auth.onAuthStateChange(async (event, session) => {
-  // SIGNED_IN: handles email verification redirect
-  // Only fires when no manual login/register is in progress and user isn't already loaded
-  if(event === 'SIGNED_IN' && session && !CU && !_manualAuthInProgress){
-    await autoRestoreOrCreateSession(session.user);
-  }
-  // PASSWORD_RECOVERY: user clicked reset link from email
+// onAuthStateChange: ONLY handles password recovery and signout
+// Login is handled by doLogin() — email verification by initSession()
+_sb.auth.onAuthStateChange((event, session) => {
   if(event === 'PASSWORD_RECOVERY' && session){
     _passwordRecoverySession = session;
     goTo('reset-password');
   }
-  // SIGNED_OUT: only redirect if user was inside the app
   if(event === 'SIGNED_OUT' && !_manualAuthInProgress){
     CU=null; CP=null; CF=null; CS=null; CROL=null;
     C={clientes:[],expedientes:[],recordatorios:[],facturas:[],miembros:[],leads:[]};

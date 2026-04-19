@@ -1780,11 +1780,23 @@ async function doRegistro(){
   try {
     // STEP 1: Crear usuario en Supabase Auth
     btn.textContent = 'Registrando...';
+
+    // Save ALL registration context in metadata so email verification can complete the setup
+    const signupMeta = { nombre, apellido, telefono: tel };
+    if(unirse){
+      signupMeta.unirse = true;
+      signupMeta.codigo_invitacion = codigo;
+    } else {
+      signupMeta.unirse = false;
+      signupMeta.firma_nombre = firma;
+      signupMeta.plan = REG_PLAN;
+    }
+
     const { data: authData, error: authErr } = await _sb.auth.signUp({
       email,
       password: pass,
       options: {
-        data: { nombre, apellido, telefono: tel, firma_nombre: firma, plan: REG_PLAN },
+        data: signupMeta,
         emailRedirectTo: CFG.APP_URL
       }
     });
@@ -3849,8 +3861,10 @@ function openPerfilConfig(){
   const planActual = CF?.plan || 'independiente';
   const esEstudio = isEstudioPlan();
 
-  // Plan switch section (only for admin/owner)
-  const planSection = esAdmin ? `
+  // Plan section: admin sees plan switch, members see membership info
+  let planSection = '';
+  if(esAdmin){
+    planSection = `
     <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
       <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:12px;">Tu plan</div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
@@ -3880,7 +3894,22 @@ function openPerfilConfig(){
           ⬆ Pasar a Plan Estudio →
         </button>
       `}
-    </div>` : '';
+    </div>`;
+  } else if(esEstudio){
+    // Member of a studio — show membership info, no plan switch
+    planSection = `
+    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+      <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--blue);margin-bottom:12px;">Tu membresía</div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
+        <div style="font-size:13px;color:var(--text);margin-bottom:6px;">🏢 Miembro de: <strong>${esc(CF?.nombre||'')}</strong></div>
+        <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">
+          Rol: <span style="color:var(--gold);font-family:'DM Mono',monospace;">${CROL||'miembro'}</span><br>
+          Tu acceso está cubierto por la suscripción del estudio.<br>
+          No necesitás un plan individual.
+        </div>
+      </div>
+    </div>`;
+  }
 
   document.getElementById('m-title').textContent = 'Mi perfil';
   document.getElementById('m-body').innerHTML = `
@@ -5047,26 +5076,26 @@ _sb.auth.onAuthStateChange((event, session) => {
   }
 });
 
-// Shared function: tries to load existing session or auto-create firma from signup metadata
+// Shared function: tries to load existing session or complete pending registration
 async function autoRestoreOrCreateSession(user){
-  if(!user || !user.id || CU) return; // already logged in or no user
+  if(!user || !user.id || CU) return;
 
   try {
-    // Check if user has complete setup (perfil + miembro + firma)
+    // Check if user already has a complete setup
     const { data: memb } = await _sb.from('miembros')
       .select('id, firma_id')
       .eq('perfil_id', user.id)
       .maybeSingle();
 
     if(memb && memb.firma_id){
-      // ✅ Everything exists — go straight into the app
-      showToast('✅ ¡Cuenta verificada!');
+      // ✅ Already set up — enter app directly
+      showToast('✅ ¡Bienvenido!');
       await loadUserSession(user);
       return;
     }
 
-    // No miembro record → user registered but RPC never ran (email wasn't confirmed yet)
-    // Now that email is confirmed, auto-create firma using signup metadata
+    // No miembro record → registration was incomplete (email confirmation was pending)
+    // Use signup metadata to complete the setup
     const meta = user.user_metadata || {};
     const nombre = meta.nombre || '';
     const apellido = meta.apellido || '';
@@ -5076,18 +5105,39 @@ async function autoRestoreOrCreateSession(user){
       return;
     }
 
-    const { error } = await _sb.rpc('crear_firma_completa', {
-      p_uid: user.id,
-      p_nombre: nombre,
-      p_apellido: apellido,
-      p_email: user.email,
-      p_telefono: meta.telefono || '',
-      p_firma_nombre: meta.firma_nombre || (nombre + ' ' + apellido).trim(),
-      p_plan: meta.plan || 'independiente'
-    });
+    let rpcError = null;
 
-    if(error){
-      // RPC failed — retry check in case of race condition
+    if(meta.unirse && meta.codigo_invitacion){
+      // ── User registered with INVITE CODE → join existing studio as member ──
+      const { error } = await _sb.rpc('unirse_a_firma', {
+        p_uid: user.id,
+        p_nombre: nombre,
+        p_apellido: apellido,
+        p_email: user.email,
+        p_telefono: meta.telefono || '',
+        p_codigo: meta.codigo_invitacion
+      });
+      rpcError = error;
+      if(!error) showToast('✅ ¡Te uniste al estudio! Bienvenido.');
+
+    } else {
+      // ── User registered as NEW owner → create their own firma ──
+      const { error } = await _sb.rpc('crear_firma_completa', {
+        p_uid: user.id,
+        p_nombre: nombre,
+        p_apellido: apellido,
+        p_email: user.email,
+        p_telefono: meta.telefono || '',
+        p_firma_nombre: meta.firma_nombre || (nombre + ' ' + apellido).trim(),
+        p_plan: meta.plan || 'independiente'
+      });
+      rpcError = error;
+      if(!error) showToast('✅ ¡Cuenta verificada! Bienvenido a Lexora.');
+    }
+
+    if(rpcError){
+      console.warn('autoRestore RPC error:', rpcError.message);
+      // Retry: maybe it partially worked
       const { data: memb2 } = await _sb.from('miembros')
         .select('id, firma_id').eq('perfil_id', user.id).maybeSingle();
       if(memb2 && memb2.firma_id){
@@ -5098,8 +5148,7 @@ async function autoRestoreOrCreateSession(user){
       return;
     }
 
-    // ✅ Firma created — enter app
-    showToast('✅ ¡Cuenta verificada! Bienvenido a Lexora.');
+    // ✅ Setup complete — enter app
     await loadUserSession(user);
 
   } catch(e){
@@ -5120,13 +5169,15 @@ async function autoRestoreOrCreateSession(user){
   }
 })();
 
-// Screen shown after email confirmation when firma wasn't created yet
+// Fallback screen when auto-restore couldn't complete registration
 function showCompleteSetupScreen(user, token){
   const meta = user.user_metadata || {};
-  // Pre-fill register form with their data and go to register
+  const isInvite = meta.unirse && meta.codigo_invitacion;
+
   goTo('register');
 
   setTimeout(() => {
+    // Pre-fill personal data
     const ne = document.getElementById('rf-nombre');
     const ae = document.getElementById('rf-apellido');
     const ee = document.getElementById('rf-email');
@@ -5134,25 +5185,37 @@ function showCompleteSetupScreen(user, token){
     if(ae) ae.value = meta.apellido || '';
     if(ee) { ee.value = user.email || ''; ee.readOnly = true; }
 
-    // Show a notice at the top
+    // If they registered with invite code, pre-check and fill
+    if(isInvite){
+      const cb = document.getElementById('rf-unirse-check');
+      if(cb){ cb.checked = true; regToggleUnirse(true); }
+      const codeEl = document.getElementById('rf-codigo');
+      if(codeEl) codeEl.value = meta.codigo_invitacion;
+    }
+
+    // Show notice
     const errEl = document.getElementById('reg-err');
     if(errEl){
       errEl.style.display = 'block';
       errEl.style.background = 'rgba(76,186,132,.1)';
       errEl.style.borderColor = 'var(--green)';
       errEl.style.color = 'var(--green)';
-      errEl.innerHTML = '✅ Email confirmado. Completá el nombre de tu estudio para ingresar.';
+      errEl.innerHTML = isInvite
+        ? '✅ Email confirmado. Confirmá tu código de invitación para unirte al estudio.'
+        : '✅ Email confirmado. Completá el nombre de tu estudio para ingresar.';
     }
 
-    // Override the submit to use the existing session token
+    // Override submit
     const btn = document.getElementById('rf-submit');
     if(btn){
-      btn.textContent = 'Completar registro →';
+      btn.textContent = isInvite ? 'Unirme al estudio →' : 'Completar registro →';
       btn.onclick = async () => {
-        const firma = (document.getElementById('rf-firma')?.value || '').trim();
-        const unirse = document.getElementById('rf-unirse-check')?.checked || false;
-        const codigo = (document.getElementById('rf-codigo')?.value || '').trim().toUpperCase();
-        const tel    = (document.getElementById('rf-tel')?.value || '').trim();
+        const firma   = (document.getElementById('rf-firma')?.value || '').trim();
+        const unirse  = document.getElementById('rf-unirse-check')?.checked || false;
+        const codigo  = (document.getElementById('rf-codigo')?.value || '').trim().toUpperCase();
+        const tel     = (document.getElementById('rf-tel')?.value || '').trim();
+        const nombre  = (document.getElementById('rf-nombre')?.value || '').trim();
+        const apellido= (document.getElementById('rf-apellido')?.value || '').trim();
 
         if(!unirse && !firma){
           const e = document.getElementById('reg-err');
@@ -5170,21 +5233,25 @@ function showCompleteSetupScreen(user, token){
         try {
           if(unirse){
             const { error } = await _sb.rpc('unirse_a_firma', {
-              p_uid: user.id, p_nombre: meta.nombre || '', p_apellido: meta.apellido || '',
+              p_uid: user.id, p_nombre: nombre || meta.nombre || '',
+              p_apellido: apellido || meta.apellido || '',
               p_email: user.email, p_telefono: tel, p_codigo: codigo
             });
             if(error) throw error;
+            showToast('✅ ¡Te uniste al estudio!');
           } else {
             const { error } = await _sb.rpc('crear_firma_completa', {
-              p_uid: user.id, p_nombre: meta.nombre || '', p_apellido: meta.apellido || '',
-              p_email: user.email, p_telefono: tel, p_firma_nombre: firma, p_plan: REG_PLAN
+              p_uid: user.id, p_nombre: nombre || meta.nombre || '',
+              p_apellido: apellido || meta.apellido || '',
+              p_email: user.email, p_telefono: tel,
+              p_firma_nombre: firma, p_plan: REG_PLAN
             });
             if(error) throw error;
           }
           await loadUserSession(user);
         } catch(e){
           btn.disabled = false;
-          btn.textContent = 'Completar registro →';
+          btn.textContent = unirse ? 'Unirme al estudio →' : 'Completar registro →';
           const err = document.getElementById('reg-err');
           if(err){ err.style.color='var(--red)'; err.style.borderColor='var(--red)'; err.style.background='rgba(201,76,76,.08)'; err.innerHTML = e.message || 'Error. Intentá de nuevo.'; }
         }
@@ -5398,15 +5465,20 @@ create or replace function unirse_a_firma(
 ) returns void language plpgsql security definer as $$
 declare
   v_firma_id uuid;
+  v_plan text;
 begin
-  select id into v_firma_id from firmas where codigo_invitacion = upper(p_codigo) limit 1;
+  select id, plan into v_firma_id, v_plan from firmas where codigo_invitacion = upper(p_codigo) limit 1;
   if v_firma_id is null then
     raise exception 'Código de invitación inválido.';
+  end if;
+  if v_plan is distinct from 'estudio' then
+    raise exception 'Solo podés unirte a estudios con plan Estudio.';
   end if;
   insert into perfiles(id, nombre, apellido, email, telefono)
     values(p_uid, p_nombre, p_apellido, p_email, p_telefono)
     on conflict(id) do update set nombre=p_nombre, apellido=p_apellido, telefono=p_telefono;
-  insert into miembros(firma_id, perfil_id, rol) values(v_firma_id, p_uid, 'miembro');
+  insert into miembros(firma_id, perfil_id, rol) values(v_firma_id, p_uid, 'miembro')
+    on conflict(firma_id, perfil_id) do nothing;
 end; $$;
 
 -- 4. ALTA MANUAL DE FIRMA (desde Admin Panel)

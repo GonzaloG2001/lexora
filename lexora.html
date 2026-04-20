@@ -60,10 +60,10 @@ textarea.form-input{height:74px;resize:none;}
 /* ── STATUS ── */
 .status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:10px;font-family:'DM Mono',monospace;}
 .status::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.status.activo,.status.cobrado{background:rgba(76,186,132,.1);color:var(--green);}
-.status.activo::before,.status.cobrado::before{background:var(--green);}
-.status.pendiente{background:rgba(201,168,76,.1);color:var(--gold);}
-.status.pendiente::before{background:var(--gold);}
+.status.activo,.status.cobrado,.status.cumplido{background:rgba(76,186,132,.1);color:var(--green);}
+.status.activo::before,.status.cobrado::before,.status.cumplido::before{background:var(--green);}
+.status.pendiente,.status.facturado{background:rgba(201,168,76,.1);color:var(--gold);}
+.status.pendiente::before,.status.facturado::before{background:var(--gold);}
 .status.cerrado,.status.cancelado{background:rgba(68,66,74,.3);color:var(--text-muted);}
 .status.cerrado::before,.status.cancelado::before{background:var(--text-muted);}
 .status.urgente,.status.vencido{background:rgba(201,76,76,.1);color:var(--red);}
@@ -364,6 +364,7 @@ textarea.form-input{height:74px;resize:none;}
 /* ── PANEL LATERAL ── */
 @keyframes slideFromRight{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
 .col-exp2{grid-template-columns:100px 1fr 150px 90px 80px;}
+.col-exp3{grid-template-columns:90px 1fr 140px 130px 90px 80px;}
 
 /* ── NAVBAR LANDING MEJORADO ── */
 .splash-nav{
@@ -544,6 +545,7 @@ textarea.form-input{height:74px;resize:none;}
   .form-row{grid-template-columns:1fr!important;}
   .plan-select-grid{grid-template-columns:1fr!important;}
   .col-exp2{grid-template-columns:80px 1fr 80px!important;}
+  .col-exp3{grid-template-columns:80px 1fr 90px 60px!important;}
   .col-rec{grid-template-columns:1fr 80px 70px!important;}
   .leads-board-cols{grid-template-columns:1fr!important;overflow-x:auto!important;}
   #leads-chart-row{grid-template-columns:1fr!important;}
@@ -681,7 +683,7 @@ textarea.form-input{height:74px;resize:none;}
 .fac-row:last-child{border-bottom:none;}
 .monto-badge{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
 .monto-badge.cobrado{color:var(--green);}
-.monto-badge.pendiente{color:var(--gold);}
+.monto-badge.pendiente,.monto-badge.facturado{color:var(--gold);}
 .monto-badge.vencido{color:var(--red);}
 
 /* ══════════════════════════════════════════
@@ -970,13 +972,11 @@ textarea.form-input{height:74px;resize:none;}
       <div class="mobile-nav-item active" onclick="showPage('dashboard',this);mobileNavActivate(this)"><span>⊞</span>Dashboard</div>
       <div class="mobile-nav-item" onclick="showPage('leads',this);mobileNavActivate(this)"><span>◈</span>Prospectos<span class="mobile-nav-badge blue" id="mob-leads-badge" style="display:none;">0</span></div>
       <div class="mobile-nav-item" onclick="showPage('clientes',this);mobileNavActivate(this)"><span>◎</span>Clientes</div>
-      <div class="mobile-nav-item" onclick="showPage('expedientes',this);mobileNavActivate(this)"><span>▤</span>Expedientes</div>
-      <div class="mobile-nav-item" onclick="showPage('agenda',this);mobileNavActivate(this)"><span>📅</span>Agenda</div>
-      <div class="mobile-nav-item" onclick="showPage('recordatorios',this);mobileNavActivate(this)"><span>◷</span>Rec.<span class="mobile-nav-badge" id="mob-rec-badge" style="display:none;">0</span></div>
+      <div class="mobile-nav-item" onclick="showPage('expedientes',this);mobileNavActivate(this)"><span>▤</span>Casos</div>
+      <div class="mobile-nav-item" onclick="showPage('recordatorios',this);mobileNavActivate(this)"><span>◷</span>Plazos<span class="mobile-nav-badge" id="mob-rec-badge" style="display:none;">0</span></div>
       <div class="mobile-nav-item" onclick="showPage('tareas',this);mobileNavActivate(this)"><span>✅</span>Tareas</div>
-      <div class="mobile-nav-item" onclick="showPage('finanzas',this);mobileNavActivate(this)"><span>💰</span>Finanzas</div>
-      <div class="mobile-nav-item" onclick="showPage('reportes',this);mobileNavActivate(this)"><span>📊</span>Reportes</div>
-      <div class="mobile-nav-item" onclick="showPage('plantillas',this);mobileNavActivate(this)"><span>📄</span>Plantillas</div>
+      <div class="mobile-nav-item" onclick="showPage('documentos',this);mobileNavActivate(this)"><span>📄</span>Docs</div>
+      <div class="mobile-nav-item" onclick="showPage('finanzas',this);mobileNavActivate(this)"><span>💰</span>Honorarios</div>
       <div class="mobile-nav-item mobile-nav-equipo" onclick="showPage('equipo',this);mobileNavActivate(this)"><span>⊕</span>Equipo</div>
     </div>
   </nav>
@@ -990,15 +990,13 @@ textarea.form-input{height:74px;resize:none;}
       <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</div>
       <div class="nav-item" onclick="showPage('leads',this)"><span class="nav-icon">◈</span>Prospectos<span class="nav-badge nav-badge-new" id="leads-badge" style="display:none;background:var(--blue);">0</span></div>
       <div class="nav-item" onclick="showPage('clientes',this)"><span class="nav-icon">◎</span>Clientes</div>
-      <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Expedientes</div>
+      <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Casos</div>
       <div class="nav-section">Operaciones</div>
-      <div class="nav-item" onclick="showPage('agenda',this)"><span class="nav-icon">📅</span>Agenda</div>
-      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Recordatorios<span class="nav-badge" id="rec-badge" style="display:none;">0</span></div>
+      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Plazos<span class="nav-badge" id="rec-badge" style="display:none;">0</span></div>
       <div class="nav-item" onclick="showPage('tareas',this)"><span class="nav-icon">✅</span>Tareas<span class="nav-badge" id="task-badge" style="display:none;background:var(--green);">0</span></div>
       <div class="nav-section">Gestión</div>
-      <div class="nav-item" onclick="showPage('finanzas',this)"><span class="nav-icon">💰</span>Finanzas</div>
-      <div class="nav-item" onclick="showPage('reportes',this)"><span class="nav-icon">📊</span>Reportes</div>
-      <div class="nav-item" onclick="showPage('plantillas',this)"><span class="nav-icon">📄</span>Plantillas</div>
+      <div class="nav-item" onclick="showPage('documentos',this)"><span class="nav-icon">📄</span>Documentos</div>
+      <div class="nav-item" onclick="showPage('finanzas',this)"><span class="nav-icon">💰</span>Honorarios</div>
       <div class="nav-section nav-equipo">Firma</div>
       <div class="nav-item nav-equipo" onclick="showPage('equipo',this)"><span class="nav-icon">⊕</span>Equipo</div>
     </div>
@@ -1047,34 +1045,78 @@ textarea.form-input{height:74px;resize:none;}
 
     <!-- DASHBOARD -->
     <div id="page-dashboard" class="page active">
+      <!-- Hero KPIs: 4 indicadores principales -->
       <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
-        <div class="stat gold" onclick="showPage('clientes',null)" style="cursor:pointer;"><div class="stat-lbl">Clientes</div><div class="stat-val" id="s-cli">—</div><div class="stat-sub up" id="s-cli-sub">registrados</div><div class="stat-icon">◎</div></div>
-        <div class="stat blue-c" onclick="showPage('expedientes',null)" style="cursor:pointer;"><div class="stat-lbl">Expedientes activos</div><div class="stat-val" id="s-exp">—</div><div class="stat-sub up">en curso</div><div class="stat-icon">▤</div></div>
-        <div class="stat" onclick="showPage('leads',null)" style="cursor:pointer;border-color:rgba(167,139,250,.2);"><div class="stat-lbl">Prospectos activos</div><div class="stat-val" id="s-leads" style="color:#a78bfa;">—</div><div class="stat-sub" id="s-leads-sub" style="color:#a78bfa;">en pipeline</div><div class="stat-icon">◈</div></div>
-        <div class="stat red-c" onclick="showPage('recordatorios',null)" style="cursor:pointer;"><div class="stat-lbl">Alertas urgentes</div><div class="stat-val" id="s-urg">—</div><div class="stat-sub dn" id="s-urg-sub">vencimientos</div><div class="stat-icon">◷</div></div>
+        <div class="stat red-c" onclick="showPage('recordatorios',null)" style="cursor:pointer;">
+          <div class="stat-lbl">Plazos urgentes</div>
+          <div class="stat-val" id="s-urg">—</div>
+          <div class="stat-sub dn" id="s-urg-sub">vencimientos</div>
+          <div class="stat-icon">◷</div>
+        </div>
+        <div class="stat blue-c" onclick="showPage('expedientes',null)" style="cursor:pointer;">
+          <div class="stat-lbl">Casos activos</div>
+          <div class="stat-val" id="s-exp">—</div>
+          <div class="stat-sub up">en curso</div>
+          <div class="stat-icon">▤</div>
+        </div>
+        <div class="stat gold" onclick="showPage('finanzas',null)" style="cursor:pointer;">
+          <div class="stat-lbl">Honorarios a cobrar</div>
+          <div class="stat-val" id="s-hon-pen" style="font-size:22px;">—</div>
+          <div class="stat-sub" id="s-hon-pen-sub">pendiente de cobro</div>
+          <div class="stat-icon">💰</div>
+        </div>
+        <div class="stat" onclick="showPage('clientes',null)" style="cursor:pointer;">
+          <div class="stat-lbl">Clientes</div>
+          <div class="stat-val" id="s-cli">—</div>
+          <div class="stat-sub up">registrados</div>
+          <div class="stat-icon">◎</div>
+        </div>
       </div>
-      <div class="dash-grid">
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div class="card">
-            <div class="card-hdr"><div class="card-title">Expedientes recientes</div><button class="btn btn-ghost" onclick="showPage('expedientes',null)" style="font-size:11px;padding:5px 10px;">Ver todos →</button></div>
-            <div class="tbl-hdr col-exp2"><div class="th">Código</div><div class="th">Expediente</div><div class="th">Cliente</div><div class="th">Estado</div></div>
-            <div id="d-exp"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
-          </div>
-          <div class="card">
-            <div class="card-hdr"><div class="card-title">Prospectos recientes</div><button class="btn btn-ghost" onclick="showPage('leads',null)" style="font-size:11px;padding:5px 10px;">Ver todos →</button></div>
-            <div id="d-leads"><div class="loading"><div class="spinner"></div></div></div>
+
+      <!-- Bloque 1: Plazos próximos (PRIORIDAD MÁXIMA, ancho completo) -->
+      <div class="card" style="margin-top:14px;">
+        <div class="card-hdr">
+          <div class="card-title">⏰ Plazos próximos</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="d-plazos-count" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);"></span>
+            <button class="btn btn-ghost" onclick="showPage('recordatorios',null)" style="font-size:11px;padding:5px 10px;">Ver todos →</button>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div class="card">
-            <div class="card-hdr"><div class="card-title">🔴 Alertas urgentes</div><span id="d-alert-count" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);"></span></div>
-            <div id="d-alerts"><div class="loading"><div class="spinner"></div></div></div>
+        <div id="d-plazos-proximos"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+      </div>
+
+      <!-- Bloques 2 y 3: Casos activos + Honorarios a cobrar -->
+      <div class="dash-grid" style="margin-top:14px;">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">▤ Casos activos</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span id="d-casos-count" style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);"></span>
+              <button class="btn btn-ghost" onclick="showPage('expedientes',null)" style="font-size:11px;padding:5px 10px;">Ver todos →</button>
+            </div>
           </div>
-          <div class="card">
-            <div class="card-hdr"><div class="card-title">📅 Próximos vencimientos</div></div>
-            <div id="d-vencimientos"></div>
-          </div>
+          <div class="tbl-hdr col-exp2"><div class="th">Código</div><div class="th">Carátula</div><div class="th">Cliente</div><div class="th">Estado</div></div>
+          <div id="d-exp"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
         </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">💰 Honorarios a cobrar</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span id="d-hon-total" style="font-size:11px;font-family:'DM Mono',monospace;color:var(--gold);"></span>
+              <button class="btn btn-ghost" onclick="showPage('finanzas',null)" style="font-size:11px;padding:5px 10px;">Ver todo →</button>
+            </div>
+          </div>
+          <div id="d-hon-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+        </div>
+      </div>
+
+      <!-- Bloque 4: Actividad reciente (mini timeline) -->
+      <div class="card" style="margin-top:14px;">
+        <div class="card-hdr">
+          <div class="card-title">📋 Actividad reciente</div>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);">Últimos eventos del estudio</span>
+        </div>
+        <div id="d-actividad"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
       </div>
     </div>
 
@@ -1124,37 +1166,105 @@ textarea.form-input{height:74px;resize:none;}
       </div>
     </div>
 
-    <!-- EXPEDIENTES -->
+    <!-- CASOS (ex Expedientes) -->
     <div id="page-expedientes" class="page" style="padding-bottom:0;">
       <div class="sec-hdr">
-        <div class="sec-title">Expedientes</div>
+        <div class="sec-title">Casos</div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <div class="search-wrap" style="width:220px;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" id="exp-search" placeholder="Buscar expediente, código..." oninput="filterExpedientes(this.value)"></div>
-          <button class="btn btn-primary" onclick="openModal('expediente')">+ Nuevo expediente</button>
+          <div class="search-wrap" style="width:220px;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" id="exp-search" placeholder="Buscar carátula, código..." oninput="filterExpedientes(this.value)"></div>
+          <button class="btn btn-primary" onclick="openModal('expediente')">+ Nuevo caso</button>
         </div>
       </div>
+      <!-- Filtros: Estado | Fuero | Cliente -->
       <div id="exp-filtros" style="margin-bottom:8px;"></div>
+      <div id="exp-filtros-extra" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;"></div>
       <div style="display:grid;grid-template-columns:1fr;gap:0;" id="exp-layout">
         <div style="overflow-y:auto;" id="exp-list-wrap">
           <div class="card">
-            <div class="tbl-hdr col-exp2"><div class="th">Código</div><div class="th">Expediente</div><div class="th">Cliente</div><div class="th">Estado</div><div class="th">Acciones</div></div>
+            <div class="tbl-hdr col-exp3"><div class="th">Código</div><div class="th">Carátula</div><div class="th">Cliente</div><div class="th">Próximo plazo</div><div class="th">Estado</div><div class="th">Acciones</div></div>
             <div id="exp-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- RECORDATORIOS -->
-    <div id="page-recordatorios" class="page">
+    <!-- DOCUMENTOS (GLOBAL) — gestión y búsqueda centralizada -->
+    <div id="page-documentos" class="page">
       <div class="sec-hdr">
-        <div class="sec-title">Recordatorios</div>
+        <div class="sec-title">Documentos</div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <div class="search-wrap" style="width:200px;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" id="rec-search" placeholder="Buscar recordatorio..." oninput="filterRec(this.value)"></div>
-          <button class="btn btn-primary" onclick="openModal('recordatorio')">+ Nuevo</button>
+          <div class="search-wrap" style="width:240px;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" id="docs-search" placeholder="Buscar nombre, contenido..." oninput="filterDocs(this.value)"></div>
+          <button class="btn btn-ghost" onclick="nuevaPlantilla()">+ Nueva plantilla</button>
         </div>
       </div>
+      <!-- Sub-tabs: todos | por caso | por cliente | plantillas -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="filter-btn active" id="docs-tab-all" onclick="setDocsTab('all')">📁 Todos</button>
+        <button class="filter-btn" id="docs-tab-case" onclick="setDocsTab('case')">▤ Por caso</button>
+        <button class="filter-btn" id="docs-tab-cli" onclick="setDocsTab('cli')">◎ Por cliente</button>
+        <button class="filter-btn" id="docs-tab-tpl" onclick="setDocsTab('tpl')">📄 Plantillas</button>
+      </div>
+      <!-- Filtros avanzados -->
+      <div id="docs-filtros" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;"></div>
+      <!-- Contenedor principal -->
+      <div id="docs-content"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+    </div>
+
+    <!-- PLAZOS (ex Recordatorios) — incluye filtros temporales + vista calendario integrada -->
+    <div id="page-recordatorios" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Plazos</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="search-wrap" style="width:200px;"><span style="color:var(--text-muted);font-size:13px;">⌕</span><input type="text" id="rec-search" placeholder="Buscar plazo..." oninput="filterRec(this.value)"></div>
+          <button class="btn btn-primary" onclick="openModal('recordatorio')">+ Nuevo plazo</button>
+        </div>
+      </div>
+
+      <!-- Toggle vista lista / calendario -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="filter-btn active" id="plazos-view-list" onclick="setVistaPlazos('list')">📋 Lista</button>
+        <button class="filter-btn" id="plazos-view-cal" onclick="setVistaPlazos('cal')">📅 Calendario</button>
+      </div>
+
+      <!-- Filtros temporales (Hoy / Semana / Mes / Vencidos) + estado -->
       <div class="filter-bar" id="rec-filter-bar" style="margin-bottom:16px;"></div>
-      <div id="rec-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+
+      <!-- Vista Lista -->
+      <div id="plazos-list-wrap">
+        <div id="rec-list"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+      </div>
+
+      <!-- Vista Calendario (oculta por defecto) -->
+      <div id="plazos-cal-wrap" style="display:none;">
+        <div class="cal-legend">
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--red);"></div>Urgente / Vencido</div>
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--gold);"></div>Activo</div>
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--blue);"></div>Pendiente</div>
+          <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--green);"></div>Vencimiento factura</div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div class="cal-nav">
+            <button class="btn btn-ghost" onclick="calPrev()" style="padding:6px 12px;">← Anterior</button>
+            <div class="cal-month-title" id="cal-month-label">—</div>
+            <button class="btn btn-ghost" onclick="calNext()" style="padding:6px 12px;">Siguiente →</button>
+          </div>
+          <div class="cal-header">
+            <div class="cal-dow">Dom</div><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div>
+            <div class="cal-dow">Mié</div><div class="cal-dow">Jue</div><div class="cal-dow">Vie</div><div class="cal-dow">Sáb</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">Próximos 7 días</div></div>
+            <div id="cal-upcoming"></div>
+          </div>
+          <div class="card">
+            <div class="card-hdr"><div class="card-title">Vencidos sin resolver</div></div>
+            <div id="cal-overdue"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- EQUIPO -->
@@ -1206,44 +1316,7 @@ textarea.form-input{height:74px;resize:none;}
       </div>
     </div>
 
-    <!-- AGENDA / CALENDARIO -->
-    <div id="page-agenda" class="page">
-      <div class="sec-hdr">
-        <div class="sec-title">Agenda</div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-ghost" onclick="openModal('recordatorio')">+ Recordatorio</button>
-        </div>
-      </div>
-      <div class="cal-legend">
-        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--red);"></div>Urgente</div>
-        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--gold);"></div>Activo</div>
-        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--blue);"></div>Pendiente</div>
-        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--green);"></div>Vencimiento factura</div>
-      </div>
-      <div class="card" style="padding:20px;">
-        <div class="cal-nav">
-          <button class="btn btn-ghost" onclick="calPrev()" style="padding:6px 12px;">← Anterior</button>
-          <div class="cal-month-title" id="cal-month-label">—</div>
-          <button class="btn btn-ghost" onclick="calNext()" style="padding:6px 12px;">Siguiente →</button>
-        </div>
-        <div class="cal-header">
-          <div class="cal-dow">Dom</div><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div>
-          <div class="cal-dow">Mié</div><div class="cal-dow">Jue</div><div class="cal-dow">Vie</div><div class="cal-dow">Sáb</div>
-        </div>
-        <div class="cal-grid" id="cal-grid"></div>
-      </div>
-      <!-- Upcoming list -->
-      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">Próximos 7 días</div></div>
-          <div id="cal-upcoming"></div>
-        </div>
-        <div class="card">
-          <div class="card-hdr"><div class="card-title">Vencidos sin resolver</div></div>
-          <div id="cal-overdue"></div>
-        </div>
-      </div>
-    </div>
+    <!-- AGENDA -- consolidada dentro de "Plazos" como vista calendario -->
 
     <!-- TAREAS -->
     <div id="page-tareas" class="page">
@@ -1257,20 +1330,21 @@ textarea.form-input{height:74px;resize:none;}
       <div id="task-list"></div>
     </div>
 
-    <!-- FINANZAS -->
+    <!-- HONORARIOS (ex Finanzas) -->
     <div id="page-finanzas" class="page">
       <div class="sec-hdr">
-        <div class="sec-title">Finanzas</div>
+        <div class="sec-title">Honorarios</div>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary" onclick="openModal('factura')">+ Nueva factura</button>
+          <button class="btn btn-primary" onclick="openModal('factura')">+ Nuevo honorario</button>
           <button class="btn btn-ghost" onclick="exportarFacturasCSV()">↓ Exportar CSV</button>
         </div>
       </div>
-      <!-- KPIs -->
+      <!-- Resumen: total a cobrar / total cobrado (según spec) -->
       <div class="stats-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:18px;" id="fin-kpis"></div>
-      <!-- Filters -->
-      <div class="filter-bar" id="fin-filter-bar" style="margin-bottom:14px;"></div>
-      <!-- Table -->
+      <!-- Filtros: por cliente | por estado | por caso (según spec) -->
+      <div class="filter-bar" id="fin-filter-bar" style="margin-bottom:10px;"></div>
+      <div id="fin-filtros-extra" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;"></div>
+      <!-- Tabla -->
       <div class="card">
         <div class="tbl-hdr fac-row" style="background:rgba(26,26,31,.7);">
           <div class="th">Número</div><div class="th">Concepto</div><div class="th">Cliente</div>
@@ -1280,25 +1354,8 @@ textarea.form-input{height:74px;resize:none;}
       </div>
     </div>
 
-    <!-- REPORTES -->
-    <div id="page-reportes" class="page">
-      <div class="sec-hdr">
-        <div class="sec-title">Reportes</div>
-        <button class="btn btn-ghost" onclick="exportarReporteCSV()">↓ Exportar CSV</button>
-      </div>
-      <div class="report-grid" id="report-grid"></div>
-    </div>
-
-    <!-- PLANTILLAS -->
-    <div id="page-plantillas" class="page">
-      <div class="sec-hdr">
-        <div class="sec-title">Plantillas de documentos</div>
-        <button class="btn btn-primary" onclick="nuevaPlantilla()">+ Nueva plantilla</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;" id="plantillas-grid">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
+    <!-- REPORTES y PLANTILLAS removidos según especificación.
+         Plantillas se integran en la nueva sección Documentos (global). -->
 
   </main>
 </div>
@@ -1814,20 +1871,24 @@ async function doRegistro(){
     if(!uid) throw new Error('No se pudo crear el usuario. Intentá de nuevo.');
 
     // Check if email confirmation is required
-    const needsConfirm = !authData?.user?.email_confirmed_at && authData?.user?.confirmation_sent_at;
+    const needsConfirm = !authData?.user?.email_confirmed_at;
 
+    if(needsConfirm){
+      // Email NOT confirmed yet → don't try to sign in (it will fail)
+      // The user metadata already has all the info needed to complete setup after verification
+      _manualAuthInProgress = false;
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta gratis →';
+      showE('📧 ¡Cuenta creada! Te enviamos un email de confirmación a <strong>' + esc(email) + '</strong>. Revisá tu bandeja (y spam) y hacé click en el enlace para activar tu cuenta.');
+      return;
+    }
+
+    // Email already confirmed (Supabase has email confirmation disabled) → proceed normally
     // STEP 2: Iniciar sesión
     btn.textContent = 'Iniciando sesión...';
     const { data: si, error: siErr } = await _sb.auth.signInWithPassword({ email, password: pass });
 
-    if(siErr){
-      const sem = siErr.message || '';
-      if(sem.toLowerCase().includes('email not confirmed') || sem.toLowerCase().includes('not confirmed')){
-        // Email confirmation required — show clear message
-        return showE('📧 Te enviamos un email de confirmación. Revisá tu bandeja (y spam) y hacé click en el enlace para activar tu cuenta.');
-      }
-      throw siErr;
-    }
+    if(siErr) throw siErr;
 
     // STEP 3: Crear firma/unirse (SECURITY DEFINER bypasa RLS)
     btn.textContent = 'Configurando estudio...';
@@ -1855,6 +1916,8 @@ async function doRegistro(){
     let msg = e.message || 'Error inesperado. Intentá de nuevo.';
     if(msg.includes('already registered') || msg.includes('User already registered'))
       msg = 'Este email ya tiene una cuenta. Iniciá sesión.';
+    if(msg.includes('Invalid login credentials'))
+      msg = '📧 Tu cuenta fue creada pero necesita confirmación. Revisá tu email (y spam) para activarla.';
     if(msg.includes('Password should be') || msg.includes('weak password'))
       msg = 'La contraseña debe tener al menos 8 caracteres.';
     if(msg.includes('Invalid API key') || msg.includes('apikey'))
@@ -1970,6 +2033,35 @@ async function loadAll(){
     const { data: miembros } = await _sb.from('miembros').select('*, perfiles(*)').eq('firma_id', CF.id);
     C.miembros = miembros || [];
   } catch(e){ C.miembros=[]; }
+
+  // ── Cargar notas persistidas y adjuntarlas a clientes/expedientes ──
+  try{
+    const { data: notas } = await _sb.from('notas')
+      .select('*')
+      .eq('firma_id', CF.id)
+      .order('created_at',{ascending:false});
+    if(notas){
+      // Adjuntar a clientes
+      C.clientes.forEach(c=>{
+        c._notas = notas.filter(n=>n.cliente_id===c.id).map(n=>({
+          id: n.id,
+          texto: n.texto,
+          tipo:  n.tipo||'',
+          fecha: n.created_at ? new Date(n.created_at).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''
+        }));
+      });
+      // Adjuntar a expedientes
+      C.expedientes.forEach(e=>{
+        e._notas = notas.filter(n=>n.expediente_id===e.id).map(n=>({
+          id: n.id,
+          texto: n.texto,
+          tipo:  n.tipo||'',
+          fecha: n.created_at ? new Date(n.created_at).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : ''
+        }));
+      });
+    }
+  } catch(e){ console.warn('No se pudieron cargar notas:', e?.message||e); }
+
   renderAll();
 }
 
@@ -1984,8 +2076,7 @@ function renderAll(){
   safeRun(rRec,     'rRec');
   safeRun(rFinanzas,'rFinanzas');
   safeRun(rTareas,  'rTareas');
-  safeRun(rReportes,'rReportes');
-  safeRun(rPlantillas,'rPlantillas');
+  safeRun(rDocs,    'rDocs');
   if(isEstudioPlan()) safeRun(rEquipo,'rEquipo');
   safeRun(rBadges,  'rBadges');
 }
@@ -1994,85 +2085,203 @@ function renderAll(){
    RENDER — DASHBOARD
 ════════════════════════════════════════ */
 function rDash(){
+  const hoy = today();
+
+  // ── KPIs principales ──
   document.getElementById('s-cli').textContent = C.clientes.length;
-  document.getElementById('s-exp').textContent = C.expedientes.filter(e=>e.estado==='activo').length;
-  const u = C.recordatorios.filter(r=>r.urgencia==='urgente').length;
-  document.getElementById('s-urg').textContent     = u;
-  document.getElementById('s-urg-sub').textContent = u > 0 ? '⚠ requieren atención' : '✓ todo al día';
-  document.getElementById('s-urg-sub').className   = 'stat-sub ' + (u>0?'dn':'up');
+  document.getElementById('s-exp').textContent = C.expedientes.filter(e=>e.estado==='activo'||e.estado==='pendiente').length;
+  // Plazos urgentes = urgentes + vencidos no resueltos
+  const urgentes = C.recordatorios.filter(r =>
+    r.urgencia==='urgente' || (r.fecha_limite && r.fecha_limite < hoy)
+  );
+  document.getElementById('s-urg').textContent = urgentes.length;
+  const sUrgSub = document.getElementById('s-urg-sub');
+  sUrgSub.textContent = urgentes.length > 0 ? '⚠ requieren atención' : '✓ todo al día';
+  sUrgSub.className   = 'stat-sub ' + (urgentes.length>0?'dn':'up');
+  // Honorarios pendientes total
+  const honPen = C.facturas.filter(f=>f.estado==='pendiente'||f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
+  const sHon = document.getElementById('s-hon-pen');
+  if(sHon) sHon.textContent = '$' + honPen.toLocaleString('es-AR');
 
-  // Leads stats
-  const activeLeads = C.leads.filter(l=>l.estado!=='ganado'&&l.estado!=='perdido').length;
-  const sLeads = document.getElementById('s-leads');
-  if(sLeads) sLeads.textContent = activeLeads;
-  const sLeadsSub = document.getElementById('s-leads-sub');
-  if(sLeadsSub) sLeadsSub.textContent = activeLeads > 0 ? 'en pipeline' : 'sin prospectos';
+  // ── BLOQUE 1: Plazos próximos (prioridad máxima) ──
+  // Próximos 14 días + vencidos sin resolver, ordenados por fecha
+  const en14 = new Date(); en14.setDate(en14.getDate()+14);
+  const en14Str = en14.toISOString().split('T')[0];
+  const plazos = C.recordatorios
+    .filter(r => r.fecha_limite && (r.fecha_limite <= en14Str))
+    .sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||''));
+  const elPlazos = document.getElementById('d-plazos-proximos');
+  if(elPlazos){
+    document.getElementById('d-plazos-count').textContent = plazos.length + ' plazos';
+    elPlazos.innerHTML = plazos.length ? plazos.slice(0,8).map(r=>{
+      const dias = Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/86400000);
+      const vencido = dias < 0;
+      const hoyMismo = dias === 0;
+      const urgenteFlag = r.urgencia==='urgente' || vencido || hoyMismo;
+      const color = vencido ? 'var(--red)' : (urgenteFlag||dias<=2) ? 'var(--red)' : (dias<=7 ? 'var(--gold)' : 'var(--blue)');
+      const diasStr = vencido ? `⚠ Vencido hace ${Math.abs(dias)}d` : (hoyMismo ? '🔴 HOY' : (dias===1 ? 'Mañana' : `En ${dias} días`));
+      const exp = C.expedientes.find(e=>e.id===r.expediente_id);
+      return `<div class="tbl-row" style="grid-template-columns:8px 90px 1fr 200px auto;gap:12px;padding:11px 18px;align-items:center;">
+        <div style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></div>
+        <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:${color};font-weight:500;">${diasStr}</div>
+        <div>
+          <div class="cp" style="font-size:13px;">${esc(r.titulo)}</div>
+          <div class="cs">📅 ${r.fecha_limite}${r.nota?' · '+esc(r.nota.slice(0,40)):''}</div>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-dim);">${exp ? '▤ '+esc(exp.titulo.slice(0,30)) : '<span style="color:var(--text-muted);">sin caso</span>'}</div>
+        <div style="display:flex;gap:5px;">
+          ${exp?`<button class="tbl-btn" title="Ir al caso" onclick="openPanelExpediente('${exp.id}')">↗</button>`:''}
+          <button class="tbl-btn" title="Marcar como resuelto" onclick="resolverPlazo('${r.id}')">✓</button>
+        </div>
+      </div>`;
+    }).join('') : `<div class="empty"><div class="ei">✅</div><p>Sin plazos próximos</p></div>`;
+  }
 
-  document.getElementById('d-exp').innerHTML = C.expedientes.slice(0,5).map(e=>`
+  // ── BLOQUE 2: Casos activos ──
+  const casosActivos = C.expedientes.filter(e=>e.estado==='activo'||e.estado==='pendiente');
+  document.getElementById('d-casos-count').textContent = casosActivos.length + ' activos';
+  document.getElementById('d-exp').innerHTML = casosActivos.slice(0,5).map(e=>`
     <div class="tbl-row col-exp2" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
       <div><span class="code-tag">${e.codigo_caso||'—'}</span></div>
       <div><div class="cp">${esc(e.titulo)}</div><div class="cs">${esc(e.juzgado||'Sin juzgado')}</div></div>
       <div class="cm">${cliName(e.cliente_id).split(' ').slice(0,2).join(' ')}</div>
       <div>${stBadge(e.estado)}</div>
-    </div>`).join('') || `<div class="empty"><div class="ei">📋</div><p>Sin expedientes</p></div>`;
+    </div>`).join('') || `<div class="empty"><div class="ei">📋</div><p>Sin casos activos</p></div>`;
 
-  // Leads recientes en dashboard
-  const dLeads = document.getElementById('d-leads');
-  if(dLeads){
-    dLeads.innerHTML = C.leads.slice(0,5).map(l=>{
-      const est = LEAD_ESTADOS.find(e=>e.key===l.estado)||{};
-      return `<div class="tbl-row" style="grid-template-columns:1fr auto;gap:10px;padding:10px 18px;cursor:pointer;" onclick="showPage('leads',null);setTimeout(()=>openLeadPanel('${l.id}'),150)">
-        <div><div class="cp">${esc(l.nombre)}</div><div class="cs">${l.origen||'—'} · ${l.email||l.telefono||'—'}</div></div>
-        <span style="font-size:10px;font-family:'DM Mono',monospace;padding:3px 8px;border-radius:20px;background:${est.bg||'rgba(68,66,74,.3)'};color:${est.color||'var(--text-muted)'};">${est.label||l.estado||'—'}</span>
+  // ── BLOQUE 3: Honorarios a cobrar (lista por cliente) ──
+  const facsPend = C.facturas.filter(f=>f.estado==='pendiente'||f.estado==='vencido');
+  const porCliente = {};
+  facsPend.forEach(f=>{
+    const cid = f.cliente_id || '__sin__';
+    if(!porCliente[cid]) porCliente[cid] = {total:0, count:0, vencidos:0};
+    porCliente[cid].total += (f.monto||0);
+    porCliente[cid].count++;
+    if(f.estado==='vencido') porCliente[cid].vencidos++;
+  });
+  const arrCliPen = Object.entries(porCliente).map(([cid,d])=>({cid,...d})).sort((a,b)=>b.total-a.total);
+  document.getElementById('d-hon-total').textContent = '$' + honPen.toLocaleString('es-AR');
+  const elHon = document.getElementById('d-hon-list');
+  if(elHon){
+    elHon.innerHTML = arrCliPen.length ? arrCliPen.slice(0,5).map(d=>{
+      const c = C.clientes.find(x=>x.id===d.cid);
+      const nom = c ? c.nombre : 'Sin cliente asignado';
+      return `<div class="tbl-row" style="grid-template-columns:1fr auto auto;gap:10px;padding:10px 18px;align-items:center;">
+        <div>
+          <div class="cp" style="font-size:13px;">${esc(nom)}</div>
+          <div class="cs">${d.count} factura${d.count>1?'s':''}${d.vencidos?` · <span style="color:var(--red);">${d.vencidos} vencida${d.vencidos>1?'s':''}</span>`:''}</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:13px;color:${d.vencidos?'var(--red)':'var(--gold)'};">$${d.total.toLocaleString('es-AR')}</div>
+        <div style="display:flex;gap:5px;">
+          ${c?`<button class="tbl-btn" title="Ver detalle" onclick="openPanelCliente('${c.id}')">↗</button>`:''}
+          <button class="tbl-btn" title="Registrar pago" onclick="registrarPagoCli('${d.cid}')">💰</button>
+        </div>
       </div>`;
-    }).join('') || `<div class="empty"><div class="ei">◈</div><p>Sin prospectos</p></div>`;
+    }).join('') : `<div class="empty"><div class="ei">💰</div><p>Sin honorarios pendientes</p></div>`;
   }
 
+  // ── BLOQUE 4: Actividad reciente (mini timeline) ──
+  rDashActividad();
+}
+
+/* ── Mini timeline de actividad reciente ── */
+function rDashActividad(){
+  const el = document.getElementById('d-actividad');
+  if(!el) return;
+  const eventos = [];
+  // Documentos subidos (de expedientes)
+  C.expedientes.forEach(e=>{
+    (e._docs||[]).forEach(d=>{
+      eventos.push({
+        tipo:'documento', icon:'📎', color:'var(--blue)',
+        titulo:`Documento subido: ${d.nombre}`,
+        sub:`Caso: ${e.titulo}`,
+        fecha:d.fecha||e.created_at,
+        accion:()=>openPanelExpediente(e.id)
+      });
+    });
+  });
+  // Plazos creados
+  C.recordatorios.forEach(r=>{
+    eventos.push({
+      tipo:'plazo', icon:'◷', color:'var(--gold)',
+      titulo:`Plazo creado: ${r.titulo}`,
+      sub:`Vencimiento: ${r.fecha_limite||'sin fecha'}`,
+      fecha:r.created_at||r.fecha_limite,
+      accion:()=>showPage('recordatorios',null)
+    });
+  });
+  // Pagos registrados
+  C.facturas.filter(f=>f.estado==='cobrado').forEach(f=>{
+    eventos.push({
+      tipo:'pago', icon:'✅', color:'var(--green)',
+      titulo:`Pago registrado: $${(f.monto||0).toLocaleString('es-AR')}`,
+      sub:`${f.concepto||'Honorario'} · ${cliName(f.cliente_id)}`,
+      fecha:f.created_at,
+      accion:()=>showPage('finanzas',null)
+    });
+  });
+  // Alertas de vencimiento (recordatorios vencidos)
   const hoy = today();
-  // Urgentes y vencidos
-  const urgentes = C.recordatorios.filter(r=>r.urgencia==='urgente'||
-    (r.fecha_limite && r.fecha_limite<=hoy)).sort((a,b)=>a.fecha_limite?.localeCompare(b.fecha_limite||'')||0);
-  // Tareas pendientes de hoy
-  const tareasHoy = tareasStore.filter(t=>!t.done && t.fecha_limite && t.fecha_limite<=hoy);
-  // Leads sin contacto hace +3 días
-  const leadsVencidos = C.leads.filter(l=>l.proximo_contacto && l.proximo_contacto<hoy && l.estado!=='ganado' && l.estado!=='perdido').length;
+  C.recordatorios.filter(r=>r.fecha_limite && r.fecha_limite<hoy).forEach(r=>{
+    eventos.push({
+      tipo:'alerta', icon:'⚠', color:'var(--red)',
+      titulo:`Plazo vencido: ${r.titulo}`,
+      sub:`Venció el ${r.fecha_limite}`,
+      fecha:r.fecha_limite,
+      accion:()=>showPage('recordatorios',null)
+    });
+  });
 
-  const cols={urgente:'red',activo:'gold',pendiente:'blue'};
-  document.getElementById('d-alerts').innerHTML = urgentes.slice(0,6).map(r=>{
-    const dias = r.fecha_limite ? Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/(86400000)) : null;
-    const late  = dias!==null && dias<0;
-    return `<div class="tbl-row" style="grid-template-columns:8px 1fr auto;gap:10px;padding:10px 18px;cursor:pointer;" onclick="showPage('recordatorios',null)">
-      <div class="alert-dot ${cols[r.urgencia]||'blue'}" style="margin-top:4px;width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${late?'var(--red)':r.urgencia==='urgente'?'var(--red)':'var(--gold)'};"></div>
-      <div><div class="cp" style="font-size:12.5px;">${esc(r.titulo)}</div><div class="cs">${late?`⚠ Vencido hace ${Math.abs(dias)}d`:r.fecha_limite||'Sin fecha'}</div></div>
-      ${stBadge(r.urgencia)}
-    </div>`;
-  }).join('') || `<div class="empty"><div class="ei">✅</div><p>Todo al día</p></div>`;
-  document.getElementById('d-alert-count').textContent = urgentes.length + ' alertas';
+  // Ordenar por fecha desc y tomar últimos 10
+  eventos.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+  const top = eventos.slice(0,10);
 
-  // Leads sin contacto badge
-  const leadsEl = document.getElementById('d-leads-vencidos');
-  if(leadsEl) leadsEl.style.display = leadsVencidos>0?'':'none';
-  if(leadsEl) leadsEl.textContent   = leadsVencidos + ' prospecto(s) sin contactar';
+  if(!top.length){
+    el.innerHTML = '<div class="empty"><div class="ei">📋</div><p>Sin actividad reciente</p></div>';
+    return;
+  }
 
-  // Tareas vencidas
-  const tareasEl = document.getElementById('d-tareas-vencidas');
-  if(tareasEl) tareasEl.style.display = tareasHoy.length>0?'':'none';
-  if(tareasEl) tareasEl.textContent   = tareasHoy.length + ' tarea(s) vencida(s)';
+  el.innerHTML = `<div style="padding:14px 20px;">
+    ${top.map((ev,i)=>`
+      <div style="display:grid;grid-template-columns:24px 1fr 100px;gap:12px;padding:9px 0;${i<top.length-1?'border-bottom:1px solid var(--border);':''}align-items:center;cursor:pointer;" onclick="(${ev.accion.toString()})()">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:11px;color:${ev.color};">${ev.icon}</div>
+        <div style="min-width:0;">
+          <div style="font-size:12.5px;color:var(--text);">${esc(ev.titulo)}</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${esc(ev.sub)}</div>
+        </div>
+        <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);text-align:right;">${ev.fecha?fmtFechaCorta(ev.fecha):''}</div>
+      </div>
+    `).join('')}
+  </div>`;
+}
 
-  // Próximos vencimientos (recordatorios + facturas pendientes)
-  const dVenc = document.getElementById('d-vencimientos');
-  if(dVenc){
-    const proxRec = C.recordatorios.filter(r=>r.fecha_limite && r.fecha_limite>=hoy).map(r=>({fecha:r.fecha_limite, label:r.titulo, tipo:'rec'}));
-    const proxFac = C.facturas.filter(f=>f.vencimiento && f.vencimiento>=hoy && f.estado!=='cobrado').map(f=>({fecha:f.vencimiento, label:f.concepto||'Factura', tipo:'fac'}));
-    const proximos = [...proxRec,...proxFac].sort((a,b)=>a.fecha.localeCompare(b.fecha)).slice(0,5);
-    dVenc.innerHTML = proximos.length ? proximos.map(v=>{
-      const dias = Math.ceil((new Date(v.fecha)-new Date(hoy))/86400000);
-      const diasStr = dias===0?'Hoy':dias===1?'Mañana':`En ${dias}d`;
-      return `<div class="tbl-row" style="grid-template-columns:60px 1fr;gap:10px;padding:10px 18px;cursor:pointer;" onclick="showPage('${v.tipo==='rec'?'recordatorios':'finanzas'}',null)">
-        <div style="font-size:10px;font-family:'DM Mono',monospace;color:${dias<=2?'var(--red)':'var(--gold)'};">${diasStr}</div>
-        <div style="font-size:12.5px;color:var(--text);">${esc(v.label)}</div>
-      </div>`;
-    }).join('') : `<div class="empty" style="padding:20px;"><p>Sin vencimientos próximos</p></div>`;
+function fmtFechaCorta(f){
+  if(!f) return '';
+  const d = new Date(f);
+  if(isNaN(d.getTime())) return f;
+  const hoy = new Date();
+  const diffDias = Math.floor((hoy - d) / 86400000);
+  if(diffDias === 0) return 'Hoy';
+  if(diffDias === 1) return 'Ayer';
+  if(diffDias < 7) return `Hace ${diffDias}d`;
+  return d.toLocaleDateString('es-AR',{day:'numeric',month:'short'});
+}
+
+/* Acciones del dashboard */
+function resolverPlazo(rid){
+  const r = C.recordatorios.find(x=>x.id===rid);
+  if(!r) return;
+  if(!confirm(`¿Marcar "${r.titulo}" como resuelto?`)) return;
+  // Eliminamos el recordatorio (equivalente a "cumplido")
+  delItem('recordatorios', rid, 'plazo');
+}
+
+async function registrarPagoCli(cid){
+  // Abre el modal de factura con el cliente preseleccionado
+  if(cid && cid !== '__sin__'){
+    openModal('factura', {cliente_id: cid});
+  } else {
+    openModal('factura');
   }
 }
 
@@ -2170,8 +2379,13 @@ function openPanelCliente(cliId){
         </div>
         <div id="notas-cli-${c.id}">${notas.length ? notas.map(n=>`
           <div class="nota-item">
-            <div class="nota-text">${n.texto}</div>
-            <div class="nota-meta">${n.fecha}</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="flex:1;min-width:0;">
+                <div class="nota-text">${esc(n.texto)}</div>
+                <div class="nota-meta">${n.fecha}</div>
+              </div>
+              ${n.id?`<button class="tbl-btn del" style="flex-shrink:0;padding:2px 6px;font-size:10px;" title="Eliminar nota" onclick="deleteNota('${n.id}','cliente','${c.id}')">✕</button>`:''}
+            </div>
           </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin notas aún</div>'}</div>
       </div>
       <div class="panel-section">
@@ -2219,15 +2433,57 @@ function openPanelCliente(cliId){
   document.getElementById('cli-side-panel').style.display='block';
 }
 
-function addNotaCli(cliId){
+async function addNotaCli(cliId){
   const el=document.getElementById('nota-cli-'+cliId);
   const txt=el?.value?.trim(); if(!txt) return;
   const c=C.clientes.find(x=>x.id===cliId); if(!c) return;
-  if(!c._notas) c._notas=[];
-  c._notas.unshift({texto:txt,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})});
-  el.value='';
-  openPanelCliente(cliId);
-  showToast('📝 Nota guardada');
+
+  // Persistir en Supabase
+  try{
+    const { data, error } = await _sb.from('notas').insert({
+      firma_id:    CF.id,
+      cliente_id:  cliId,
+      texto:       txt,
+      tipo:        'general',
+      creado_por:  CU?.id || null
+    }).select().single();
+    if(error) throw error;
+
+    if(!c._notas) c._notas=[];
+    c._notas.unshift({
+      id:    data.id,
+      texto: data.texto,
+      tipo:  data.tipo||'',
+      fecha: new Date(data.created_at).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    });
+    el.value='';
+    openPanelCliente(cliId);
+    showToast('📝 Nota guardada');
+  } catch(err){
+    console.error('Error al guardar nota:', err);
+    showToast('✗ Error al guardar: '+(err.message||'desconocido'));
+  }
+}
+
+/* Eliminar una nota persistida (de cliente o expediente) */
+async function deleteNota(notaId, kind, parentId){
+  if(!confirm('¿Eliminar esta nota?')) return;
+  try{
+    const { error } = await _sb.from('notas').delete().eq('id', notaId);
+    if(error) throw error;
+    if(kind==='cliente'){
+      const c = C.clientes.find(x=>x.id===parentId);
+      if(c) c._notas = (c._notas||[]).filter(n=>n.id!==notaId);
+      openPanelCliente(parentId);
+    } else {
+      const e = C.expedientes.find(x=>x.id===parentId);
+      if(e) e._notas = (e._notas||[]).filter(n=>n.id!==notaId);
+      openPanelExpediente(parentId);
+    }
+    showToast('🗑 Nota eliminada');
+  } catch(err){
+    showToast('✗ Error: '+(err.message||'desconocido'));
+  }
 }
 
 function closePanelCliente(){
@@ -2241,30 +2497,76 @@ function closePanelCliente(){
 function rExp(filtro='', listaOverride=null){
   const fBar = document.getElementById('exp-filtros');
   if(fBar && !listaOverride) fBar.innerHTML = renderFiltrosExp();
+  // Filtros extra (Fuero + Cliente) — siempre se re-renderizan
+  const fExtra = document.getElementById('exp-filtros-extra');
+  if(fExtra) fExtra.innerHTML = renderFiltrosExpExtra();
 
   const el = document.getElementById('exp-list');
   let lista = listaOverride || C.expedientes;
   if(filtroExpState !== 'todos' && !listaOverride) lista = lista.filter(e=>e.estado===filtroExpState);
+  if(filtroExpFuero !== 'todos' && !listaOverride) lista = lista.filter(e=>e.tipo===filtroExpFuero);
+  if(filtroExpCliente && !listaOverride) lista = lista.filter(e=>e.cliente_id===filtroExpCliente);
   if(filtro) lista = lista.filter(e=>
     e.titulo?.toLowerCase().includes(filtro)||
     (e.codigo_caso||'').toLowerCase().includes(filtro)||
+    (e.numero_expediente||'').toLowerCase().includes(filtro)||
     cliName(e.cliente_id).toLowerCase().includes(filtro)||
     (e.descripcion||'').toLowerCase().includes(filtro)
   );
-  if(!lista.length){ el.innerHTML=`<div class="empty"><div class="ei">▤</div><p>${filtro?'Sin resultados para "'+filtro+'"':'Sin expedientes.'}</p></div>`; return; }
+  if(!lista.length){ el.innerHTML=`<div class="empty"><div class="ei">▤</div><p>${filtro?'Sin resultados para "'+filtro+'"':'Sin casos. Creá el primero.'}</p></div>`; return; }
+
+  const hoy = today();
   el.innerHTML = lista.map(e=>{
     const respName = e.responsable_id ? membName(e.responsable_id) : '';
-    return `<div class="tbl-row col-exp2" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
+    // Próximo plazo (el recordatorio más cercano)
+    const plazos = C.recordatorios
+      .filter(r=>r.expediente_id===e.id && r.fecha_limite)
+      .sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||''));
+    const prox = plazos.find(r=>r.fecha_limite>=hoy) || plazos[0];
+    let proxHTML = '<span style="color:var(--text-muted);font-size:11px;">—</span>';
+    if(prox){
+      const dias = Math.ceil((new Date(prox.fecha_limite)-new Date(hoy))/86400000);
+      const vencido = dias < 0;
+      const color = vencido ? 'var(--red)' : (dias<=2 ? 'var(--red)' : (dias<=7 ? 'var(--gold)' : 'var(--blue)'));
+      const diasStr = vencido ? `⚠ Hace ${Math.abs(dias)}d` : (dias===0 ? '🔴 HOY' : (dias===1 ? 'Mañana' : `En ${dias}d`));
+      proxHTML = `<div style="font-size:11.5px;color:${color};">${diasStr}</div><div style="font-size:10px;color:var(--text-muted);">${esc(prox.titulo.slice(0,25))}</div>`;
+    }
+    return `<div class="tbl-row col-exp3" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
       <div><span class="code-tag">${e.codigo_caso||'—'}</span></div>
-      <div><div class="cp">${esc(e.titulo)}</div><div class="cs">${esc(e.juzgado||'Sin juzgado')}${respName?' · 👤 '+respName:''}</div></div>
+      <div><div class="cp">${esc(e.titulo)}</div><div class="cs">${esc(e.juzgado||'Sin juzgado')}${e.tipo?' · '+e.tipo:''}${respName?' · 👤 '+respName:''}</div></div>
       <div class="cm" style="font-size:12px;">${cliName(e.cliente_id)}</div>
+      <div>${proxHTML}</div>
       <div>${stBadge(e.estado)}</div>
       <div class="act-btns" onclick="event.stopPropagation();">
         <button class="tbl-btn" onclick="editItem('expediente','${e.id}')">✏️</button>
-        <button class="tbl-btn del" onclick="delItem('expedientes','${e.id}','expediente')">✕</button>
+        <button class="tbl-btn del" onclick="delItem('expedientes','${e.id}','caso')">✕</button>
       </div>
     </div>`;}).join('');
 }
+
+/* Filtros adicionales de Casos: Fuero + Cliente */
+let filtroExpFuero   = 'todos';
+let filtroExpCliente = '';
+
+function renderFiltrosExpExtra(){
+  const fueros = ['todos','Civil','Comercial','Laboral','Familia','Penal','Administrativo'];
+  const clientes = [...new Set(C.expedientes.map(e=>e.cliente_id).filter(Boolean))];
+  return `
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+      <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">FUERO:</span>
+      ${fueros.map(f=>`<button class="filter-btn ${filtroExpFuero===f?'active':''}" onclick="setFiltroExpFuero('${f}')">${f==='todos'?'Todos':f}</button>`).join('')}
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">CLIENTE:</span>
+      <select class="form-input" style="padding:5px 10px;font-size:12px;width:auto;min-width:160px;" onchange="setFiltroExpCliente(this.value)">
+        <option value="">Todos</option>
+        ${clientes.map(cid=>{const c=C.clientes.find(x=>x.id===cid); return c?`<option value="${cid}"${filtroExpCliente===cid?' selected':''}>${esc(c.nombre)}</option>`:'';}).join('')}
+      </select>
+    </div>`;
+}
+
+function setFiltroExpFuero(f){ filtroExpFuero=f; rExpConFiltros(); }
+function setFiltroExpCliente(c){ filtroExpCliente=c; rExpConFiltros(); }
 
 /* ════════════════════════════════════════
    PANEL LATERAL — EXPEDIENTE
@@ -2286,88 +2588,123 @@ function openPanelExpediente(expId){
           <span class="code-tag">${e.codigo_caso||'—'}</span>
           ${stBadge(e.estado)}
         </div>
+        <!-- Cliente principal según spec -->
+        <div style="margin-top:6px;font-size:12px;color:var(--text-dim);">
+          Cliente principal: <span style="color:var(--gold);cursor:pointer;text-decoration:underline;" onclick="closePanelExpediente();setTimeout(()=>openPanelCliente('${cli?.id||''}'),120);">${cli?.nombre||'Sin cliente'} ↗</span>
+        </div>
       </div>
       <div class="panel-close" onclick="closePanelExpediente()">✕</div>
     </div>
     <div class="panel-body">
-      <div class="panel-section">
-        <div class="panel-section-title">Información del caso</div>
-        <div class="info-row"><span class="info-lbl">Cliente</span>
-          <span class="info-val" style="color:var(--gold);cursor:pointer;text-decoration:underline;" onclick="closePanelExpediente();setTimeout(()=>openPanelCliente('${cli?.id||''}'),120);">${cli?.nombre||'—'} ↗</span>
-        </div>
-        <div class="info-row"><span class="info-lbl">Tipo</span><span class="info-val">${e.tipo||'—'}</span></div>
-        <div class="info-row"><span class="info-lbl">Juzgado</span><span class="info-val">${e.juzgado||'—'}</span></div>
-        ${isEstudioPlan()&&e.responsable_id?`<div class="info-row"><span class="info-lbl">A cargo</span><span class="info-val" style="color:var(--blue);">👤 ${membName(e.responsable_id)}</span></div>`:''}
-        <div class="info-row"><span class="info-lbl">Estado</span>
-          <select class="tipo-select" onchange="cambiarEstadoExp('${e.id}',this.value)">
-            ${['activo','pendiente','cerrado'].map(s=>`<option value="${s}"${e.estado===s?' selected':''}>${s}</option>`).join('')}
-          </select>
-        </div>
-        ${e.descripcion?`<div style="margin-top:8px;padding:10px;background:var(--surface2);border-radius:var(--r);font-size:12.5px;color:var(--text-dim);line-height:1.6;">${e.descripcion}</div>`:''}
-      </div>
+      <!-- Quick actions bar -->
       <div class="quick-actions">
         <button class="qa-btn" onclick="document.getElementById('nota-exp-input-${e.id}').focus()">📝 Nota</button>
-        <button class="qa-btn" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">📅 Fecha</button>
-        <button class="qa-btn" onclick="activarModoDoc('${e.id}')">📎 Documento</button>
+        <button class="qa-btn" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">⏰ Plazo</button>
+        <button class="qa-btn" onclick="document.getElementById('doc-upload-${e.id}').click()">📎 Documento</button>
+        <button class="qa-btn" onclick="openModal('factura',{expediente_id:'${e.id}',cliente_id:'${e.cliente_id||''}'})">💰 Honorario</button>
         <button class="qa-btn" onclick="editItem('expediente','${e.id}')">✏️ Editar</button>
       </div>
+
+      <!-- Buscador interno -->
       <div style="margin-bottom:14px;">
         <div class="search-wrap" style="width:100%;"><span style="color:var(--text-muted);font-size:13px;">⌕</span>
           <input type="text" placeholder="Buscar en notas y documentos..." oninput="buscarEnExp('${e.id}',this.value)" style="width:100%;">
         </div>
       </div>
-      <div class="panel-section">
-        <div class="panel-section-title">Registro cronológico</div>
-        <div style="display:flex;gap:6px;margin-bottom:10px;align-items:flex-end;">
-          <div style="flex:1;">
-            <textarea id="nota-exp-input-${e.id}" class="nota-input" placeholder="Nota, llamada, movimiento..."></textarea>
-            <div style="display:flex;gap:6px;margin-top:5px;">
-              <select id="nota-exp-tipo-${e.id}" class="tipo-select" style="font-size:11px;" onchange="onNotaTipoChange('${e.id}',this.value)">
-                <option value="">📝 Nota general</option>
-                <option value="llamada">📞 Llamada</option>
-                <option value="movimiento">⚖️ Movimiento</option>
-                <option value="urgente">🔴 Urgente</option>
-                <option value="audiencia">🏛️ Audiencia</option>
-                <option value="escrito">📄 Escrito</option>
-                <option value="documento">📎 Documento</option>
-              </select>
-              <button class="btn btn-primary" style="padding:5px 14px;font-size:12px;" onclick="addNotaExp('${e.id}')">Agregar</button>
-            </div>
+
+      <!-- ════════════════════════════════════════
+           MÓDULO A: EXPEDIENTE (desplegable)
+      ════════════════════════════════════════ -->
+      <details class="panel-section" open style="border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;background:var(--surface2);">
+        <summary style="cursor:pointer;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:10px;">
+          📋 A. Expediente judicial
+        </summary>
+        <div style="margin-top:10px;">
+          <div class="info-row"><span class="info-lbl">N° de expediente</span><span class="info-val" style="font-family:'DM Mono',monospace;">${e.numero_expediente||'—'}</span></div>
+          <div class="info-row"><span class="info-lbl">Juzgado</span><span class="info-val">${e.juzgado||'—'}</span></div>
+          <div class="info-row"><span class="info-lbl">Jurisdicción</span><span class="info-val">${e.jurisdiccion||'—'}</span></div>
+          <div class="info-row"><span class="info-lbl">Fuero</span><span class="info-val">${e.tipo||'—'}</span></div>
+          <div class="info-row"><span class="info-lbl">Estado procesal</span>
+            <select class="tipo-select" onchange="cambiarEstadoExp('${e.id}',this.value)">
+              ${['activo','pendiente','en_prueba','en_sentencia','apelacion','mediacion','cerrado','archivado'].map(s=>`<option value="${s}"${e.estado===s?' selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}
+            </select>
           </div>
+          ${isEstudioPlan()&&e.responsable_id?`<div class="info-row"><span class="info-lbl">Abogado a cargo</span><span class="info-val" style="color:var(--blue);">👤 ${membName(e.responsable_id)}</span></div>`:''}
+          ${e.descripcion?`<div style="margin-top:10px;padding:10px;background:var(--bg);border-radius:var(--r);font-size:12.5px;color:var(--text-dim);line-height:1.6;">${e.descripcion}</div>`:''}
         </div>
-        <div id="notas-exp-list-${e.id}">${notas.length ? notas.map(n=>`
-          <div class="nota-item ${n.tipo||''}">
-            <div class="nota-text">${n.texto}</div>
-            <div class="nota-meta">${n.fecha}${n.tipo?' · '+n.tipo:''}</div>
-          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin entradas aún</div>'}</div>
-      </div>
-      <!-- Resumen financiero -->
-      ${(()=>{const fs=C.facturas.filter(f=>f.expediente_id===e.id);if(!fs.length)return '';
-        const cob=fs.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
-        const pen=fs.filter(f=>f.estado==='pendiente').reduce((s,f)=>s+(f.monto||0),0);
-        return `<div class="panel-section"><div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">💰 Honorarios<button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="openModal('factura',{expediente_id:'${e.id}',cliente_id:'${e.cliente_id}'})">+ Agregar</button></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;">
-          <div style="text-align:center;padding:8px;background:var(--surface2);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">TOTAL</div><div style="font-family:'DM Mono',monospace;font-size:12px;">$${(cob+pen).toLocaleString('es-AR')}</div></div>
-          <div style="text-align:center;padding:8px;background:rgba(76,186,132,.08);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">COBRADO</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);">$${cob.toLocaleString('es-AR')}</div></div>
-          <div style="text-align:center;padding:8px;background:rgba(201,168,76,.06);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">PENDIENTE</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);">$${pen.toLocaleString('es-AR')}</div></div>
-        </div></div>`})()}
+      </details>
+
+      <!-- ════════════════════════════════════════
+           MÓDULO B: TIMELINE (feed automático)
+      ════════════════════════════════════════ -->
       <div class="panel-section">
         <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          Fechas y recordatorios
-          <button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">+ Agregar</button>
+          <span>📜 B. Timeline del caso</span>
+          <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);text-transform:none;letter-spacing:0;">feed automático</span>
         </div>
-        ${recs.length ? recs.map(r=>`
-          <div style="padding:9px 12px;background:var(--surface2);border-radius:var(--r);margin-bottom:6px;border-left:2px solid ${cols[r.urgencia]||'var(--border3)'};">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <div style="font-size:13px;color:var(--text);">${esc(r.titulo)}</div>
-              ${stBadge(r.urgencia)}
+        ${renderTimelineExp(e, cli, recs, docs, notas)}
+
+        <!-- Input manual de nota (se suma al timeline) -->
+        <div style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);">
+          <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:6px;letter-spacing:.1em;">AGREGAR ENTRADA MANUAL</div>
+          <textarea id="nota-exp-input-${e.id}" class="nota-input" placeholder="Nota, llamada, movimiento..."></textarea>
+          <div style="display:flex;gap:6px;margin-top:5px;">
+            <select id="nota-exp-tipo-${e.id}" class="tipo-select" style="font-size:11px;" onchange="onNotaTipoChange('${e.id}',this.value)">
+              <option value="">📝 Nota general</option>
+              <option value="llamada">📞 Llamada</option>
+              <option value="movimiento">⚖️ Movimiento</option>
+              <option value="urgente">🔴 Urgente</option>
+              <option value="audiencia">🏛️ Audiencia</option>
+              <option value="escrito">📄 Escrito</option>
+              <option value="documento">📎 Documento</option>
+            </select>
+            <button class="btn btn-primary" style="padding:5px 14px;font-size:12px;" onclick="addNotaExp('${e.id}')">Agregar</button>
+          </div>
+          <div id="notas-exp-list-${e.id}" style="display:none;">${notas.length ? notas.map(n=>`
+            <div class="nota-item ${n.tipo||''}">
+              <div class="nota-text">${n.texto}</div>
+              <div class="nota-meta">${n.fecha}${n.tipo?' · '+n.tipo:''}</div>
+            </div>`).join('') : ''}</div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════
+           MÓDULO C: PLAZOS (del caso) — CRUD
+      ════════════════════════════════════════ -->
+      <div class="panel-section">
+        <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>⏰ C. Plazos</span>
+          <button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="openModal('recordatorio',{expediente_id:'${e.id}'})">+ Nuevo plazo</button>
+        </div>
+        ${recs.length ? recs.sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||'')).map(r=>{
+          const hoy = today();
+          const dias = r.fecha_limite ? Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/86400000) : null;
+          const vencido = dias!==null && dias<0;
+          const estado = vencido ? 'vencido' : r.urgencia||'pendiente';
+          const estLabel = vencido ? 'vencido' : (r.urgencia==='urgente'?'urgente':(r.urgencia==='activo'?'cumplido':'pendiente'));
+          return `<div style="padding:10px 12px;background:var(--surface2);border-radius:var(--r);margin-bottom:6px;border-left:3px solid ${cols[r.urgencia]||(vencido?'var(--red)':'var(--border3)')};">
+            <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;">
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:13px;color:var(--text);">${r.tipo_plazo?`<span style="font-size:9.5px;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.08em;">${r.tipo_plazo.toUpperCase()}</span> · `:''}${esc(r.titulo)}</div>
+                <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:3px;">📅 ${r.fecha_limite||'Sin fecha'}${dias!==null?` · ${vencido?'⚠ hace '+Math.abs(dias)+'d':(dias===0?'HOY':'en '+dias+'d')}`:''}${r.nota?' · '+esc(r.nota):''}</div>
+              </div>
+              ${stBadge(estado)}
             </div>
-            <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:3px;">📅 ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+r.nota:''}</div>
-          </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin fechas agendadas</div>'}
+            <div style="display:flex;gap:5px;margin-top:8px;">
+              <button class="tbl-btn" title="Marcar como cumplido" onclick="resolverPlazo('${r.id}')">✓</button>
+              <button class="tbl-btn" onclick="editItem('recordatorio','${r.id}')">✏️</button>
+              <button class="tbl-btn del" onclick="delItem('recordatorios','${r.id}','plazo')">✕</button>
+            </div>
+          </div>`;
+        }).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px 0;">Sin plazos agendados</div>'}
       </div>
+
+      <!-- ════════════════════════════════════════
+           MÓDULO D: DOCUMENTOS
+      ════════════════════════════════════════ -->
       <div class="panel-section">
         <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
-          Documentos
+          <span>📎 D. Documentos</span>
           <button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="document.getElementById('doc-upload-${e.id}').click()">+ Subir</button>
         </div>
         <input type="file" id="doc-upload-${e.id}" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.txt,.csv,.zip" style="display:none;" onchange="uploadDocs('${e.id}',this.files,'expediente')">
@@ -2386,10 +2723,126 @@ function openPanelExpediente(expId){
             <button class="tbl-btn del" onclick="removeDoc('${e.id}','${d.id}','expediente');event.stopPropagation();">✕</button>
           </div>`).join('') : '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Sin documentos</div>'}</div>
       </div>
+
+      <!-- ════════════════════════════════════════
+           MÓDULO E: HONORARIOS
+      ════════════════════════════════════════ -->
+      ${(()=>{const fs=C.facturas.filter(f=>f.expediente_id===e.id);
+        const cob=fs.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
+        const pen=fs.filter(f=>f.estado==='pendiente'||f.estado==='facturado').reduce((s,f)=>s+(f.monto||0),0);
+        const ven=fs.filter(f=>f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
+        return `<div class="panel-section">
+        <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>💰 E. Honorarios</span>
+          <button class="qa-btn" style="padding:3px 9px;font-size:11px;" onclick="openModal('factura',{expediente_id:'${e.id}',cliente_id:'${e.cliente_id||''}'})">+ Agregar</button>
+        </div>
+        ${fs.length?`
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+            <div style="text-align:center;padding:8px;background:rgba(76,186,132,.08);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">PAGADO</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);">$${cob.toLocaleString('es-AR')}</div></div>
+            <div style="text-align:center;padding:8px;background:rgba(201,168,76,.06);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">PENDIENTE</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);">$${pen.toLocaleString('es-AR')}</div></div>
+            <div style="text-align:center;padding:8px;background:rgba(201,76,76,.06);border-radius:5px;"><div style="font-size:9px;color:var(--text-muted);margin-bottom:3px;">VENCIDO</div><div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--red);">$${ven.toLocaleString('es-AR')}</div></div>
+          </div>
+          ${fs.map(f=>`<div style="padding:9px 11px;background:var(--surface2);border-radius:var(--r);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:12.5px;color:var(--text);">${esc(f.concepto||'Honorario')}</div>
+              <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:2px;">${f.tipo_honorario||'Por caso'} · $${(f.monto||0).toLocaleString('es-AR')}${f.vencimiento?' · vence '+f.vencimiento:''}</div>
+            </div>
+            <div style="display:flex;gap:5px;align-items:center;">
+              ${stBadge(f.estado||'pendiente')}
+              ${f.estado!=='cobrado'?`<button class="tbl-btn" title="Registrar pago" onclick="marcarCobradoFac('${f.id}')">💰</button>`:''}
+              <button class="tbl-btn" onclick="editItem('factura','${f.id}')">✏️</button>
+              <button class="tbl-btn del" onclick="delItem('facturas','${f.id}','honorario')">✕</button>
+            </div>
+          </div>`).join('')}
+        `:'<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px 0;">Sin honorarios registrados</div>'}
+      </div>`})()}
     </div>`;
 
   document.getElementById('exp-panel-overlay').style.display='block';
   document.getElementById('exp-side-panel').style.display='block';
+}
+
+/* Timeline automático del caso (Módulo B) */
+function renderTimelineExp(e, cli, recs, docs, notas){
+  const eventos = [];
+
+  // Creación del caso
+  if(e.created_at){
+    eventos.push({fecha:e.created_at, icon:'▤', color:'var(--gold)', titulo:'Caso creado', sub:cli?`Cliente: ${cli.nombre}`:'Sin cliente asignado'});
+  }
+
+  // Plazos creados
+  recs.forEach(r=>{
+    if(r.created_at) eventos.push({fecha:r.created_at, icon:'⏰', color:'var(--gold)', titulo:`Plazo agregado: ${r.titulo}`, sub:`Vence el ${r.fecha_limite||'sin fecha'}`});
+    // Plazos vencidos
+    const hoy = today();
+    if(r.fecha_limite && r.fecha_limite<hoy){
+      eventos.push({fecha:r.fecha_limite, icon:'⚠', color:'var(--red)', titulo:`Plazo vencido: ${r.titulo}`, sub:'Alerta automática'});
+    }
+  });
+
+  // Documentos subidos
+  docs.forEach(d=>{
+    eventos.push({fecha:d.fecha||e.created_at, icon:'📎', color:'var(--blue)', titulo:`Documento subido: ${d.nombre}`, sub:d.size||''});
+  });
+
+  // Pagos / honorarios registrados
+  C.facturas.filter(f=>f.expediente_id===e.id).forEach(f=>{
+    if(f.created_at) eventos.push({fecha:f.created_at, icon:'💰', color:'var(--gold)', titulo:`Honorario registrado: ${f.concepto||''}`, sub:`$${(f.monto||0).toLocaleString('es-AR')} · ${f.estado||'pendiente'}`});
+    if(f.estado==='cobrado') eventos.push({fecha:f.updated_at||f.created_at, icon:'✅', color:'var(--green)', titulo:`Pago recibido`, sub:`$${(f.monto||0).toLocaleString('es-AR')} · ${f.concepto||''}`});
+  });
+
+  // Notas manuales (con id para permitir eliminación)
+  notas.forEach(n=>{
+    const iconMap = {llamada:'📞',movimiento:'⚖️',urgente:'🔴',audiencia:'🏛️',escrito:'📄',documento:'📎'};
+    eventos.push({
+      fecha:n.fecha,
+      icon:iconMap[n.tipo]||'📝',
+      color:'var(--text-dim)',
+      titulo:n.texto.slice(0,80),
+      sub:n.tipo?n.tipo.charAt(0).toUpperCase()+n.tipo.slice(1):'Nota',
+      notaId:n.id,
+      expId:e.id
+    });
+  });
+
+  // Ordenar descendente
+  eventos.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||''));
+
+  if(!eventos.length){
+    return '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:12px 0;">Sin actividad registrada</div>';
+  }
+
+  return `<div style="max-height:320px;overflow-y:auto;padding-right:4px;">
+    ${eventos.slice(0,30).map((ev,i)=>`
+      <div style="display:grid;grid-template-columns:22px 1fr ${ev.notaId?'24px':''};gap:10px;padding:8px 0;${i<Math.min(eventos.length,30)-1?'border-bottom:1px solid var(--border);':''};align-items:center;">
+        <div style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:10px;color:${ev.color};">${ev.icon}</div>
+        <div style="min-width:0;">
+          <div style="font-size:12px;color:var(--text);line-height:1.4;">${esc(ev.titulo)}</div>
+          <div style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);margin-top:2px;">${ev.fecha?fmtFechaCorta(ev.fecha)+' · ':''}${esc(ev.sub||'')}</div>
+        </div>
+        ${ev.notaId?`<button class="tbl-btn del" style="padding:2px 5px;font-size:10px;" title="Eliminar nota" onclick="deleteNota('${ev.notaId}','expediente','${ev.expId}')">✕</button>`:''}
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+/* Marcar factura como cobrada desde el panel del caso */
+async function marcarCobradoFac(fid){
+  const f = C.facturas.find(x=>x.id===fid);
+  if(!f) return;
+  if(!confirm(`¿Registrar pago de $${(f.monto||0).toLocaleString('es-AR')}?`)) return;
+  try{
+    await dbUpdate('facturas', fid, {estado:'cobrado'});
+    f.estado='cobrado';
+    showToast('✅ Pago registrado');
+    renderAll();
+    // Refrescar panel si está abierto
+    if(f.expediente_id){
+      const exp = C.expedientes.find(e=>e.id===f.expediente_id);
+      if(exp && document.getElementById('exp-side-panel').style.display==='block') openPanelExpediente(f.expediente_id);
+    }
+  }catch(err){ showToast('✗ Error: '+err.message); }
 }
 
 function activarModoDoc(expId){
@@ -2419,16 +2872,37 @@ function onNotaTipoChange(expId, tipo){
   }
 }
 
-function addNotaExp(expId){
+async function addNotaExp(expId){
   const input = document.getElementById('nota-exp-input-'+expId);
   const tipo  = document.getElementById('nota-exp-tipo-'+expId)?.value||'';
   const txt   = input?.value?.trim(); if(!txt) return;
   const e = C.expedientes.find(x=>x.id===expId); if(!e) return;
-  if(!e._notas) e._notas=[];
-  e._notas.unshift({texto:txt,tipo,fecha:new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})});
-  input.value='';
-  openPanelExpediente(expId);
-  showToast('📝 Entrada guardada');
+
+  // Persistir en Supabase
+  try{
+    const { data, error } = await _sb.from('notas').insert({
+      firma_id:      CF.id,
+      expediente_id: expId,
+      texto:         txt,
+      tipo:          tipo || 'general',
+      creado_por:    CU?.id || null
+    }).select().single();
+    if(error) throw error;
+
+    if(!e._notas) e._notas=[];
+    e._notas.unshift({
+      id:    data.id,
+      texto: data.texto,
+      tipo:  data.tipo||'',
+      fecha: new Date(data.created_at).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    });
+    input.value='';
+    openPanelExpediente(expId);
+    showToast('📝 Entrada guardada');
+  } catch(err){
+    console.error('Error al guardar nota:', err);
+    showToast('✗ Error al guardar: '+(err.message||'desconocido'));
+  }
 }
 
 async function cambiarEstadoExp(expId, nuevoEstado){
@@ -2610,49 +3084,101 @@ function setFiltroRec(estado){
 }
 
 function renderFiltrosRec(){
-  const opts = ['todos','urgente','activo','pendiente'];
-  return opts.map(o=>`<button class="filter-btn ${filtroRecState===o?'active':''}" onclick="setFiltroRec('${o}')">${o==='todos'?'Todos':o.charAt(0).toUpperCase()+o.slice(1)}</button>`).join('');
+  // Filtros temporales según spec: Hoy / Semana / Mes / Vencidos + Todos
+  const opts = [
+    {key:'todos',    label:'Todos'},
+    {key:'hoy',      label:'Hoy'},
+    {key:'semana',   label:'Esta semana'},
+    {key:'mes',      label:'Este mes'},
+    {key:'vencidos', label:'Vencidos'}
+  ];
+  return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+    <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">PERÍODO:</span>
+    ${opts.map(o=>`<button class="filter-btn ${filtroRecState===o.key?'active':''}" onclick="setFiltroRec('${o.key}')">${o.label}</button>`).join('')}
+  </div>`;
 }
 
 function rRec(){
   const fb = document.getElementById('rec-filter-bar');
   if(fb) fb.innerHTML = renderFiltrosRec();
+  // Si está en vista calendario, renderizar eso también
+  if(vistaPlazos==='cal') safeRun(rCalendario,'rCalendario');
   rRecConFiltro(C.recordatorios);
+}
+
+/* Toggle vista lista / calendario */
+let vistaPlazos = 'list';
+function setVistaPlazos(v){
+  vistaPlazos = v;
+  document.getElementById('plazos-view-list').classList.toggle('active', v==='list');
+  document.getElementById('plazos-view-cal').classList.toggle('active',  v==='cal');
+  document.getElementById('plazos-list-wrap').style.display = v==='list' ? '' : 'none';
+  document.getElementById('plazos-cal-wrap').style.display  = v==='cal'  ? '' : 'none';
+  if(v==='cal') safeRun(rCalendario,'rCalendario');
 }
 
 function rRecConFiltro(lista){
   const el=document.getElementById('rec-list');
   if(!el) return;
-  let filtered = filtroRecState==='todos' ? lista : lista.filter(r=>r.urgencia===filtroRecState);
+
+  const hoy = today();
+  const hoyDate = new Date(hoy);
+  // Rango fin de semana (domingo siguiente)
+  const finSemana = new Date(hoyDate); finSemana.setDate(finSemana.getDate() + (7 - finSemana.getDay()));
+  const finSemanaStr = finSemana.toISOString().split('T')[0];
+  // Rango fin de mes
+  const finMes = new Date(hoyDate.getFullYear(), hoyDate.getMonth()+1, 0);
+  const finMesStr = finMes.toISOString().split('T')[0];
+
+  let filtered = lista;
+  if(filtroRecState==='hoy'){
+    filtered = filtered.filter(r=>r.fecha_limite===hoy);
+  } else if(filtroRecState==='semana'){
+    filtered = filtered.filter(r=>r.fecha_limite && r.fecha_limite>=hoy && r.fecha_limite<=finSemanaStr);
+  } else if(filtroRecState==='mes'){
+    filtered = filtered.filter(r=>r.fecha_limite && r.fecha_limite>=hoy && r.fecha_limite<=finMesStr);
+  } else if(filtroRecState==='vencidos'){
+    filtered = filtered.filter(r=>r.fecha_limite && r.fecha_limite<hoy);
+  }
+
   if(!filtered.length){
-    el.innerHTML=`<div class="empty"><div class="ei">◷</div><p>${filtroRecState!=='todos'?'Sin recordatorios de tipo "'+filtroRecState+'"':'Sin recordatorios. Creá uno para no perder ningún plazo.'}</p></div>`;
+    const labels = {todos:'plazos',hoy:'plazos para hoy',semana:'plazos esta semana',mes:'plazos este mes',vencidos:'plazos vencidos'};
+    el.innerHTML=`<div class="empty"><div class="ei">◷</div><p>Sin ${labels[filtroRecState]||'plazos'}. ${filtroRecState==='vencidos'?'✓ Todo al día.':'Creá uno para no perder ningún vencimiento.'}</p></div>`;
     return;
   }
-  const hoy = today();
+
   const recRow=r=>{
     const dias = r.fecha_limite ? Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/86400000) : null;
     const late  = dias!==null && dias<0;
     const diasStr = dias===null?'—':late?`<span style="color:var(--red)">⚠ Vencido hace ${Math.abs(dias)}d</span>`:dias===0?`<span style="color:var(--gold)">📅 Hoy</span>`:dias===1?`<span style="color:var(--gold)">📅 Mañana</span>`:`📅 En ${dias}d`;
     const exp  = C.expedientes.find(e=>e.id===r.expediente_id);
     const cli  = exp ? cliName(exp.cliente_id) : '';
+    const tipo = r.tipo_plazo ? `<span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.08em;">${r.tipo_plazo.toUpperCase()}</span> · ` : '';
     return `<div class="tbl-row col-rec" style="${late?'background:rgba(201,76,76,.04);':''}cursor:pointer;" onclick="editItem('recordatorio','${r.id}')">
       <div>
-        <div class="cp">${esc(r.titulo)}</div>
-        ${exp?`<div class="cs" style="color:var(--blue);font-size:10.5px;">▤ ${esc(exp.titulo.slice(0,30))}${cli?' · '+esc(cli.split(' ')[0]):''}</div>`:'<div class="cs">Sin expediente</div>'}
+        <div class="cp">${tipo}${esc(r.titulo)}</div>
+        ${exp?`<div class="cs" style="color:var(--blue);font-size:10.5px;cursor:pointer;" onclick="event.stopPropagation();openPanelExpediente('${exp.id}')">▤ ${esc(exp.titulo.slice(0,30))}${cli?' · '+esc(cli.split(' ')[0]):''} ↗</div>`:'<div class="cs">Sin caso</div>'}
       </div>
       <div class="cm" style="font-size:11px;">${r.fecha_limite||'—'}<br><span style="font-size:10px;">${diasStr}</span></div>
       <div>${stBadge(r.urgencia)}</div>
       <div class="act-btns">
+        <button class="tbl-btn" title="Marcar como cumplido" onclick="event.stopPropagation();resolverPlazo('${r.id}')">✓</button>
         <button class="tbl-btn" onclick="event.stopPropagation();editItem('recordatorio','${r.id}')">✏️</button>
-        <button class="tbl-btn del" onclick="event.stopPropagation();delItem('recordatorios','${r.id}','recordatorio')">✕</button>
+        <button class="tbl-btn del" onclick="event.stopPropagation();delItem('recordatorios','${r.id}','plazo')">✕</button>
       </div>
     </div>`;
   };
-  const urg  = filtered.filter(r=>r.urgencia==='urgente');
-  const rest = filtered.filter(r=>r.urgencia!=='urgente').sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||''));
+
+  // Orden: vencidos primero, luego urgentes, luego por fecha
+  const vencidos = filtered.filter(r=>r.fecha_limite && r.fecha_limite<hoy);
+  const urg  = filtered.filter(r=>r.urgencia==='urgente' && !vencidos.includes(r));
+  const rest = filtered.filter(r=>!urg.includes(r) && !vencidos.includes(r)).sort((a,b)=>(a.fecha_limite||'').localeCompare(b.fecha_limite||''));
+
   let h='';
-  if(urg.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">🔴 Urgentes (${urg.length})</div><div class="card" style="margin-bottom:18px;"><div class="tbl-hdr col-rec"><div class="th">Recordatorio + Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${urg.map(recRow).join('')}</div>`; }
-  if(rest.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:9px;">Próximos (${rest.length})</div><div class="card"><div class="tbl-hdr col-rec"><div class="th">Recordatorio + Expediente</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th"></div></div>${rest.map(recRow).join('')}</div>`; }
+  const hdrCol = `<div class="tbl-hdr col-rec"><div class="th">Plazo + Caso</div><div class="th">Fecha límite</div><div class="th">Urgencia</div><div class="th">Acciones</div></div>`;
+  if(vencidos.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">⚠ Vencidos (${vencidos.length})</div><div class="card" style="margin-bottom:18px;">${hdrCol}${vencidos.map(recRow).join('')}</div>`; }
+  if(urg.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);margin-bottom:9px;">🔴 Urgentes (${urg.length})</div><div class="card" style="margin-bottom:18px;">${hdrCol}${urg.map(recRow).join('')}</div>`; }
+  if(rest.length){ h+=`<div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:9px;">Próximos (${rest.length})</div><div class="card">${hdrCol}${rest.map(recRow).join('')}</div>`; }
   el.innerHTML=h;
 }
 
@@ -3316,10 +3842,14 @@ function rExpConFiltros(){
   // Re-renderizar filtros
   const fBar = document.getElementById('exp-filtros');
   if(fBar) fBar.innerHTML = renderFiltrosExp();
+  const fExtra = document.getElementById('exp-filtros-extra');
+  if(fExtra) fExtra.innerHTML = renderFiltrosExpExtra();
   // Filtrar
   const filtro = document.getElementById('exp-search')?.value.toLowerCase()||'';
   let lista = C.expedientes;
   if(filtroExpState !== 'todos') lista = lista.filter(e=>e.estado===filtroExpState);
+  if(filtroExpFuero !== 'todos') lista = lista.filter(e=>e.tipo===filtroExpFuero);
+  if(filtroExpCliente) lista = lista.filter(e=>e.cliente_id===filtroExpCliente);
   rExp(filtro, lista);
 }
 
@@ -3664,9 +4194,13 @@ function editLead(id){
 /* ════════════════════════════════════════
    APP NAVIGATION
 ════════════════════════════════════════ */
-const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Expedientes',agenda:'Agenda',recordatorios:'Recordatorios',tareas:'Tareas',finanzas:'Finanzas',reportes:'Reportes',plantillas:'Plantillas',equipo:'Equipo'};
+const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Casos',recordatorios:'Plazos',tareas:'Tareas',documentos:'Documentos',finanzas:'Honorarios',equipo:'Equipo'};
 function showPage(p, el){
   if(p==='equipo' && CF && !isEstudioPlan()){ p='dashboard'; el=null; }
+  // Compatibilidad con nombres antiguos (agenda / reportes / plantillas ya no existen como páginas independientes)
+  if(p==='agenda') p='recordatorios';
+  if(p==='reportes' || p==='plantillas') p='documentos';
+
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.mobile-nav-item').forEach(x=>x.classList.remove('active'));
@@ -3676,7 +4210,6 @@ function showPage(p, el){
   if(el && el.classList.contains('nav-item')){ el.classList.add('active'); }
   else if(el && el.classList.contains('mobile-nav-item')){ el.classList.add('active'); }
   else {
-    // Buscar el nav-item correspondiente y marcarlo
     const navItems = document.querySelectorAll('.nav-item,.mobile-nav-item');
     navItems.forEach(n => { if(n.getAttribute('onclick')?.includes("'"+p+"'")) n.classList.add('active'); });
   }
@@ -3684,7 +4217,9 @@ function showPage(p, el){
   const gs = document.getElementById('global-search');
   if(gs) gs.value = '';
   closeSearchResults();
-  if(p==='agenda') safeRun(rCalendario,'rCalendario');
+  // Refrescar vistas específicas
+  if(p==='recordatorios') safeRun(rRec,'rRec');
+  if(p==='documentos')    safeRun(rDocs,'rDocs');
   closePanelCliente(); closePanelExpediente(); closePanelMiembro();
   closeNotifPanel(); closePerfilMenu();
 }
@@ -3745,12 +4280,12 @@ function handleSearch(v){
       <div class="sr-item-icon">▤</div>
       <div class="sr-item-text"><div class="sr-item-main">${esc(e.titulo)}</div><div class="sr-item-sub">${e.codigo_caso||'—'} · ${stBadge(e.estado)}</div></div>
     </div>`).join(''));
-  if(recordatorios.length) html_parts.push(`<div class="sr-section">Recordatorios</div>` +
+  if(recordatorios.length) html_parts.push(`<div class="sr-section">Plazos</div>` +
     recordatorios.map(r=>`<div class="sr-item" onclick="showPage('recordatorios',null);closeSearchResults()">
       <div class="sr-item-icon">◷</div>
       <div class="sr-item-text"><div class="sr-item-main">${esc(r.titulo)}</div><div class="sr-item-sub">📅 ${r.fecha_limite||'Sin fecha'}</div></div>
     </div>`).join(''));
-  if(facturas.length) html_parts.push(`<div class="sr-section">Facturas</div>` +
+  if(facturas.length) html_parts.push(`<div class="sr-section">Honorarios</div>` +
     facturas.map(f=>`<div class="sr-item" onclick="showPage('finanzas',null);closeSearchResults()">
       <div class="sr-item-icon">💰</div>
       <div class="sr-item-text"><div class="sr-item-main">${esc(f.concepto||'—')}</div><div class="sr-item-sub">${f.numero||'—'} · $${(f.monto||0).toLocaleString('es-AR')}</div></div>
@@ -3820,25 +4355,99 @@ function toggleNotifPanel(){
   const p = document.getElementById('notif-panel');
   if(!p) return;
   if(p.classList.contains('open')){ closeNotifPanel(); return; }
-  // Renderizar notificaciones (recordatorios urgentes)
-  const urgentes = C.recordatorios.filter(r=>r.urgencia==='urgente');
-  const activos  = C.recordatorios.filter(r=>r.urgencia==='activo');
+
+  const hoy = today();
+  // ── CRÍTICAS: vencimientos de plazos ──
+  const criticas = C.recordatorios.filter(r =>
+    r.urgencia==='urgente' ||
+    (r.fecha_limite && r.fecha_limite < hoy) ||
+    (r.fecha_limite && r.fecha_limite === hoy)
+  );
+  // ── FINANCIERAS: clientes con deuda ──
+  const facsPen = C.facturas.filter(f => f.estado==='pendiente' || f.estado==='vencido');
+  const deudorPorCli = {};
+  facsPen.forEach(f => {
+    const cid = f.cliente_id || '__sin__';
+    if(!deudorPorCli[cid]) deudorPorCli[cid] = {total:0, vencidas:0};
+    deudorPorCli[cid].total += (f.monto||0);
+    if(f.estado==='vencido') deudorPorCli[cid].vencidas++;
+  });
+  const financieras = Object.entries(deudorPorCli).map(([cid,d])=>({cid,...d})).sort((a,b)=>b.total-a.total);
+  // ── OPERATIVAS: resumen semanal ──
+  const en7 = new Date(); en7.setDate(en7.getDate()+7);
+  const en7Str = en7.toISOString().split('T')[0];
+  const plazosSemana = C.recordatorios.filter(r=>r.fecha_limite && r.fecha_limite>=hoy && r.fecha_limite<=en7Str).length;
+  const casosActivos = C.expedientes.filter(e=>e.estado==='activo'||e.estado==='pendiente').length;
+  const operativas = [];
+  if(plazosSemana > 0) operativas.push({titulo:`${plazosSemana} plazo${plazosSemana>1?'s':''} esta semana`, sub:'Revisá la agenda', accion:"showPage('recordatorios',null);setVistaPlazos('cal')"});
+  if(casosActivos > 0) operativas.push({titulo:`${casosActivos} caso${casosActivos>1?'s':''} activo${casosActivos>1?'s':''}`, sub:'En seguimiento', accion:"showPage('expedientes',null)"});
+
   let html = '';
-  if(!urgentes.length && !activos.length){
-    html = '<div class="notif-empty">✅ Sin alertas activas</div>';
-  } else {
-    html += urgentes.map(r=>`
-      <div class="notif-item urgente" onclick="closeNotifPanel();showPage('recordatorios',null)">
-        <div class="notif-item-title">🔴 ${esc(r.titulo)}</div>
-        <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}${r.nota?' · '+esc(r.nota):''}</div>
-      </div>`).join('');
-    html += activos.slice(0,5).map(r=>`
-      <div class="notif-item activo" onclick="closeNotifPanel();showPage('recordatorios',null)">
-        <div class="notif-item-title">⚡ ${esc(r.titulo)}</div>
-        <div class="notif-item-meta">Fecha límite: ${r.fecha_limite||'Sin fecha'}</div>
-      </div>`).join('');
+
+  // Sección críticas
+  if(criticas.length){
+    html += `<div style="padding:10px 16px 6px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--red);border-bottom:1px solid var(--border);">🔴 Críticas (${criticas.length})</div>`;
+    html += criticas.slice(0,6).map(r=>{
+      const exp = C.expedientes.find(e=>e.id===r.expediente_id);
+      const vencido = r.fecha_limite && r.fecha_limite < hoy;
+      const dias = r.fecha_limite ? Math.ceil((new Date(r.fecha_limite)-new Date(hoy))/86400000) : null;
+      const label = vencido ? `Vencido hace ${Math.abs(dias)}d` : dias===0 ? 'Vence HOY' : (r.fecha_limite||'Sin fecha');
+      return `<div class="notif-item urgente">
+        <div class="notif-item-title">⏰ ${esc(r.titulo)}</div>
+        <div class="notif-item-meta">${label}${exp?' · ▤ '+esc(exp.titulo.slice(0,25)):''}</div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          ${exp?`<button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="closeNotifPanel();openPanelExpediente('${exp.id}')">↗ Ir al caso</button>`:''}
+          <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="closeNotifPanel();showPage('recordatorios',null)">Ver plazo</button>
+        </div>
+      </div>`;
+    }).join('');
   }
+
+  // Sección operativas
+  if(operativas.length){
+    html += `<div style="padding:10px 16px 6px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--gold);border-bottom:1px solid var(--border);">⚙ Operativas</div>`;
+    html += operativas.map(o=>`<div class="notif-item activo">
+      <div class="notif-item-title">📋 ${esc(o.titulo)}</div>
+      <div class="notif-item-meta">${esc(o.sub)}</div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="closeNotifPanel();${o.accion}">Ver →</button>
+      </div>
+    </div>`).join('');
+  }
+
+  // Sección financieras
+  if(financieras.length){
+    html += `<div style="padding:10px 16px 6px;font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:#a78bfa;border-bottom:1px solid var(--border);">💰 Financieras (${financieras.length})</div>`;
+    html += financieras.slice(0,5).map(d=>{
+      const c = C.clientes.find(x=>x.id===d.cid);
+      const nom = c ? c.nombre : 'Sin cliente';
+      return `<div class="notif-item" style="border-left:2px solid #a78bfa;">
+        <div class="notif-item-title">💰 ${esc(nom)}</div>
+        <div class="notif-item-meta">Deuda: $${d.total.toLocaleString('es-AR')}${d.vencidas>0?` · <span style="color:var(--red);">${d.vencidas} vencida${d.vencidas>1?'s':''}</span>`:''}</div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          ${c?`<button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="closeNotifPanel();openPanelCliente('${c.id}')">↗ Ver cliente</button>`:''}
+          <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;" onclick="closeNotifPanel();registrarPagoCli('${d.cid}')">💰 Registrar pago</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  if(!html){
+    html = '<div class="notif-empty">✅ Sin alertas activas</div>';
+  }
+
   document.getElementById('notif-list').innerHTML = html;
+  // Actualizar contador del dot
+  const totalNotif = criticas.length + operativas.length + financieras.length;
+  const dot = document.getElementById('notif-dot');
+  if(dot){
+    if(totalNotif > 0){
+      dot.textContent = totalNotif > 9 ? '9+' : totalNotif;
+      dot.style.display = '';
+    } else {
+      dot.style.display = 'none';
+    }
+  }
   p.classList.add('open');
 }
 
@@ -4195,35 +4804,40 @@ const FORMS = {
     <div class="form-row"><div class="form-group"><label class="form-label">DNI / CUIT <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-dni" class="form-input" placeholder="20-12345678-9" value="${d.dni||''}" oninput="fmtCuit(this)"></div><div class="form-group"><label class="form-label">Dirección <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><input id="ff-direccion" class="form-input" placeholder="Av. Corrientes 1234" value="${d.direccion||''}"></div></div>
     ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Responsable</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:''}
     <div class="form-group"><label class="form-label">Notas internas</label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
-  expediente: d=>({title:d.id?'Editar expediente':'Nuevo expediente',body:`
+  expediente: d=>({title:d.id?'Editar caso':'Nuevo caso',body:`
     <div class="form-group"><label class="form-label">Carátula *</label><input id="ff-titulo" class="form-input" placeholder="García c/ López s/ daños..." value="${d.titulo||''}"></div>
     <div class="form-row"><div class="form-group"><label class="form-label">Cliente</label>
   <input id="ff-cliente_id_search" class="form-input" list="dl-clientes" placeholder="Buscar cliente..." value="${d.cliente_id?cliName(d.cliente_id):''}" oninput="syncCliId(this.value)">
   <input type="hidden" id="ff-cliente_id" value="${d.cliente_id||''}">
   <datalist id="dl-clientes">${C.clientes.map(c=>`<option value="${esc(c.nombre)}" data-id="${c.id}">${esc(c.nombre)}</option>`).join('')}</datalist>
-</div><div class="form-group"><label class="form-label">Tipo de causa</label><select id="ff-tipo" class="form-input">${selO(d.tipo||'Civil',['Civil','Comercial','Laboral','Familia','Penal','Administrativo'])}</select></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Juzgado / Tribunal</label><input id="ff-juzgado" class="form-input" placeholder="Juzgado Civil Nº 12" value="${d.juzgado||''}"></div><div class="form-group"><label class="form-label">Estado</label><select id="ff-estado" class="form-input">
-  ${['activo','pendiente','en_sentencia','apelacion','mediacion','cerrado','archivado'].map(s=>`<option value="${s}"${(d.estado||'activo')===s?' selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}
+</div><div class="form-group"><label class="form-label">N° de expediente <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(judicial)</span></label><input id="ff-numero_expediente" class="form-input" placeholder="Ej: 12345/2025" value="${d.numero_expediente||''}"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Juzgado / Tribunal</label><input id="ff-juzgado" class="form-input" placeholder="Juzgado Civil Nº 12" value="${d.juzgado||''}"></div><div class="form-group"><label class="form-label">Jurisdicción</label><select id="ff-jurisdiccion" class="form-input">${selO(d.jurisdiccion||'Nacional',['Nacional','Federal','Provincial','CABA','Córdoba','Buenos Aires','Santa Fe','Mendoza','Otra'])}</select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Fuero</label><select id="ff-tipo" class="form-input">${selO(d.tipo||'Civil',['Civil','Comercial','Laboral','Familia','Penal','Administrativo','Contencioso Administrativo','Contravencional','Tributario','Consumidor'])}</select></div><div class="form-group"><label class="form-label">Estado procesal</label><select id="ff-estado" class="form-input">
+  ${['activo','pendiente','en_prueba','en_sentencia','apelacion','mediacion','cerrado','archivado'].map(s=>`<option value="${s}"${(d.estado||'activo')===s?' selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}
 </select></div></div>
     ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Abogado a cargo</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:''}
     <div class="form-group"><label class="form-label">Descripción</label><textarea id="ff-descripcion" class="form-input">${d.descripcion||''}</textarea></div>`}),
-  recordatorio: d=>({title:d.id?'Editar recordatorio':'Nuevo recordatorio',body:`
+  recordatorio: d=>({title:d.id?'Editar plazo':'Nuevo plazo',body:`
     <div class="form-group"><label class="form-label">Título *</label><input id="ff-titulo" class="form-input" placeholder="Vencimiento para contestar demanda" value="${d.titulo||''}"></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Expediente</label><select id="ff-expediente_id" class="form-input"><option value="">Seleccionar...</option>${expOpts(d.expediente_id)}</select></div><div class="form-group"><label class="form-label">Fecha límite</label><input id="ff-fecha_limite" class="form-input" type="date" value="${d.fecha_limite||''}"></div></div>
-    <div class="form-row"><div class="form-group"><label class="form-label">Urgencia</label><select id="ff-urgencia" class="form-input"><option value="activo"${(d.urgencia||'')==='activo'?' selected':''}>activo</option><option value="pendiente"${(d.urgencia||'')==='pendiente'?' selected':''}>pendiente</option><option value="urgente"${(d.urgencia||'')==='urgente'?' selected':''}>urgente</option></select></div><div class="form-group"><label class="form-label">Notificar</label><select id="ff-notif" class="form-input"><option>24hs antes</option><option>48hs antes</option><option>1 semana antes</option><option>No notificar</option></select></div></div>
-    ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Asignado a</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:''}
+    <div class="form-row"><div class="form-group"><label class="form-label">Tipo de plazo</label><select id="ff-tipo_plazo" class="form-input">${selO(d.tipo_plazo||'Traslado',['Traslado','Audiencia','Escrito','Apelación','Prueba','Alegatos','Sentencia','Recurso','Otro'])}</select></div><div class="form-group"><label class="form-label">Caso</label><select id="ff-expediente_id" class="form-input"><option value="">Seleccionar...</option>${expOpts(d.expediente_id)}</select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Fecha de vencimiento *</label><input id="ff-fecha_limite" class="form-input" type="date" value="${d.fecha_limite||''}"></div><div class="form-group"><label class="form-label">Urgencia</label><select id="ff-urgencia" class="form-input"><option value="activo"${(d.urgencia||'')==='activo'?' selected':''}>activo</option><option value="pendiente"${(d.urgencia||'')==='pendiente'?' selected':''}>pendiente</option><option value="urgente"${(d.urgencia||'')==='urgente'?' selected':''}>urgente</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Notificar</label><select id="ff-notif" class="form-input"><option>24hs antes</option><option>48hs antes</option><option>1 semana antes</option><option>No notificar</option></select></div>
+    ${isEstudioPlan()?`<div class="form-group"><label class="form-label">Asignado a</label><select id="ff-responsable_id" class="form-input"><option value="">Sin asignar</option>${miembroOpts(d.responsable_id)}</select></div>`:'<div></div>'}</div>
     <div class="form-group"><label class="form-label">Notas</label><textarea id="ff-nota" class="form-input">${d.nota||''}</textarea></div>`}),
-  factura: d=>({title:d.id?'Editar factura':'Nueva factura',body:`
+  factura: d=>({title:d.id?'Editar honorario':'Nuevo honorario',body:`
     <div class="form-group"><label class="form-label">Concepto / Descripción *</label><input id="ff-concepto" class="form-input" placeholder="Honorarios — caso García" value="${d.concepto||''}"></div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Cliente</label><select id="ff-cliente_id_fac" class="form-input"><option value="">Sin cliente</option>${cliOpts(d.cliente_id)}</select></div>
-      <div class="form-group"><label class="form-label">Expediente</label><select id="ff-expediente_id_fac" class="form-input"><option value="">Sin expediente</option>${expOpts(d.expediente_id)}</select></div>
+      <div class="form-group"><label class="form-label">Caso</label><select id="ff-expediente_id_fac" class="form-input"><option value="">Sin caso</option>${expOpts(d.expediente_id)}</select></div>
     </div>
     <div class="form-row">
+      <div class="form-group"><label class="form-label">Tipo de honorario</label><select id="ff-tipo_honorario" class="form-input">${selO(d.tipo_honorario||'Por caso',['Por caso','Por hora','Cuota litis','Consulta','Gestión administrativa','Otro'])}</select></div>
       <div class="form-group"><label class="form-label">Monto (ARS) *</label><input id="ff-monto" class="form-input" type="text" inputmode="decimal" placeholder="85000" value="${d.monto||''}" oninput="fmtMonto(this)"></div>
-      <div class="form-group"><label class="form-label">Vencimiento</label><input id="ff-vencimiento_fac" class="form-input" type="date" value="${d.vencimiento||''}"></div>
     </div>
-    <div class="form-group"><label class="form-label">Estado</label><select id="ff-estado_fac" class="form-input"><option value="pendiente"${(d.estado||'')!=='cobrado'&&(d.estado||'')!=='vencido'?' selected':''}>Pendiente</option><option value="cobrado"${(d.estado||'')==='cobrado'?' selected':''}>Cobrado</option><option value="vencido"${(d.estado||'')==='vencido'?' selected':''}>Vencido</option></select></div>`}),
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Vencimiento</label><input id="ff-vencimiento_fac" class="form-input" type="date" value="${d.vencimiento||''}"></div>
+      <div class="form-group"><label class="form-label">Estado</label><select id="ff-estado_fac" class="form-input"><option value="pendiente"${(d.estado||'')!=='cobrado'&&(d.estado||'')!=='vencido'&&(d.estado||'')!=='facturado'?' selected':''}>Pendiente</option><option value="facturado"${(d.estado||'')==='facturado'?' selected':''}>Facturado</option><option value="cobrado"${(d.estado||'')==='cobrado'?' selected':''}>Pagado</option><option value="vencido"${(d.estado||'')==='vencido'?' selected':''}>Vencido</option></select></div>
+    </div>`}),
     lead: d=>({title:d.id?'Editar prospecto':'Nuevo prospecto',body:`
     <div class="form-row">
       <div class="form-group"><label class="form-label">Nombre / Razón social *</label><input id="ff-nombre" class="form-input" placeholder="Juan García" value="${d.nombre||''}"></div>
@@ -4248,7 +4862,7 @@ const FORMS = {
     <div class="form-group"><label class="form-label">Notas <span style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;">(opcional)</span></label><textarea id="ff-notas" class="form-input">${d.notas||''}</textarea></div>`}),
     default: ()=>({title:'¿Qué querés crear?', noSave:true, body:`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      ${[['lead','Nuevo prospecto','Agregar al pipeline'],['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo expediente','Abrir nueva causa'],['recordatorio','Recordatorio','Agendar vencimiento judicial'],['factura','Nueva factura','Registrar honorario o cobro']].map(([t,l,s])=>`
+      ${[['lead','Nuevo prospecto','Agregar al pipeline'],['cliente','Nuevo cliente','Agregar cliente al estudio'],['expediente','Nuevo caso','Abrir nueva causa'],['recordatorio','Nuevo plazo','Agendar vencimiento judicial'],['factura','Nuevo honorario','Registrar cobro o pendiente']].map(([t,l,s])=>`
       <div onclick="closeModal();setTimeout(()=>openModal('${t}'),80)" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:17px;cursor:pointer;transition:all .18s;" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
         <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);margin-bottom:3px;">${l}</div>
         <div style="font-size:11px;color:var(--text-muted);">${s}</div>
@@ -4258,11 +4872,11 @@ const FORMS = {
 
 const TBL  = {cliente:'clientes',expediente:'expedientes',recordatorio:'recordatorios',lead:'leads',factura:'facturas'};
 const FV   = {
-  factura:      ()=>({concepto:gv('ff-concepto'),cliente_id:gv('ff-cliente_id_fac')||null,monto:parseFloat(gv('ff-monto'))||0,estado:gv('ff-estado_fac'),vencimiento:gv('ff-vencimiento_fac')||null,expediente_id:gv('ff-expediente_id_fac')||null}),
+  factura:      ()=>({concepto:gv('ff-concepto'),cliente_id:gv('ff-cliente_id_fac')||null,tipo_honorario:gv('ff-tipo_honorario'),monto:parseFloat(gv('ff-monto'))||0,estado:gv('ff-estado_fac'),vencimiento:gv('ff-vencimiento_fac')||null,expediente_id:gv('ff-expediente_id_fac')||null}),
   lead:         ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),telefono:gv('ff-telefono'),email:gv('ff-email'),origen:gv('ff-origen'),estado:gv('ff-estado'),interes:gv('ff-interes'),prioridad:gv('ff-prioridad'),valor_estimado:parseFloat(gv('ff-valor_estimado'))||null,proximo_contacto:gv('ff-proximo_contacto')||null,notas:gv('ff-notas'),ultimo_contacto:new Date().toISOString().split('T')[0]}),
   cliente:      ()=>({nombre:gv('ff-nombre'),tipo:gv('ff-tipo'),email:gv('ff-email'),telefono:gv('ff-telefono'),dni:gv('ff-dni'),direccion:gv('ff-direccion'),notas:gv('ff-notas'),responsable_id:gv('ff-responsable_id')||null}),
-  expediente:   ()=>({titulo:gv('ff-titulo'),cliente_id:gv('ff-cliente_id'),tipo:gv('ff-tipo'),juzgado:gv('ff-juzgado'),estado:gv('ff-estado'),descripcion:gv('ff-descripcion'),responsable_id:gv('ff-responsable_id')||null}),
-  recordatorio: ()=>({titulo:gv('ff-titulo'),expediente_id:gv('ff-expediente_id')||null,fecha_limite:gv('ff-fecha_limite')||null,urgencia:gv('ff-urgencia'),nota:gv('ff-nota'),responsable_id:gv('ff-responsable_id')||null}),
+  expediente:   ()=>({titulo:gv('ff-titulo'),cliente_id:gv('ff-cliente_id'),numero_expediente:gv('ff-numero_expediente'),jurisdiccion:gv('ff-jurisdiccion'),tipo:gv('ff-tipo'),juzgado:gv('ff-juzgado'),estado:gv('ff-estado'),descripcion:gv('ff-descripcion'),responsable_id:gv('ff-responsable_id')||null}),
+  recordatorio: ()=>({titulo:gv('ff-titulo'),tipo_plazo:gv('ff-tipo_plazo'),expediente_id:gv('ff-expediente_id')||null,fecha_limite:gv('ff-fecha_limite')||null,urgencia:gv('ff-urgencia'),nota:gv('ff-nota'),responsable_id:gv('ff-responsable_id')||null}),
 };
 const gv = id => document.getElementById(id)?.value || '';
 function syncCliId(name){
@@ -4559,8 +5173,6 @@ let calMonth = new Date().getMonth();
 
 const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
-function showPage_agenda(){ rCalendario(); }
-
 function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} rCalendario(); }
 function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} rCalendario(); }
 
@@ -4789,46 +5401,87 @@ function rFinanzas(){
 function rFinKPIs(){
   const el = document.getElementById('fin-kpis');
   if(!el) return;
-  const total    = C.facturas.reduce((s,f)=>s+(f.monto||0),0);
-  const cobrado  = C.facturas.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
-  const pendiente= C.facturas.filter(f=>f.estado==='pendiente').reduce((s,f)=>s+(f.monto||0),0);
-  const vencido  = C.facturas.filter(f=>f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
+  const total      = C.facturas.reduce((s,f)=>s+(f.monto||0),0);
+  const cobrado    = C.facturas.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
+  const pendiente  = C.facturas.filter(f=>f.estado==='pendiente'||f.estado==='facturado').reduce((s,f)=>s+(f.monto||0),0);
+  const vencido    = C.facturas.filter(f=>f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
+  const totalPorCobrar = pendiente + vencido;
   el.innerHTML=[
-    {l:'Total facturado',v:'$'+total.toLocaleString('es-AR'),cls:'gold',icon:'💰'},
-    {l:'Cobrado',v:'$'+cobrado.toLocaleString('es-AR'),cls:'',icon:'✅'},
-    {l:'Pendiente de cobro',v:'$'+pendiente.toLocaleString('es-AR'),cls:'blue-c',icon:'⏳'},
-    {l:'Vencido sin cobrar',v:'$'+vencido.toLocaleString('es-AR'),cls:'red-c',icon:'⚠'},
+    {l:'Total a cobrar',     v:'$'+totalPorCobrar.toLocaleString('es-AR'), cls:'gold',  icon:'💰'},
+    {l:'Total cobrado',      v:'$'+cobrado.toLocaleString('es-AR'),        cls:'',      icon:'✅'},
+    {l:'Pendiente de cobro', v:'$'+pendiente.toLocaleString('es-AR'),      cls:'blue-c',icon:'⏳'},
+    {l:'Vencido',            v:'$'+vencido.toLocaleString('es-AR'),        cls:'red-c', icon:'⚠'},
   ].map(x=>`<div class="stat ${x.cls}" style="cursor:default;"><div class="stat-lbl">${x.l}</div><div class="stat-val" style="font-size:24px;">${x.v}</div><div class="stat-icon">${x.icon}</div></div>`).join('');
 }
 
 function rFinFilterBar(){
   const fb = document.getElementById('fin-filter-bar');
   if(!fb) return;
-  fb.innerHTML=['todos','pendiente','cobrado','vencido'].map(f=>`<button class="filter-btn ${filtroFinEstado===f?'active':''}" onclick="setFiltroFin('${f}')">${f==='todos'?'Todas':f.charAt(0).toUpperCase()+f.slice(1)}</button>`).join('');
+  const estados = [
+    {k:'todos',    l:'Todos'},
+    {k:'pendiente',l:'Pendientes'},
+    {k:'facturado',l:'Facturados'},
+    {k:'cobrado',  l:'Pagados'},
+    {k:'vencido',  l:'Vencidos'}
+  ];
+  fb.innerHTML = `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+    <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">ESTADO:</span>
+    ${estados.map(f=>`<button class="filter-btn ${filtroFinEstado===f.k?'active':''}" onclick="setFiltroFin('${f.k}')">${f.l}</button>`).join('')}
+  </div>`;
+  // Filtros adicionales por cliente y caso
+  const extra = document.getElementById('fin-filtros-extra');
+  if(extra){
+    const clientesConFacturas = [...new Set(C.facturas.map(f=>f.cliente_id).filter(Boolean))];
+    const casosConFacturas    = [...new Set(C.facturas.map(f=>f.expediente_id).filter(Boolean))];
+    extra.innerHTML = `
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">CLIENTE:</span>
+        <select class="form-input" style="padding:5px 10px;font-size:12px;width:auto;min-width:160px;" onchange="setFiltroFinCliente(this.value)">
+          <option value="">Todos</option>
+          ${clientesConFacturas.map(cid=>{const c=C.clientes.find(x=>x.id===cid); return c?`<option value="${cid}"${filtroFinCliente===cid?' selected':''}>${esc(c.nombre)}</option>`:'';}).join('')}
+        </select>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">CASO:</span>
+        <select class="form-input" style="padding:5px 10px;font-size:12px;width:auto;min-width:160px;" onchange="setFiltroFinCaso(this.value)">
+          <option value="">Todos</option>
+          ${casosConFacturas.map(eid=>{const e=C.expedientes.find(x=>x.id===eid); return e?`<option value="${eid}"${filtroFinCaso===eid?' selected':''}>${esc(e.titulo.slice(0,40))}</option>`:'';}).join('')}
+        </select>
+      </div>`;
+  }
 }
 
+let filtroFinCliente = '';
+let filtroFinCaso    = '';
+
 function setFiltroFin(f){ filtroFinEstado=f; rFinFilterBar(); rFacList(); }
+function setFiltroFinCliente(c){ filtroFinCliente=c; rFacList(); }
+function setFiltroFinCaso(e){ filtroFinCaso=e; rFacList(); }
 
 function rFacList(){
   const el = document.getElementById('fac-list');
   if(!el) return;
   let lista = [...C.facturas];
   if(filtroFinEstado!=='todos') lista=lista.filter(f=>f.estado===filtroFinEstado);
+  if(filtroFinCliente)          lista=lista.filter(f=>f.cliente_id===filtroFinCliente);
+  if(filtroFinCaso)             lista=lista.filter(f=>f.expediente_id===filtroFinCaso);
   lista.sort((a,b)=>(b.created_at||'').localeCompare(a.created_at||''));
-  if(!lista.length){ el.innerHTML=`<div class="empty"><div class="ei">💰</div><p>Sin facturas${filtroFinEstado!=='todos'?' con estado "'+filtroFinEstado+'"':''}.</p></div>`; return; }
-  el.innerHTML=lista.map(f=>`
-    <div class="fac-row">
+  if(!lista.length){ el.innerHTML=`<div class="empty"><div class="ei">💰</div><p>Sin honorarios${filtroFinEstado!=='todos'?' con estado "'+filtroFinEstado+'"':''}.</p></div>`; return; }
+  el.innerHTML=lista.map(f=>{
+    const exp = C.expedientes.find(e=>e.id===f.expediente_id);
+    return `<div class="fac-row">
       <div class="cm" style="font-size:10.5px;">${f.numero||'—'}</div>
-      <div><div class="cp" style="font-size:13px;">${f.concepto||'—'}</div><div class="cs">${cliName(f.cliente_id)}</div></div>
+      <div><div class="cp" style="font-size:13px;">${f.concepto||'—'}</div><div class="cs">${f.tipo_honorario||'Por caso'}${exp?' · ▤ '+esc(exp.titulo.slice(0,25)):''}</div></div>
       <div class="cm">${cliName(f.cliente_id)}</div>
       <div class="monto-badge ${f.estado||'pendiente'}">$${(f.monto||0).toLocaleString('es-AR')}</div>
       <div class="cm">${f.vencimiento||'—'}</div>
       <div style="display:flex;gap:5px;align-items:center;">
         ${stBadge(f.estado||'pendiente')}
+        ${f.estado!=='cobrado'?`<button class="tbl-btn" title="Registrar pago" onclick="marcarCobradoFac('${f.id}')">💰</button>`:''}
         <button class="tbl-btn" onclick="editItem('factura','${f.id}')">✏️</button>
-        <button class="tbl-btn del" onclick="delItem('facturas','${f.id}','factura')">✕</button>
+        <button class="tbl-btn del" onclick="delItem('facturas','${f.id}','honorario')">✕</button>
       </div>
-    </div>`).join('');
+    </div>`;}).join('');
 }
 
 function exportarFacturasCSV(){
@@ -4841,149 +5494,194 @@ function exportarFacturasCSV(){
 }
 
 /* ════════════════════════════════════════
-   REPORTES
+   DOCUMENTOS (GLOBAL) — reemplaza Reportes y Plantillas
 ════════════════════════════════════════ */
-function rReportes(){
-  const el = document.getElementById('report-grid');
-  if(!el) return;
+let docsTab = 'all';
+let docsFilter = '';
+let docsCasoFilter = '';
+let docsClienteFilter = '';
+let docsTipoFilter = '';
 
-  // 1. Expedientes por tipo
-  const tipoCount={};
-  C.expedientes.forEach(e=>{ tipoCount[e.tipo||'Sin tipo']=(tipoCount[e.tipo||'Sin tipo']||0)+1; });
-  const tipoMax=Math.max(...Object.values(tipoCount),1);
-
-  // 2. Expedientes por estado
-  const estados={activo:0,pendiente:0,cerrado:0};
-  C.expedientes.forEach(e=>{ if(estados[e.estado]!==undefined) estados[e.estado]++; });
-
-  // 3. Leads por origen
-  const origenCount={};
-  C.leads.forEach(l=>{ origenCount[l.origen||'Otro']=(origenCount[l.origen||'Otro']||0)+1; });
-  const origenMax=Math.max(...Object.values(origenCount),1);
-
-  // 4. Productividad por abogado (expedientes asignados)
-  const prodMap={};
-  C.expedientes.forEach(e=>{
-    if(e.responsable_id){ const n=membName(e.responsable_id)||'—'; prodMap[n]=(prodMap[n]||0)+1; }
+function setDocsTab(tab){
+  docsTab = tab;
+  ['all','case','cli','tpl'].forEach(t=>{
+    const el = document.getElementById('docs-tab-'+t);
+    if(el) el.classList.toggle('active', t===tab);
   });
-  const prodMax=Math.max(...Object.values(prodMap),1);
-
-  // 5. Finanzas resumen
-  const facCobrado  = C.facturas.filter(f=>f.estado==='cobrado').reduce((s,f)=>s+(f.monto||0),0);
-  const facPendiente= C.facturas.filter(f=>f.estado==='pendiente').reduce((s,f)=>s+(f.monto||0),0);
-  const facVencido  = C.facturas.filter(f=>f.estado==='vencido').reduce((s,f)=>s+(f.monto||0),0);
-  const facTotal    = facCobrado+facPendiente+facVencido||1;
-
-  // 6. Conversión leads
-  const totalLeads  = C.leads.length;
-  const ganados     = C.leads.filter(l=>l.estado==='ganado').length;
-  const perdidos    = C.leads.filter(l=>l.estado==='perdido').length;
-  const enPipeline  = totalLeads-ganados-perdidos;
-
-  const barRows = (data, max, colorFn) => Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
-    <div class="bar-row">
-      <div class="bar-label" title="${k}">${k}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(v/max*100)}%;background:${colorFn(k)};"></div></div>
-      <div class="bar-val">${v}</div>
-    </div>`).join('');
-
-  el.innerHTML=`
-    <div class="report-card">
-      <div class="report-title">▤ Expedientes por tipo</div>
-      ${Object.keys(tipoCount).length ? barRows(tipoCount,tipoMax,()=>'var(--blue)') : '<div style="color:var(--text-muted);font-size:12px;">Sin expedientes</div>'}
-    </div>
-    <div class="report-card">
-      <div class="report-title">▤ Expedientes por estado</div>
-      ${barRows(estados,Math.max(...Object.values(estados),1),k=>k==='activo'?'var(--green)':k==='cerrado'?'var(--text-muted)':'var(--gold)')}
-    </div>
-    <div class="report-card">
-      <div class="report-title">◈ Leads por origen</div>
-      ${Object.keys(origenCount).length ? barRows(origenCount,origenMax,()=>'#a78bfa') : '<div style="color:var(--text-muted);font-size:12px;">Sin prospectos</div>'}
-    </div>
-    ${isEstudioPlan()&&Object.keys(prodMap).length?`
-    <div class="report-card">
-      <div class="report-title">👤 Expedientes por abogado</div>
-      ${barRows(prodMap,prodMax,()=>'var(--blue)')}
-    </div>`:''}
-    <div class="report-card">
-      <div class="report-title">💰 Facturación</div>
-      ${barRows({'Cobrado':facCobrado,'Pendiente':facPendiente,'Vencido':facVencido},facTotal,k=>k==='Cobrado'?'var(--green)':k==='Vencido'?'var(--red)':'var(--gold)')}
-      <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">Total facturado: <strong style="color:var(--text);">$${(facCobrado+facPendiente+facVencido).toLocaleString('es-AR')}</strong></div>
-    </div>
-    <div class="report-card">
-      <div class="report-title">◈ Pipeline de prospectos</div>
-      ${totalLeads?barRows({'Ganados':ganados,'En pipeline':enPipeline,'Perdidos':perdidos},Math.max(ganados,enPipeline,perdidos,1),k=>k==='Ganados'?'var(--green)':k==='Perdidos'?'var(--red)':'#a78bfa'):
-      '<div style="color:var(--text-muted);font-size:12px;">Sin prospectos</div>'}
-      ${totalLeads?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--text-dim);">Conversión: <strong style="color:var(--green);">${Math.round(ganados/(totalLeads||1)*100)}%</strong></div>`:''}
-    </div>`;
+  rDocs();
 }
 
-function exportarReporteCSV(){
-  const lines=['REPORTE LEXORA','Fecha: '+new Date().toLocaleDateString('es-AR'),''];
-  lines.push('EXPEDIENTES'); lines.push('Código,Título,Cliente,Tipo,Estado');
-  C.expedientes.forEach(e=>lines.push([e.codigo_caso,e.titulo,cliName(e.cliente_id),e.tipo,e.estado].join(',')));
-  lines.push('');
-  lines.push('CLIENTES'); lines.push('Código,Nombre,Tipo,Email,Teléfono');
-  C.clientes.forEach(c=>lines.push([c.codigo_cliente,c.nombre,c.tipo,c.email,c.telefono].join(',')));
-  lines.push('');
-  lines.push('FACTURAS'); lines.push('Número,Concepto,Cliente,Monto,Estado');
-  C.facturas.forEach(f=>lines.push([f.numero,f.concepto,cliName(f.cliente_id),f.monto,f.estado].join(',')));
-  lines.push('');
-  lines.push('PROSPECTOS'); lines.push('Nombre,Tipo,Origen,Estado,Valor estimado');
-  C.leads.forEach(l=>lines.push([l.nombre,l.tipo,l.origen,l.estado,l.valor_estimado||0].join(',')));
-
-  const blob=new Blob(['\ufeff'+lines.join('\n')],{type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='lexora-reporte.csv'; a.click();
-  showToast('✅ Reporte exportado');
+function filterDocs(v){
+  docsFilter = (v||'').toLowerCase().trim();
+  rDocs();
 }
 
-/* ════════════════════════════════════════
-   HISTORIAL DE ACTIVIDAD mejorado
-════════════════════════════════════════ */
-function rActividad(){
-  const el = document.getElementById('actividad-list');
+/* Obtiene todos los documentos del sistema (de casos y clientes) */
+function getAllDocs(){
+  const all = [];
+  // Documentos de casos
+  C.expedientes.forEach(e=>{
+    (e._docs||[]).forEach(d=>{
+      all.push({...d, _exp:e, _cli:C.clientes.find(c=>c.id===e.cliente_id)});
+    });
+  });
+  // Documentos de clientes (si existen)
+  C.clientes.forEach(c=>{
+    (c._docs||[]).forEach(d=>{
+      all.push({...d, _cli:c});
+    });
+  });
+  return all;
+}
+
+function rDocs(){
+  const el = document.getElementById('docs-content');
   if(!el) return;
-  const iconos = { firma:'🏛️', cliente:'◎', expediente:'▤', recordatorio:'◷', lead:'◈', nota:'📝', factura:'💰', tarea:'✅', general:'•' };
-  el.innerHTML = actividadLog.length ? actividadLog.map(a=>`
-    <div class="actividad-item">
-      <div class="actividad-dot" style="background:${a.tipo==='expediente'?'var(--blue)':a.tipo==='lead'?'#a78bfa':a.tipo==='factura'?'var(--green)':'var(--border2)'};"></div>
-      <div>
-        <div class="actividad-text">${iconos[a.tipo]||'•'} ${a.texto}</div>
-        <div class="actividad-meta">${a.meta}</div>
+
+  const filtros = document.getElementById('docs-filtros');
+
+  // Render filter bar según tab
+  if(filtros){
+    if(docsTab==='all'){
+      const tipos = [...new Set(getAllDocs().map(d=>(d.nombre.split('.').pop()||'').toLowerCase()))].filter(Boolean);
+      filtros.innerHTML = `
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);letter-spacing:.1em;">TIPO:</span>
+          <button class="filter-btn ${docsTipoFilter===''?'active':''}" onclick="setDocsTipoFilter('')">Todos</button>
+          ${tipos.slice(0,8).map(t=>`<button class="filter-btn ${docsTipoFilter===t?'active':''}" onclick="setDocsTipoFilter('${t}')">${t.toUpperCase()}</button>`).join('')}
+        </div>`;
+    } else {
+      filtros.innerHTML = '';
+    }
+  }
+
+  if(docsTab==='all'){
+    let all = getAllDocs();
+    if(docsFilter) all = all.filter(d=>d.nombre.toLowerCase().includes(docsFilter) || (d._exp?.titulo||'').toLowerCase().includes(docsFilter) || (d._cli?.nombre||'').toLowerCase().includes(docsFilter));
+    if(docsTipoFilter) all = all.filter(d=>(d.nombre.split('.').pop()||'').toLowerCase()===docsTipoFilter);
+    if(!all.length){
+      el.innerHTML = `<div class="empty"><div class="ei">📄</div><p>${docsFilter?'Sin resultados para "'+esc(docsFilter)+'"':'Sin documentos en el sistema. Subí archivos desde los casos o clientes.'}</p></div>`;
+      return;
+    }
+    // Lista tipo tabla
+    el.innerHTML = `<div class="card">
+      <div class="tbl-hdr" style="display:grid;grid-template-columns:40px 1.5fr 1fr 1fr 100px 70px;gap:12px;padding:12px 18px;font-size:10px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);background:rgba(26,26,31,.7);border-bottom:1px solid var(--border);">
+        <div></div><div>Nombre</div><div>Caso</div><div>Cliente</div><div>Fecha</div><div>Acción</div>
       </div>
-    </div>`).join('')
-  : `<div class="empty"><p>Sin actividad registrada</p></div>`;
+      ${all.sort((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')).map(d=>`
+        <div class="tbl-row" style="display:grid;grid-template-columns:40px 1.5fr 1fr 1fr 100px 70px;gap:12px;padding:11px 18px;align-items:center;cursor:pointer;" onclick="${d._exp?`previewDoc('${d._exp.id}','${d.id}','expediente')`:`previewDoc('${d._cli.id}','${d.id}','cliente')`}">
+          <div class="doc-icon" style="margin:0;">${docIcon(d.nombre)}</div>
+          <div>
+            <div class="cp" style="font-size:13px;">${esc(d.nombre)}</div>
+            <div class="cs" style="font-size:10.5px;">${d.size||''}</div>
+          </div>
+          <div class="cm" style="font-size:11.5px;">${d._exp?esc(d._exp.titulo.slice(0,30)):'<span style="color:var(--text-muted);">—</span>'}</div>
+          <div class="cm" style="font-size:11.5px;">${d._cli?esc(d._cli.nombre.slice(0,25)):'<span style="color:var(--text-muted);">—</span>'}</div>
+          <div class="cm" style="font-size:10.5px;">${d.fecha||'—'}</div>
+          <div style="display:flex;gap:4px;" onclick="event.stopPropagation();">
+            <button class="tbl-btn" title="Vista previa" onclick="${d._exp?`previewDoc('${d._exp.id}','${d.id}','expediente')`:`previewDoc('${d._cli.id}','${d.id}','cliente')`}">👁</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  } else if(docsTab==='case'){
+    // Agrupado por caso
+    const grupos = C.expedientes.filter(e=>(e._docs||[]).length>0);
+    if(!grupos.length){ el.innerHTML = `<div class="empty"><div class="ei">▤</div><p>Ningún caso tiene documentos aún.</p></div>`; return; }
+    el.innerHTML = grupos.map(e=>{
+      let docs = e._docs||[];
+      if(docsFilter) docs = docs.filter(d=>d.nombre.toLowerCase().includes(docsFilter));
+      if(!docs.length) return '';
+      const cli = C.clientes.find(c=>c.id===e.cliente_id);
+      return `<div class="card" style="margin-bottom:12px;">
+        <div class="card-hdr" style="cursor:pointer;" onclick="openPanelExpediente('${e.id}')">
+          <div class="card-title">▤ ${esc(e.titulo)}</div>
+          <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);">${docs.length} docs · ${cli?cli.nombre:'Sin cliente'}</span>
+        </div>
+        <div style="padding:10px 18px;">
+          ${docs.map(d=>`<div class="doc-item" onclick="previewDoc('${e.id}','${d.id}','expediente')">
+            <div class="doc-icon">${docIcon(d.nombre)}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="doc-name">${esc(d.nombre)}</div>
+              <div class="doc-meta">${d.fecha} · ${d.size||''}</div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('') || `<div class="empty"><div class="ei">▤</div><p>Sin resultados.</p></div>`;
+  } else if(docsTab==='cli'){
+    // Agrupado por cliente (docs de casos + docs propios)
+    const mapCli = {};
+    C.expedientes.forEach(e=>{
+      (e._docs||[]).forEach(d=>{
+        const cid = e.cliente_id || '__sin__';
+        if(!mapCli[cid]) mapCli[cid] = [];
+        mapCli[cid].push({...d, _exp:e, _ctx:'caso'});
+      });
+    });
+    C.clientes.forEach(c=>{
+      (c._docs||[]).forEach(d=>{
+        if(!mapCli[c.id]) mapCli[c.id]=[];
+        mapCli[c.id].push({...d, _ctx:'cliente'});
+      });
+    });
+    const entries = Object.entries(mapCli);
+    if(!entries.length){ el.innerHTML = `<div class="empty"><div class="ei">◎</div><p>Ningún cliente tiene documentos aún.</p></div>`; return; }
+    el.innerHTML = entries.map(([cid,docs])=>{
+      const c = C.clientes.find(x=>x.id===cid);
+      let filtered = docs;
+      if(docsFilter) filtered = filtered.filter(d=>d.nombre.toLowerCase().includes(docsFilter));
+      if(!filtered.length) return '';
+      return `<div class="card" style="margin-bottom:12px;">
+        <div class="card-hdr" style="cursor:pointer;" onclick="${c?`openPanelCliente('${c.id}')`:''}">
+          <div class="card-title">◎ ${c?esc(c.nombre):'Sin cliente asignado'}</div>
+          <span style="font-size:10.5px;font-family:'DM Mono',monospace;color:var(--text-muted);">${filtered.length} docs</span>
+        </div>
+        <div style="padding:10px 18px;">
+          ${filtered.map(d=>`<div class="doc-item" onclick="${d._exp?`previewDoc('${d._exp.id}','${d.id}','expediente')`:`previewDoc('${cid}','${d.id}','cliente')`}">
+            <div class="doc-icon">${docIcon(d.nombre)}</div>
+            <div style="flex:1;min-width:0;">
+              <div class="doc-name">${esc(d.nombre)}</div>
+              <div class="doc-meta">${d.fecha} · ${d._exp?'▤ '+esc(d._exp.titulo.slice(0,25)):'Documento personal'}</div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('') || `<div class="empty"><div class="ei">◎</div><p>Sin resultados.</p></div>`;
+  } else if(docsTab==='tpl'){
+    // Plantillas reutilizables (reusa la lógica original)
+    const tags = {carta:'📮',poder:'⚖️',honorarios:'💰',otro:'📄'};
+    let plantillas = plantillasStore||[];
+    if(docsFilter) plantillas = plantillas.filter(p=>p.nombre.toLowerCase().includes(docsFilter) || p.cuerpo.toLowerCase().includes(docsFilter));
+    el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
+      ${plantillas.map(p=>`
+        <div class="card" style="padding:18px;cursor:pointer;display:flex;flex-direction:column;gap:12px;" onclick="abrirPlantilla('${p.id}')">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="font-size:22px;">${tags[p.tipo]||'📄'}</div>
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);">${esc(p.nombre)}</div>
+              <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);text-transform:uppercase;">${p.tipo}</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);line-height:1.5;white-space:pre-wrap;max-height:60px;overflow:hidden;">${esc(p.cuerpo.slice(0,120))}...</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px;" onclick="event.stopPropagation();usarPlantilla('${p.id}')">Usar →</button>
+            <button class="tbl-btn del" onclick="event.stopPropagation();deletePlantilla('${p.id}')">✕</button>
+          </div>
+        </div>`).join('')}
+      <div class="card" style="padding:18px;cursor:pointer;border:1px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:160px;" onclick="nuevaPlantilla()">
+        <div style="font-size:28px;opacity:.3;">+</div>
+        <div style="font-size:12px;color:var(--text-muted);">Nueva plantilla</div>
+      </div>
+    </div>`;
+  }
 }
 
+function setDocsTipoFilter(t){ docsTipoFilter=t; rDocs(); }
+
 /* ════════════════════════════════════════
-   PLANTILLAS DE DOCUMENTOS
+   PLANTILLAS — se mantienen como subcomponente de Documentos
 ════════════════════════════════════════ */
 let plantillasStore = [];
-
-function rPlantillas(){
-  const g = document.getElementById('plantillas-grid');
-  if(!g) return;
-  const tags = {carta:'📮',poder:'⚖️',honorarios:'💰',otro:'📄'};
-  g.innerHTML = plantillasStore.map(p=>`
-    <div class="card" style="padding:18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:12px;" onclick="abrirPlantilla('${p.id}')" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor=''">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div style="font-size:22px;">${tags[p.tipo]||'📄'}</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);">${esc(p.nombre)}</div>
-          <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--text-muted);text-transform:uppercase;">${p.tipo}</div>
-        </div>
-      </div>
-      <div style="font-size:11px;color:var(--text-dim);line-height:1.5;white-space:pre-wrap;max-height:60px;overflow:hidden;">${esc(p.cuerpo.slice(0,120))}...</div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn btn-primary" style="flex:1;font-size:12px;padding:8px;" onclick="event.stopPropagation();usarPlantilla('${p.id}')">Usar →</button>
-        <button class="tbl-btn del" onclick="event.stopPropagation();deletePlantilla('${p.id}')">✕</button>
-      </div>
-    </div>`).join('') + `
-    <div class="card" style="padding:18px;cursor:pointer;border:1px dashed var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:160px;" onclick="nuevaPlantilla()" onmouseover="this.style.borderColor='var(--gold-dim)'" onmouseout="this.style.borderColor='var(--border2)'">
-      <div style="font-size:28px;opacity:.3;">+</div>
-      <div style="font-size:12px;color:var(--text-muted);">Nueva plantilla</div>
-    </div>`;
-}
 
 function nuevaPlantilla(){
   document.getElementById('m-title').textContent = 'Nueva plantilla';
@@ -5003,7 +5701,7 @@ function nuevaPlantilla(){
     const cuerpo=(document.getElementById('pt-cuerpo')?.value||'').trim();
     if(!nombre){ showToast('⚠ El nombre es obligatorio'); return; }
     plantillasStore.push({id:'p'+Date.now(), nombre, tipo, cuerpo});
-    closeModal(); rPlantillas(); showToast('✅ Plantilla guardada');
+    closeModal(); rDocs(); showToast('✅ Plantilla guardada');
     document.getElementById('m-save').onclick=saveModal;
   };
   document.getElementById('overlay').classList.add('open');
@@ -5012,7 +5710,6 @@ function nuevaPlantilla(){
 function abrirPlantilla(id){
   const p = plantillasStore.find(x=>x.id===id);
   if(!p) return;
-  // Fill variables with current context if available
   let cuerpo = p.cuerpo;
   const now = new Date().toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'});
   cuerpo = cuerpo.replace(/\[FECHA\]/g, now);
@@ -5039,7 +5736,7 @@ function usarPlantilla(id){ abrirPlantilla(id); }
 function deletePlantilla(id){
   if(!confirm('¿Eliminar esta plantilla?')) return;
   plantillasStore = plantillasStore.filter(x=>x.id!==id);
-  rPlantillas(); showToast('🗑 Plantilla eliminada');
+  rDocs(); showToast('🗑 Plantilla eliminada');
 }
 
 /* ════════════════════════════════════════

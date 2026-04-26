@@ -875,6 +875,7 @@ textarea.form-input{height:74px;resize:none;}
   .fac-row{grid-template-columns:1fr 110px 80px!important;}
   .cal-event{display:none;}
   .cal-day{min-height:40px;}
+  #cal-standalone-upcoming, #cal-standalone-overdue{ grid-column: 1; }
 }
 
 </style>
@@ -1125,15 +1126,15 @@ textarea.form-input{height:74px;resize:none;}
   <nav class="mobile-nav" id="mobile-nav">
     <div class="mobile-nav-inner">
       <div class="mobile-nav-logo">L</div>
-      <div class="mobile-nav-item active" onclick="showPage('dashboard',this);mobileNavActivate(this)"><span>⊞</span>Dashboard</div>
-      <div class="mobile-nav-item" onclick="showPage('leads',this);mobileNavActivate(this)"><span>◈</span>Prospectos<span class="mobile-nav-badge blue" id="mob-leads-badge" style="display:none;">0</span></div>
-      <div class="mobile-nav-item" onclick="showPage('clientes',this);mobileNavActivate(this)"><span>◎</span>Clientes</div>
-      <div class="mobile-nav-item" onclick="showPage('expedientes',this);mobileNavActivate(this)"><span>▤</span>Casos</div>
-      <div class="mobile-nav-item" onclick="showPage('recordatorios',this);mobileNavActivate(this)"><span>◷</span>Plazos<span class="mobile-nav-badge" id="mob-rec-badge" style="display:none;">0</span></div>
+      <div class="mobile-nav-item active" onclick="showPage('dashboard',this);mobileNavActivate(this)"><span>📊</span>Dashboard</div>
+      <div class="mobile-nav-item" onclick="showPage('expedientes',this);mobileNavActivate(this)"><span>📁</span>Casos</div>
+      <div class="mobile-nav-item" onclick="showPage('clientes',this);mobileNavActivate(this)"><span>👤</span>Clientes</div>
+      <div class="mobile-nav-item" onclick="showPage('leads',this);mobileNavActivate(this)"><span>🎯</span>Prospectos<span class="mobile-nav-badge blue" id="mob-leads-badge" style="display:none;">0</span></div>
+      <div class="mobile-nav-item" onclick="showPage('recordatorios',this);mobileNavActivate(this)"><span>⏰</span>Plazos<span class="mobile-nav-badge" id="mob-rec-badge" style="display:none;">0</span></div>
+      <div class="mobile-nav-item" onclick="showPage('calendario',this);mobileNavActivate(this)"><span>📅</span>Calendario</div>
       <div class="mobile-nav-item" onclick="showPage('tareas',this);mobileNavActivate(this)"><span>✅</span>Tareas</div>
-      <div class="mobile-nav-item" onclick="showPage('documentos',this);mobileNavActivate(this)"><span>📄</span>Docs</div>
+      <div class="mobile-nav-item mobile-nav-equipo" onclick="showPage('equipo',this);mobileNavActivate(this)"><span>👥</span>Equipo</div>
       <div class="mobile-nav-item" onclick="showPage('finanzas',this);mobileNavActivate(this)"><span>💰</span>Honorarios</div>
-      <div class="mobile-nav-item mobile-nav-equipo" onclick="showPage('equipo',this);mobileNavActivate(this)"><span>⊕</span>Equipo</div>
     </div>
   </nav>
   <aside class="sidebar">
@@ -1141,23 +1142,33 @@ textarea.form-input{height:74px;resize:none;}
       <div class="logo-name">Lexora</div>
       <div class="logo-firma" id="sb-firma-name">Cargando...</div>
     </div>
+    <!-- Sidebar search -->
+    <div style="padding:10px 12px;border-bottom:1px solid var(--border);">
+      <div class="search-wrap" style="width:100%;background:var(--surface3);position:relative;">
+        <span style="color:var(--text-muted);font-size:13px;">🔍</span>
+        <input type="text" placeholder="Buscar..." id="sidebar-search" oninput="handleSidebarSearch(this.value)" autocomplete="off" style="font-size:12.5px;">
+        <div class="search-results" id="search-results-sidebar"></div>
+      </div>
+    </div>
     <div class="sidebar-nav">
       <div class="nav-section">Principal</div>
-      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">⊞</span>Dashboard</div>
-      <div class="nav-item" onclick="showPage('leads',this)"><span class="nav-icon">◈</span>Prospectos<span class="nav-badge nav-badge-new" id="leads-badge" style="display:none;background:var(--blue);">0</span></div>
-      <div class="nav-item" onclick="showPage('clientes',this)"><span class="nav-icon">◎</span>Clientes</div>
-      <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">▤</span>Casos</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</div>
+      <div class="nav-item" onclick="showPage('expedientes',this)"><span class="nav-icon">📁</span>Casos</div>
+      <div class="nav-item" onclick="showPage('clientes',this)"><span class="nav-icon">👤</span>Clientes</div>
+      <div class="nav-item" onclick="showPage('leads',this)"><span class="nav-icon">🎯</span>Prospectos<span class="nav-badge nav-badge-new" id="leads-badge" style="display:none;background:var(--blue);">0</span></div>
       <div class="nav-section">Operaciones</div>
-      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">◷</span>Plazos<span class="nav-badge" id="rec-badge" style="display:none;">0</span></div>
+      <div class="nav-item" onclick="showPage('recordatorios',this)"><span class="nav-icon">⏰</span>Plazos<span class="nav-badge" id="rec-badge" style="display:none;">0</span></div>
+      <div class="nav-item" onclick="showPage('calendario',this)"><span class="nav-icon">📅</span>Calendario</div>
       <div class="nav-item" onclick="showPage('tareas',this)"><span class="nav-icon">✅</span>Tareas<span class="nav-badge" id="task-badge" style="display:none;background:var(--green);">0</span></div>
+      <div class="nav-item nav-equipo" onclick="showPage('equipo',this)"><span class="nav-icon">👥</span>Equipo</div>
       <div class="nav-section">Gestión</div>
-      <div class="nav-item" onclick="showPage('documentos',this)"><span class="nav-icon">📄</span>Documentos</div>
       <div class="nav-item" onclick="showPage('finanzas',this)"><span class="nav-icon">💰</span>Honorarios</div>
-      <div class="nav-section nav-equipo">Firma</div>
-      <div class="nav-item nav-equipo" onclick="showPage('equipo',this)"><span class="nav-icon">⊕</span>Equipo</div>
     </div>
     <div class="sidebar-footer">
-
+      <div style="padding:6px 10px 0;">
+        <div class="nav-item" onclick="openPerfilConfig()" style="margin-bottom:2px;"><span class="nav-icon">⚙️</span>Configuración</div>
+        <div class="nav-item" onclick="confirmarCerrarSesion()"><span class="nav-icon">🚪</span>Salir</div>
+      </div>
       <div class="user-chip" onclick="togglePerfilMenu(event)" id="user-chip-btn">
         <div class="u-avatar" id="sb-avatar">--</div>
         <div style="flex:1;min-width:0;">
@@ -1450,6 +1461,78 @@ textarea.form-input{height:74px;resize:none;}
             <div class="card-hdr"><div class="card-title">Vencidos sin resolver</div></div>
             <div id="cal-overdue"></div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDARIO (página independiente) -->
+    <div id="page-calendario" class="page">
+      <div class="sec-hdr">
+        <div class="sec-title">Calendario</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-primary" onclick="openModal('recordatorio')">+ Nuevo plazo</button>
+        </div>
+      </div>
+      <!-- Leyenda -->
+      <div class="cal-legend" style="margin-bottom:14px;">
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--ruby);"></div>Vence hoy</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--orange);"></div>24hs</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--gold);"></div>Próximo</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:var(--blue);"></div>Más lejos</div>
+        <div class="cal-leg-item"><div class="cal-leg-dot" style="background:#6FA87F;"></div>Honorarios</div>
+      </div>
+      <!-- Vistas: Día / Semana / Mes -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <button class="filter-btn" id="cal-view-day" onclick="setCalView('day')">📋 Día</button>
+        <button class="filter-btn" id="cal-view-week" onclick="setCalView('week')">📅 Semana</button>
+        <button class="filter-btn active" id="cal-view-month" onclick="setCalView('month')">🗓️ Mes</button>
+      </div>
+      <!-- Calendario mensual (view por defecto) -->
+      <div id="cal-standalone-month">
+        <div class="card" style="padding:20px;">
+          <div class="cal-nav">
+            <button class="btn btn-ghost" onclick="calStandalonePrev()" style="padding:6px 12px;">← Anterior</button>
+            <div class="cal-month-title" id="cal-standalone-label">—</div>
+            <button class="btn btn-ghost" onclick="calStandaloneNext()" style="padding:6px 12px;">Siguiente →</button>
+          </div>
+          <div class="cal-header">
+            <div class="cal-dow">Dom</div><div class="cal-dow">Lun</div><div class="cal-dow">Mar</div>
+            <div class="cal-dow">Mié</div><div class="cal-dow">Jue</div><div class="cal-dow">Vie</div><div class="cal-dow">Sáb</div>
+          </div>
+          <div class="cal-grid" id="cal-standalone-grid"></div>
+        </div>
+      </div>
+      <!-- Vista semana -->
+      <div id="cal-standalone-week" style="display:none;">
+        <div class="card" style="padding:20px;">
+          <div class="cal-nav" style="margin-bottom:16px;">
+            <button class="btn btn-ghost" onclick="calStandalonePrev()" style="padding:6px 12px;">← Anterior</button>
+            <div class="cal-month-title" id="cal-week-label" style="font-size:17px;">—</div>
+            <button class="btn btn-ghost" onclick="calStandaloneNext()" style="padding:6px 12px;">Siguiente →</button>
+          </div>
+          <div id="cal-week-content"></div>
+        </div>
+      </div>
+      <!-- Vista día -->
+      <div id="cal-standalone-day" style="display:none;">
+        <div class="card" style="padding:20px;">
+          <div class="cal-nav" style="margin-bottom:16px;">
+            <button class="btn btn-ghost" onclick="calStandalonePrev()" style="padding:6px 12px;">← Anterior</button>
+            <div class="cal-month-title" id="cal-day-label" style="font-size:17px;">—</div>
+            <button class="btn btn-ghost" onclick="calStandaloneNext()" style="padding:6px 12px;">Siguiente →</button>
+          </div>
+          <div id="cal-day-content"></div>
+        </div>
+      </div>
+      <!-- Próximos y vencidos -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Próximos 7 días</div></div>
+          <div id="cal-standalone-upcoming"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">Vencidos sin resolver</div></div>
+          <div id="cal-standalone-overdue"></div>
         </div>
       </div>
     </div>
@@ -4635,7 +4718,7 @@ function editLead(id){
 /* ════════════════════════════════════════
    APP NAVIGATION
 ════════════════════════════════════════ */
-const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Casos',recordatorios:'Plazos',tareas:'Tareas',documentos:'Documentos',finanzas:'Honorarios',equipo:'Equipo'};
+const PAGE_TITLES = {dashboard:'Dashboard',leads:'Prospectos',clientes:'Clientes',expedientes:'Casos',recordatorios:'Plazos',calendario:'Calendario',tareas:'Tareas',documentos:'Documentos',finanzas:'Honorarios',equipo:'Equipo'};
 function showPage(p, el){
   if(p==='equipo' && CF && !isEstudioPlan()){ p='dashboard'; el=null; }
   // Compatibilidad con nombres antiguos (agenda / reportes / plantillas ya no existen como páginas independientes)
@@ -4660,6 +4743,7 @@ function showPage(p, el){
   closeSearchResults();
   // Refrescar vistas específicas
   if(p==='recordatorios') safeRun(rRec,'rRec');
+  if(p==='calendario')    safeRun(rCalStandalone,'rCalStandalone');
   if(p==='documentos')    safeRun(rDocs,'rDocs');
   closePanelCliente(); closePanelExpediente(); closePanelMiembro();
   closeNotifPanel(); closePerfilMenu();
@@ -4739,6 +4823,27 @@ function handleSearchKey(e){
   if(e.key==='Escape') closeSearchResults();
 }
 
+function handleSidebarSearch(v){
+  // Reuse same logic but render into sidebar search results
+  const res = document.getElementById('search-results-sidebar');
+  if(!res) return;
+  if(!v || v.length < 2){ res.classList.remove('open'); return; }
+  const q = v.toLowerCase();
+  const clientes    = C.clientes.filter(c=>c.nombre?.toLowerCase().includes(q)||(c.codigo_cliente||'').includes(q)).slice(0,3);
+  const expedientes = C.expedientes.filter(e=>e.titulo?.toLowerCase().includes(q)||(e.codigo_caso||'').toLowerCase().includes(q)).slice(0,3);
+  const leads       = C.leads.filter(l=>l.nombre?.toLowerCase().includes(q)).slice(0,2);
+  if(!clientes.length && !expedientes.length && !leads.length){
+    res.innerHTML=`<div style="padding:10px 14px;font-size:12px;color:var(--text-muted);">Sin resultados</div>`;
+    res.classList.add('open'); return;
+  }
+  let html='';
+  if(leads.length) html+=`<div class="sr-section">Prospectos</div>`+leads.map(l=>`<div class="sr-item" onclick="goToLead('${l.id}');document.getElementById('sidebar-search').value='';document.getElementById('search-results-sidebar').classList.remove('open');"><div class="sr-item-icon">🎯</div><div class="sr-item-text"><div class="sr-item-main">${esc(l.nombre)}</div></div></div>`).join('');
+  if(clientes.length) html+=`<div class="sr-section">Clientes</div>`+clientes.map(c=>`<div class="sr-item" onclick="goToCliente('${c.id}');document.getElementById('sidebar-search').value='';document.getElementById('search-results-sidebar').classList.remove('open');"><div class="sr-item-icon">👤</div><div class="sr-item-text"><div class="sr-item-main">${esc(c.nombre)}</div><div class="sr-item-sub">CLI-${c.codigo_cliente||'—'}</div></div></div>`).join('');
+  if(expedientes.length) html+=`<div class="sr-section">Casos</div>`+expedientes.map(e=>`<div class="sr-item" onclick="goToExpediente('${e.id}');document.getElementById('sidebar-search').value='';document.getElementById('search-results-sidebar').classList.remove('open');"><div class="sr-item-icon">📁</div><div class="sr-item-text"><div class="sr-item-main">${esc(e.titulo)}</div><div class="sr-item-sub">${e.codigo_caso||'—'}</div></div></div>`).join('');
+  res.innerHTML=html;
+  res.classList.add('open');
+}
+
 function closeSearchResults(){
   const res = document.getElementById('search-results');
   if(res) res.classList.remove('open');
@@ -4767,7 +4872,7 @@ function goToLead(id){
 
 // Cerrar resultados al hacer click fuera
 document.addEventListener('click', e=>{
-  if(!e.target.closest('.search-wrap')) closeSearchResults();
+  if(!e.target.closest('.search-wrap')) { closeSearchResults(); document.getElementById('search-results-sidebar')?.classList.remove('open'); }
   if(!e.target.closest('#user-chip-btn') && !e.target.closest('#perfil-menu')) closePerfilMenu();
   if(!e.target.closest('#notif-btn-top') && !e.target.closest('.notif-panel')) closeNotifPanel();
 });
@@ -6199,6 +6304,129 @@ function deletePlantilla(id){
   if(!confirm('¿Eliminar esta plantilla?')) return;
   plantillasStore = plantillasStore.filter(x=>x.id!==id);
   rDocs(); showToast('🗑 Plantilla eliminada');
+}
+
+/* ════════════════════════════════════════
+   CALENDARIO STANDALONE
+════════════════════════════════════════ */
+let calStandaloneYear  = new Date().getFullYear();
+let calStandaloneMonth = new Date().getMonth();
+let calStandaloneDay   = new Date();
+let calStandaloneView  = 'month'; // 'month' | 'week' | 'day'
+
+function setCalView(v){
+  calStandaloneView = v;
+  ['day','week','month'].forEach(x=>{
+    const btn = document.getElementById('cal-view-'+x);
+    if(btn) btn.classList.toggle('active', x===v);
+    const el = document.getElementById('cal-standalone-'+x);
+    if(el) el.style.display = x===v ? '' : 'none';
+  });
+  rCalStandalone();
+}
+
+function calStandalonePrev(){
+  if(calStandaloneView==='month'){ calStandaloneMonth--; if(calStandaloneMonth<0){calStandaloneMonth=11;calStandaloneYear--;} }
+  else if(calStandaloneView==='week'){ calStandaloneDay = new Date(calStandaloneDay.getTime()-7*86400000); }
+  else { calStandaloneDay = new Date(calStandaloneDay.getTime()-86400000); }
+  rCalStandalone();
+}
+
+function calStandaloneNext(){
+  if(calStandaloneView==='month'){ calStandaloneMonth++; if(calStandaloneMonth>11){calStandaloneMonth=0;calStandaloneYear++;} }
+  else if(calStandaloneView==='week'){ calStandaloneDay = new Date(calStandaloneDay.getTime()+7*86400000); }
+  else { calStandaloneDay = new Date(calStandaloneDay.getTime()+86400000); }
+  rCalStandalone();
+}
+
+function rCalStandalone(){
+  const events = getAllCalEvents();
+  const todayStr = new Date().toISOString().split('T')[0];
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const en7 = new Date(hoy); en7.setDate(en7.getDate()+7);
+
+  if(calStandaloneView==='month'){
+    const lbl = document.getElementById('cal-standalone-label');
+    const grid = document.getElementById('cal-standalone-grid');
+    if(!lbl||!grid) return;
+    lbl.textContent = MESES_ES[calStandaloneMonth] + ' ' + calStandaloneYear;
+    const firstDay    = new Date(calStandaloneYear, calStandaloneMonth, 1).getDay();
+    const daysInMonth = new Date(calStandaloneYear, calStandaloneMonth+1, 0).getDate();
+    const daysInPrev  = new Date(calStandaloneYear, calStandaloneMonth, 0).getDate();
+    const getEventsForDate = (dateStr) => events.filter(e=>e.date===dateStr);
+    let cells = '';
+    for(let i=firstDay-1; i>=0; i--){
+      cells += `<div class="cal-day other-month"><div class="cal-day-num">${daysInPrev-i}</div></div>`;
+    }
+    for(let d=1; d<=daysInMonth; d++){
+      const dateStr = `${calStandaloneYear}-${String(calStandaloneMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday = dateStr===todayStr;
+      const dayEvents = getEventsForDate(dateStr);
+      const evHtml = dayEvents.slice(0,3).map(e=>`<div class="cal-event ${e.type}" title="${e.label}">${e.label}</div>`).join('');
+      const more = dayEvents.length>3?`<div style="font-size:8.5px;color:var(--text-muted);margin-top:1px;">+${dayEvents.length-3} más</div>`:'';
+      cells += `<div class="cal-day${isToday?' today':''}" onclick="openModal('recordatorio',{fecha_limite:'${dateStr}'})"><div class="cal-day-num">${d}</div>${evHtml}${more}</div>`;
+    }
+    const totalCells = Math.ceil((firstDay + daysInMonth)/7)*7;
+    let nextDay=1;
+    for(let i=firstDay+daysInMonth; i<totalCells; i++) cells += `<div class="cal-day other-month"><div class="cal-day-num">${nextDay++}</div></div>`;
+    grid.innerHTML = cells;
+  }
+  else if(calStandaloneView==='week'){
+    const lbl = document.getElementById('cal-week-label');
+    const content = document.getElementById('cal-week-content');
+    if(!lbl||!content) return;
+    // Start of week (Sunday)
+    const startOfWeek = new Date(calStandaloneDay);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(endOfWeek.getDate()+6);
+    lbl.textContent = `${startOfWeek.toLocaleDateString('es-AR',{day:'numeric',month:'short'})} — ${endOfWeek.toLocaleDateString('es-AR',{day:'numeric',month:'short',year:'numeric'})}`;
+    let html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">';
+    const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    for(let i=0; i<7; i++){
+      const d = new Date(startOfWeek); d.setDate(d.getDate()+i);
+      const dateStr = d.toISOString().split('T')[0];
+      const isToday = dateStr===todayStr;
+      const dayEvs  = events.filter(e=>e.date===dateStr);
+      html += `<div style="background:${isToday?'var(--gold-light)':'var(--surface2)'};border:1px solid ${isToday?'var(--gold-dim)':'var(--border)'};border-radius:var(--r);padding:10px;min-height:120px;cursor:pointer;" onclick="openModal('recordatorio',{fecha_limite:'${dateStr}'})">
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:${isToday?'var(--gold)':'var(--text-muted)'};margin-bottom:5px;">${dias[i]} ${d.getDate()}</div>
+        ${dayEvs.map(e=>`<div style="font-size:10px;padding:3px 6px;border-radius:3px;margin-bottom:3px;background:rgba(255,255,255,.04);color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${e.label}">${e.label}</div>`).join('')}
+      </div>`;
+    }
+    html += '</div>';
+    content.innerHTML = html;
+  }
+  else { // day
+    const lbl = document.getElementById('cal-day-label');
+    const content = document.getElementById('cal-day-content');
+    if(!lbl||!content) return;
+    const dateStr = calStandaloneDay.toISOString().split('T')[0];
+    const isToday = dateStr===todayStr;
+    lbl.textContent = calStandaloneDay.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    const dayEvs = events.filter(e=>e.date===dateStr);
+    content.innerHTML = dayEvs.length
+      ? dayEvs.map(e=>`<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${e.type==='urgente'?'var(--ruby)':e.type==='vence'?'var(--green)':'var(--gold)'};flex-shrink:0;"></div>
+          <div><div style="font-size:13px;color:var(--text);">${e.label}</div></div>
+        </div>`).join('')
+      : `<div class="empty"><div class="ei">📅</div><p>Sin eventos${isToday?' hoy':' este día'}.<br><button class="btn btn-ghost" style="margin-top:8px;font-size:12px;" onclick="openModal('recordatorio',{fecha_limite:'${dateStr}'})">+ Agregar plazo</button></p></div>`;
+  }
+
+  // Upcoming & overdue (shared for all views)
+  const upcoming = events.filter(e=>{ const d=new Date(e.date); return d>=hoy && d<=en7; }).sort((a,b)=>a.date.localeCompare(b.date));
+  const upEl = document.getElementById('cal-standalone-upcoming');
+  if(upEl) upEl.innerHTML = upcoming.length ? upcoming.map(e=>`
+    <div class="tbl-row" style="grid-template-columns:60px 1fr;gap:10px;padding:10px 16px;">
+      <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--gold);">${e.date.slice(5)}</div>
+      <div style="font-size:12.5px;color:var(--text);">${e.label}</div>
+    </div>`).join('') : `<div class="empty" style="padding:20px;"><p>Sin eventos próximos</p></div>`;
+
+  const overdue = events.filter(e=>{ const d=new Date(e.date); d.setHours(23,59,59); return d<hoy; }).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6);
+  const ovEl = document.getElementById('cal-standalone-overdue');
+  if(ovEl) ovEl.innerHTML = overdue.length ? overdue.map(e=>`
+    <div class="tbl-row" style="grid-template-columns:60px 1fr;gap:10px;padding:10px 16px;">
+      <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--red);">${e.date.slice(5)}</div>
+      <div style="font-size:12.5px;color:var(--text);">${e.label}</div>
+    </div>`).join('') : `<div class="empty" style="padding:20px;"><p>Ningún evento vencido</p></div>`;
 }
 
 /* ════════════════════════════════════════

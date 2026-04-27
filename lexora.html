@@ -673,6 +673,9 @@ textarea.form-input{height:74px;resize:none;}
 .mobile-nav-badge{background:var(--red);color:#fff;font-size:9px;padding:1px 5px;border-radius:20px;font-family:'DM Mono',monospace;margin-left:2px;}
 .mobile-nav-badge.blue{background:var(--blue);}
 
+@media(max-width:1024px) and (min-width:769px){
+  .plans-grid{grid-template-columns:1fr 1fr!important;}
+}
 @media(max-width:768px){
   .sidebar{display:none;}
   .main{margin-left:0;padding-top:46px;}
@@ -695,6 +698,7 @@ textarea.form-input{height:74px;resize:none;}
   .reg-box{padding:0 16px;}
   .form-row{grid-template-columns:1fr!important;}
   .plan-select-grid{grid-template-columns:1fr!important;}
+  #rf-plan-grid{grid-template-columns:1fr!important;}
   .col-exp2{grid-template-columns:80px 1fr 80px!important;}
   .col-exp3{grid-template-columns:80px 1fr 90px 60px!important;}
   .col-rec{grid-template-columns:1fr 80px 70px!important;}
@@ -910,22 +914,24 @@ textarea.form-input{height:74px;resize:none;}
   </div>
   <div class="splash-plans" id="splash-planes" style="padding-top:44px;">
     <div class="splash-plans-title">Planes</div>
-    <div class="plans-grid" style="grid-template-columns:1fr 1fr;max-width:720px;margin:0 auto;">
+    <div class="plans-grid" style="grid-template-columns:1fr 1fr 1fr;max-width:1080px;margin:0 auto;">
       <div class="plan-card">
         <div class="plan-name">🧍 Independiente</div>
-        <div class="plan-price" style="font-size:32px;">$39.000<span style="font-size:14px;">/mes</span></div>
+        <div class="plan-price" style="font-size:32px;">$38.999<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · 1 abogado · uso personal</div>
         <ul class="plan-features">
           <li>Clientes y expedientes ilimitados</li>
           <li>Prospectos y recordatorios</li>
           <li>Agenda, tareas y facturación</li>
           <li>Plantillas de documentos</li>
+          <li>Búsqueda instantánea de expedientes</li>
+          <li>Historial cronológico por caso</li>
         </ul>
         <button class="btn btn-ghost btn-full" onclick="goTo('register')">Empezar solo →</button>
       </div>
       <div class="plan-card featured">
         <div class="plan-name">🏢 Estudio ★</div>
-        <div class="plan-price" style="font-size:32px;">$49.000<span style="font-size:14px;">/mes</span></div>
+        <div class="plan-price" style="font-size:32px;">$49.999<span style="font-size:14px;">/mes</span></div>
         <div class="plan-period">ARS · incluye hasta 3 usuarios</div>
         <ul class="plan-features">
           <li>Todo lo del plan Independiente</li>
@@ -935,7 +941,22 @@ textarea.form-input{height:74px;resize:none;}
           <li>Permisos personalizables por módulo</li>
           <li>Asignación de casos, clientes y leads</li>
         </ul>
-        <button class="btn btn-primary btn-full" onclick="goTo('register')">Empezar con equipo →</button>
+        <button class="btn btn-primary btn-full" onclick="goTo('register')">Activar mi estudio →</button>
+      </div>
+      <div class="plan-card">
+        <div class="plan-name">🏛️ Corporativo</div>
+        <div class="plan-price" style="font-size:32px;">$89.999<span style="font-size:14px;">/mes</span></div>
+        <div class="plan-period">ARS · incluye hasta 10 usuarios</div>
+        <ul class="plan-features">
+          <li>Todo lo del plan Estudio</li>
+          <li>Hasta 10 usuarios incluidos</li>
+          <li>Onboarding personalizado</li>
+          <li>Soporte prioritario (2 hs)</li>
+          <li>Reportes avanzados por equipo</li>
+          <li>Exportación con branding del estudio</li>
+          <li>Adicional: $10.000/mes por usuario extra</li>
+        </ul>
+        <button class="btn btn-ghost btn-full" onclick="goTo('register')">Activar mi estudio →</button>
       </div>
     </div>
     <p style="text-align:center;font-size:12px;color:var(--text-muted);margin-top:18px;">🎉 Beta gratuita — acceso completo sin límites · Sin tarjeta requerida</p>
@@ -1055,15 +1076,22 @@ textarea.form-input{height:74px;resize:none;}
       <!-- Plan -->
       <div style="margin-bottom:14px;">
         <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--text-muted);margin-bottom:10px;">Plan</div>
-        <div id="rf-plan-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div id="rf-plan-grid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
           <div id="rp-ind" class="type-card selected" onclick="regSelPlan('independiente')" style="padding:14px;cursor:pointer;">
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🧍 Independiente</div>
             <div style="font-size:11px;color:var(--text-muted);">Abogado solo</div>
+            <div style="font-size:10px;color:var(--gold-dim);margin-top:4px;font-family:'DM Mono',monospace;">$38.999/mes</div>
           </div>
           <div id="rp-est" class="type-card" onclick="regSelPlan('estudio')" style="padding:14px;cursor:pointer;position:relative;">
             <div style="position:absolute;top:8px;right:8px;font-size:8px;font-family:'DM Mono',monospace;background:var(--gold);color:var(--bg);padding:1px 5px;border-radius:10px;">POPULAR</div>
             <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🏢 Estudio</div>
-            <div style="font-size:11px;color:var(--text-muted);">Con equipo y roles</div>
+            <div style="font-size:11px;color:var(--text-muted);">Hasta 3 usuarios</div>
+            <div style="font-size:10px;color:var(--gold-dim);margin-top:4px;font-family:'DM Mono',monospace;">$49.999/mes</div>
+          </div>
+          <div id="rp-corp" class="type-card" onclick="regSelPlan('corporativo')" style="padding:14px;cursor:pointer;">
+            <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;">🏛️ Corporativo</div>
+            <div style="font-size:11px;color:var(--text-muted);">Hasta 10 usuarios</div>
+            <div style="font-size:10px;color:var(--gold-dim);margin-top:4px;font-family:'DM Mono',monospace;">$89.999/mes</div>
           </div>
         </div>
       </div>
@@ -1747,7 +1775,7 @@ textarea.form-input{height:74px;resize:none;}
           <div class="form-row">
             <div class="form-group"><label class="form-label">Plan</label>
               <select id="nf-plan" class="form-input" style="background:#0e0e14;border-color:#1e1e28;">
-                <option value="trial">Trial 1 mes (gratis)</option><option value="independiente">🧍 Independiente — $39.000/mes</option><option value="estudio" selected>🏢 Estudio — $49.000/mes (3 usuarios)</option>
+                <option value="trial">Trial 1 mes (gratis)</option><option value="independiente">🧍 Independiente — $38.999/mes</option><option value="estudio" selected>🏢 Estudio — $49.999/mes (3 usuarios)</option><option value="corporativo">🏛️ Corporativo — $89.999/mes (10 usuarios)</option>
               </select>
             </div>
             <div class="form-group"><label class="form-label">Activar inmediatamente</label>
@@ -1841,10 +1869,45 @@ const cliName = id => id ? esc((C.clientes.find(x=>x.id===id)||{}).nombre||'[Cli
 const membName = uid => { const m=C.miembros.find(x=>x.perfil_id===uid); const p=m?.perfiles||{}; return p.nombre?esc((p.nombre+' '+p.apellido).trim()):''; };
 const expTitle = id => esc((C.expedientes.find(x=>x.id===id)||{}).titulo||'—');
 const stBadge = s => `<span class="status ${s||'pendiente'}">${s||'pendiente'}</span>`;
-const planPill = p => { const m={independiente:'pill-basic',estudio:'pill-pro',trial:'pill-trial'}; return `<span class="plan-pill ${m[p]||'pill-basic'}">${p}</span>`; };
-const PLAN_PRICES = { independiente:39000, estudio:49000, trial:0, estudio_extra_usuario:10000 };
-const PLAN_NOMBRES = { independiente:'Independiente', estudio:'Estudio', trial:'Trial gratuito' };
+const planPill = p => {
+  const m = {
+    independiente:'pill-basic',
+    estudio:'pill-pro',
+    corporativo:'pill-ent',
+    trial:'pill-trial'
+  };
+  return `<span class="plan-pill ${m[p]||'pill-basic'}">${p}</span>`;
+};
+const PLAN_PRICES = {
+  independiente:38999,
+  estudio:49999,
+  corporativo:89999,
+  trial:0,
+  estudio_extra_usuario:10000,
+  corporativo_extra_usuario:10000
+};
+const PLAN_NOMBRES = {
+  independiente:'Independiente',
+  estudio:'Estudio',
+  corporativo:'Corporativo',
+  trial:'Trial gratuito'
+};
 const ESTUDIO_USUARIOS_INCLUIDOS = 3;
+const CORPORATIVO_USUARIOS_INCLUIDOS = 10;
+
+// Devuelve cuántos usuarios incluye el plan según el tipo
+function planUsuariosIncluidos(plan){
+  if(plan === 'corporativo') return CORPORATIVO_USUARIOS_INCLUIDOS;
+  if(plan === 'estudio') return ESTUDIO_USUARIOS_INCLUIDOS;
+  return 1;
+}
+
+// Devuelve el precio extra por usuario adicional
+function planPrecioExtraUsuario(plan){
+  if(plan === 'corporativo') return PLAN_PRICES.corporativo_extra_usuario;
+  if(plan === 'estudio') return PLAN_PRICES.estudio_extra_usuario;
+  return 0;
+}
 
 function showErr(id, msg){ const e=document.getElementById(id); if(!e) return; e.textContent=msg; e.style.display='block'; }
 function hideErr(id){ const e=document.getElementById(id); if(e) e.style.display='none'; }
@@ -1938,7 +2001,12 @@ async function loadUserSession(user){
   }
 }
 
-function isEstudioPlan(){ return CF?.plan==='estudio' || CF?.tipo==='estudio'; }
+// Plan colaborativo = Estudio o Corporativo (ambos comparten lógica de equipo)
+function isEstudioPlan(){
+  return CF?.plan==='estudio' || CF?.plan==='corporativo' || CF?.tipo==='estudio' || CF?.tipo==='corporativo';
+}
+function isCorporativoPlan(){ return CF?.plan==='corporativo' || CF?.tipo==='corporativo'; }
+function isPlanColaborativo(){ return isEstudioPlan(); }
 
 /* ════════════════════════════════════════
    PASSWORD RECOVERY
@@ -2043,6 +2111,7 @@ function regSelPlan(p){
   REG_PLAN = p;
   document.getElementById('rp-ind')?.classList.toggle('selected', p==='independiente');
   document.getElementById('rp-est')?.classList.toggle('selected', p==='estudio');
+  document.getElementById('rp-corp')?.classList.toggle('selected', p==='corporativo');
 }
 
 function regToggleUnirse(checked){
@@ -2055,6 +2124,7 @@ function regToggleUnirse(checked){
   if(checked){
     document.getElementById('rp-ind')?.classList.remove('selected');
     document.getElementById('rp-est')?.classList.remove('selected');
+    document.getElementById('rp-corp')?.classList.remove('selected');
   } else {
     regSelPlan(REG_PLAN);
   }
@@ -3783,16 +3853,30 @@ function rEquipoSidebar(){
   const panel = document.getElementById('roles-info-panel');
   if(!panel) return;
 
-  // Show pricing info for estudio plan
-  const pricingHtml = isEstudioPlan() ? `
-    <div style="margin-bottom:16px;padding:14px;background:var(--gold-light);border:1px solid rgba(201,168,76,.15);border-radius:var(--r);">
-      <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:6px;">PLAN ESTUDIO</div>
+  // Show pricing info según el plan colaborativo (Estudio o Corporativo)
+  let pricingHtml = '';
+  if(isEstudioPlan()){
+    const planActual = CF?.plan || 'estudio';
+    const planNombre = PLAN_NOMBRES[planActual] || 'Estudio';
+    const planPrecio = PLAN_PRICES[planActual] || PLAN_PRICES.estudio;
+    const incluidos = planUsuariosIncluidos(planActual);
+    const extraPorUsuario = planPrecioExtraUsuario(planActual);
+    const usuariosExtra = Math.max(0, C.miembros.length - incluidos);
+    const costoExtras = usuariosExtra * extraPorUsuario;
+    const colorAccent = isCorporativoPlan() ? 'var(--blue)' : 'var(--gold)';
+    const bgAccent = isCorporativoPlan() ? 'rgba(76,123,201,.06)' : 'var(--gold-light)';
+    const borderAccent = isCorporativoPlan() ? 'rgba(76,123,201,.15)' : 'rgba(201,168,76,.15)';
+
+    pricingHtml = `
+    <div style="margin-bottom:16px;padding:14px;background:${bgAccent};border:1px solid ${borderAccent};border-radius:var(--r);">
+      <div style="font-size:11px;font-family:'DM Mono',monospace;color:${colorAccent};margin-bottom:6px;">PLAN ${planNombre.toUpperCase()}</div>
       <div style="font-size:12.5px;color:var(--text-dim);line-height:1.5;">
-        $49.000/mes · Incluye hasta 3 usuarios<br>
-        Usuarios adicionales: $10.000/mes c/u<br>
-        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">Miembros actuales: ${C.miembros.length}/${ESTUDIO_USUARIOS_INCLUIDOS}${C.miembros.length>ESTUDIO_USUARIOS_INCLUIDOS?' · +$'+(((C.miembros.length-ESTUDIO_USUARIOS_INCLUIDOS)*10000).toLocaleString('es-AR'))+'/mes':''}</span>
+        $${planPrecio.toLocaleString('es-AR')}/mes · Incluye hasta ${incluidos} usuarios<br>
+        Usuarios adicionales: $${extraPorUsuario.toLocaleString('es-AR')}/mes c/u<br>
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);">Miembros actuales: ${C.miembros.length}/${incluidos}${usuariosExtra>0?' · +$'+costoExtras.toLocaleString('es-AR')+'/mes extras':''}</span>
       </div>
-    </div>` : '';
+    </div>`;
+  }
 
   // Render roles with module-based permissions
   panel.innerHTML = pricingHtml + Object.entries(ROLES_CONFIG).map(([key,cfg])=>`
@@ -5015,49 +5099,110 @@ function openPerfilConfig(){
   const esAdmin = CROL === 'admin';
   const planActual = CF?.plan || 'independiente';
   const esEstudio = isEstudioPlan();
+  const esCorporativo = isCorporativoPlan();
+  const esIndependiente = !esEstudio;
 
   // Plan section: admin sees plan switch, members see membership info
   let planSection = '';
   if(esAdmin){
-    planSection = `
-    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
-      <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:12px;">Tu plan</div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-        <span class="plan-pill ${esEstudio?'pill-pro':'pill-basic'}" style="font-size:12px;padding:4px 12px;">${esEstudio?'🏢 Estudio':'🧍 Independiente'}</span>
-        <span style="font-size:12px;color:var(--text-dim);">${esEstudio?'$49.000/mes · hasta 3 usuarios':'$39.000/mes · 1 usuario'}</span>
-      </div>
-      ${esEstudio ? `
+    // Datos del plan actual
+    const planActualNombre = PLAN_NOMBRES[planActual] || 'Independiente';
+    const planActualPrecio = PLAN_PRICES[planActual] || PLAN_PRICES.independiente;
+    const planActualIcono = esCorporativo ? '🏛️' : (esEstudio ? '🏢' : '🧍');
+    const planActualPillClass = esCorporativo ? 'pill-ent' : (esEstudio ? 'pill-pro' : 'pill-basic');
+    const incluidos = planUsuariosIncluidos(planActual);
+    const extraPorUsuario = planPrecioExtraUsuario(planActual);
+    const miembrosActuales = C.miembros.length;
+    const usuariosExtra = Math.max(0, miembrosActuales - incluidos);
+    const costoExtras = usuariosExtra * extraPorUsuario;
+
+    let bloquePlanActual = '';
+    if(esEstudio){
+      bloquePlanActual = `
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;">
           <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
-            <strong style="color:var(--text);">Plan Estudio</strong> · Incluye ${ESTUDIO_USUARIOS_INCLUIDOS} usuarios<br>
-            Miembros actuales: <span style="font-family:'DM Mono',monospace;color:var(--gold);">${C.miembros.length}</span>${C.miembros.length>ESTUDIO_USUARIOS_INCLUIDOS?` · <span style="color:var(--gold);">+$${((C.miembros.length-ESTUDIO_USUARIOS_INCLUIDOS)*PLAN_PRICES.estudio_extra_usuario).toLocaleString('es-AR')}/mes extras</span>`:''}
+            <strong style="color:var(--text);">Plan ${planActualNombre}</strong> · Incluye ${incluidos} usuarios<br>
+            Miembros actuales: <span style="font-family:'DM Mono',monospace;color:var(--gold);">${miembrosActuales}</span>/${incluidos}${usuariosExtra>0?` · <span style="color:var(--gold);">+$${costoExtras.toLocaleString('es-AR')}/mes extras</span>`:''}<br>
+            Adicional: $${extraPorUsuario.toLocaleString('es-AR')}/mes por usuario extra
           </div>
-        </div>
-        <button class="btn btn-ghost" style="width:100%;font-size:12px;" onclick="confirmarCambioPlan('independiente')">
-          Cambiar a plan Independiente →
-        </button>
-        <div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;line-height:1.4;">⚠ Al bajar de plan se deshabilitarán las funciones de equipo. Los miembros existentes perderán acceso.</div>
-      ` : `
+        </div>`;
+    }
+
+    // Botones de cambio de plan según el plan actual
+    let botonesCambio = '';
+    if(esIndependiente){
+      // Desde Independiente: subir a Estudio o Corporativo
+      botonesCambio = `
         <div style="background:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:14px;margin-bottom:12px;">
           <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
-            <strong style="color:var(--gold);">🏢 Plan Estudio</strong> — $49.000/mes<br>
+            <strong style="color:var(--gold);">🏢 Plan Estudio</strong> — $49.999/mes<br>
             Incluye hasta 3 usuarios · $10.000/mes por usuario extra<br>
             Roles (Admin, Abogado, Asistente) · Permisos por módulo · Asignación de casos
           </div>
         </div>
-        <button class="btn btn-primary" style="width:100%;font-size:13px;" onclick="confirmarCambioPlan('estudio')">
+        <button class="btn btn-primary" style="width:100%;font-size:13px;margin-bottom:10px;" onclick="confirmarCambioPlan('estudio')">
           ⬆ Pasar a Plan Estudio →
         </button>
-      `}
+        <div style="background:rgba(76,123,201,.06);border:1px solid rgba(76,123,201,.2);border-radius:var(--r);padding:14px;margin-bottom:12px;">
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+            <strong style="color:var(--blue);">🏛️ Plan Corporativo</strong> — $89.999/mes<br>
+            Incluye hasta 10 usuarios · $10.000/mes por usuario extra<br>
+            Onboarding personalizado · Soporte prioritario · Reportes avanzados
+          </div>
+        </div>
+        <button class="btn btn-ghost" style="width:100%;font-size:13px;" onclick="confirmarCambioPlan('corporativo')">
+          ⬆ Pasar a Plan Corporativo →
+        </button>`;
+    } else if(planActual === 'estudio'){
+      // Desde Estudio: subir a Corporativo o bajar a Independiente
+      botonesCambio = `
+        <div style="background:rgba(76,123,201,.06);border:1px solid rgba(76,123,201,.2);border-radius:var(--r);padding:14px;margin-bottom:12px;">
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">
+            <strong style="color:var(--blue);">🏛️ Plan Corporativo</strong> — $89.999/mes<br>
+            Incluye hasta 10 usuarios · Soporte prioritario · Reportes avanzados<br>
+            Ideal si tu equipo crece y necesitás más usuarios incluidos.
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;font-size:13px;margin-bottom:10px;" onclick="confirmarCambioPlan('corporativo')">
+          ⬆ Pasar a Plan Corporativo →
+        </button>
+        <button class="btn btn-ghost" style="width:100%;font-size:12px;" onclick="confirmarCambioPlan('independiente')">
+          ⬇ Cambiar a plan Independiente
+        </button>
+        <div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;line-height:1.4;">⚠ Al bajar a Independiente se deshabilitarán las funciones de equipo. Los miembros existentes perderán acceso.</div>`;
+    } else if(planActual === 'corporativo'){
+      // Desde Corporativo: bajar a Estudio o Independiente
+      botonesCambio = `
+        <button class="btn btn-ghost" style="width:100%;font-size:12px;margin-bottom:8px;" onclick="confirmarCambioPlan('estudio')">
+          ⬇ Cambiar a plan Estudio
+        </button>
+        <button class="btn btn-ghost" style="width:100%;font-size:12px;" onclick="confirmarCambioPlan('independiente')">
+          ⬇ Cambiar a plan Independiente
+        </button>
+        <div style="font-size:10.5px;color:var(--text-muted);margin-top:6px;line-height:1.4;">⚠ Al bajar de plan se reducirá el cupo de usuarios incluidos. Si tenés más miembros que el cupo del plan destino, se cobrarán como usuarios extra.</div>`;
+    }
+
+    planSection = `
+    <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+      <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--gold);margin-bottom:12px;">Tu plan</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <span class="plan-pill ${planActualPillClass}" style="font-size:12px;padding:4px 12px;">${planActualIcono} ${planActualNombre}</span>
+        <span style="font-size:12px;color:var(--text-dim);">$${planActualPrecio.toLocaleString('es-AR')}/mes${esEstudio?` · hasta ${incluidos} usuarios`:' · 1 usuario'}</span>
+      </div>
+      ${bloquePlanActual}
+      ${botonesCambio}
     </div>`;
   } else if(esEstudio){
     // Member of a studio — show membership info, no plan switch
+    const planNombre = PLAN_NOMBRES[planActual] || 'Estudio';
+    const icono = esCorporativo ? '🏛️' : '🏢';
     planSection = `
     <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
       <div style="font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;font-family:'DM Mono',monospace;color:var(--blue);margin-bottom:12px;">Tu membresía</div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;">
-        <div style="font-size:13px;color:var(--text);margin-bottom:6px;">🏢 Miembro de: <strong>${esc(CF?.nombre||'')}</strong></div>
+        <div style="font-size:13px;color:var(--text);margin-bottom:6px;">${icono} Miembro de: <strong>${esc(CF?.nombre||'')}</strong></div>
         <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">
+          Plan del estudio: <span style="color:var(--gold);font-family:'DM Mono',monospace;">${planNombre}</span><br>
           Rol: <span style="color:var(--gold);font-family:'DM Mono',monospace;">${CROL||'miembro'}</span><br>
           Tu acceso está cubierto por la suscripción del estudio.<br>
           No necesitás un plan individual.
@@ -5117,39 +5262,117 @@ async function savePerfilConfig(){
 ════════════════════════════════════════ */
 function confirmarCambioPlan(nuevoPlan){
   closeModal();
-  const esUpgrade = nuevoPlan === 'estudio';
+
+  // Definimos jerarquía de planes para saber si es upgrade o downgrade
+  const jerarquia = { independiente: 0, estudio: 1, corporativo: 2 };
+  const planActual = CF?.plan || 'independiente';
+  const esUpgrade = (jerarquia[nuevoPlan] || 0) > (jerarquia[planActual] || 0);
+
+  // Datos visuales por plan
+  const planData = {
+    independiente: {
+      icono: '🧍',
+      nombre: 'Plan Independiente',
+      precio: 38999,
+      usuarios: '1 usuario',
+      bg: 'rgba(201,76,76,.06)',
+      borderColor: 'rgba(201,76,76,.2)',
+      btnClass: 'background:rgba(201,76,76,.1);color:var(--red);border:1px solid rgba(201,76,76,.25);',
+      features: [
+        'Clientes y expedientes ilimitados',
+        'Prospectos y recordatorios',
+        'Agenda, tareas y facturación',
+        'Plantillas de documentos'
+      ]
+    },
+    estudio: {
+      icono: '🏢',
+      nombre: 'Plan Estudio',
+      precio: 49999,
+      usuarios: 'Hasta 3 usuarios incluidos',
+      bg: 'var(--gold-light)',
+      borderColor: 'rgba(201,168,76,.2)',
+      btnClass: '',
+      features: [
+        'Todo lo del plan Independiente',
+        'Hasta 3 usuarios incluidos',
+        'Adicional: $10.000/mes por usuario extra',
+        'Roles: Administrador, Abogado, Asistente',
+        'Permisos personalizables por módulo',
+        'Asignación de casos, clientes y leads'
+      ]
+    },
+    corporativo: {
+      icono: '🏛️',
+      nombre: 'Plan Corporativo',
+      precio: 89999,
+      usuarios: 'Hasta 10 usuarios incluidos',
+      bg: 'rgba(76,123,201,.08)',
+      borderColor: 'rgba(76,123,201,.2)',
+      btnClass: '',
+      features: [
+        'Todo lo del plan Estudio',
+        'Hasta 10 usuarios incluidos',
+        'Adicional: $10.000/mes por usuario extra',
+        'Onboarding personalizado',
+        'Soporte prioritario (respuesta en 2 hs)',
+        'Reportes avanzados por equipo y abogado',
+        'Exportación con branding del estudio'
+      ]
+    }
+  };
+
+  const data = planData[nuevoPlan];
+  if(!data) return;
+
+  // Aviso si bajamos de plan y tenemos más miembros que los incluidos en el destino
+  const incluidosDestino = planUsuariosIncluidos(nuevoPlan);
+  const miembrosActuales = C.miembros.length;
+  let aviso = '';
+
+  if(!esUpgrade){
+    if(nuevoPlan === 'independiente' && miembrosActuales > 1){
+      aviso = `<p style="font-size:12px;color:var(--red);margin-bottom:16px;line-height:1.5;background:rgba(201,76,76,.06);border:1px solid rgba(201,76,76,.2);border-radius:var(--r);padding:10px 12px;">
+        ⚠ Tenés <strong>${miembrosActuales - 1}</strong> miembro(s) en tu equipo. Al cambiar a Independiente, perderán acceso al estudio.
+      </p>`;
+    } else if(miembrosActuales > incluidosDestino){
+      const extras = miembrosActuales - incluidosDestino;
+      const costoExtra = extras * planPrecioExtraUsuario(nuevoPlan);
+      aviso = `<p style="font-size:12px;color:var(--gold);margin-bottom:16px;line-height:1.5;background:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:10px 12px;">
+        ℹ Tenés <strong>${miembrosActuales}</strong> miembros y el plan ${data.nombre} incluye <strong>${incluidosDestino}</strong>.<br>
+        Se cobrarán <strong>${extras}</strong> usuario(s) extra · +$${costoExtra.toLocaleString('es-AR')}/mes.
+      </p>`;
+    }
+  }
+
+  const featuresHtml = data.features.map(f => `✓ ${f}`).join('<br>');
+  const tituloModal = esUpgrade
+    ? `⬆ Pasar a ${data.nombre}`
+    : `⬇ Cambiar a ${data.nombre}`;
+
+  const advertenciaDowngrade = !esUpgrade && nuevoPlan === 'independiente' ? `
+    <strong style="color:var(--red);">⚠ Al bajar a Independiente:</strong><br>
+    • Se deshabilitarán las funciones de equipo<br>
+    • Los miembros existentes perderán acceso<br>
+    • No se eliminan datos — podés volver a un plan colaborativo en cualquier momento
+  ` : '';
 
   setTimeout(()=>{
-    document.getElementById('m-title').textContent = esUpgrade ? '⬆ Pasar a Plan Estudio' : '⬇ Cambiar a Plan Independiente';
-    document.getElementById('m-body').innerHTML = esUpgrade ? `
-      <div style="background:var(--gold-light);border:1px solid rgba(201,168,76,.2);border-radius:var(--r);padding:18px;margin-bottom:16px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:8px;">🏢 Plan Estudio</div>
+    document.getElementById('m-title').textContent = tituloModal;
+    document.getElementById('m-body').innerHTML = `
+      <div style="background:${data.bg};border:1px solid ${data.borderColor};border-radius:var(--r);padding:18px;margin-bottom:16px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:8px;">${data.icono} ${data.nombre}</div>
         <div style="font-size:13px;color:var(--text-dim);line-height:1.6;">
-          $49.000/mes · Incluye hasta 3 usuarios<br>
-          Usuarios adicionales: $10.000/mes c/u<br><br>
+          $${data.precio.toLocaleString('es-AR')}/mes · ${data.usuarios}<br><br>
           <strong style="color:var(--text);">Incluye:</strong><br>
-          ✓ Roles: Administrador, Abogado, Asistente<br>
-          ✓ Permisos personalizables por módulo<br>
-          ✓ Código de invitación para equipo<br>
-          ✓ Asignación de casos, clientes y leads<br>
-          ✓ Todo lo del plan Independiente
+          ${featuresHtml}
+          ${advertenciaDowngrade ? '<br><br>' + advertenciaDowngrade : ''}
         </div>
       </div>
-      <p style="font-size:12px;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">Al cambiar, tu estudio podrá invitar miembros y gestionar roles. Solo el titular realiza el pago.</p>
-      <button id="plan-switch-btn" class="btn btn-primary" style="width:100%;padding:13px;font-size:14px;" onclick="ejecutarCambioPlan('estudio')">Confirmar cambio a Plan Estudio →</button>
-    ` : `
-      <div style="background:rgba(201,76,76,.06);border:1px solid rgba(201,76,76,.2);border-radius:var(--r);padding:18px;margin-bottom:16px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin-bottom:8px;">🧍 Plan Independiente</div>
-        <div style="font-size:13px;color:var(--text-dim);line-height:1.6;">
-          $39.000/mes · 1 usuario<br><br>
-          <strong style="color:var(--red);">⚠ Al bajar de plan:</strong><br>
-          • Se deshabilitarán las funciones de equipo<br>
-          • Los miembros existentes perderán acceso<br>
-          • No se eliminan datos — podés volver al plan Estudio en cualquier momento
-        </div>
-      </div>
-      ${C.miembros.length > 1 ? `<p style="font-size:12px;color:var(--red);margin-bottom:16px;line-height:1.5;">⚠ Tenés ${C.miembros.length - 1} miembro(s) en tu equipo. Al cambiar a Independiente, perderán acceso al estudio.</p>` : ''}
-      <button id="plan-switch-btn" class="btn" style="background:rgba(201,76,76,.1);color:var(--red);border:1px solid rgba(201,76,76,.25);width:100%;padding:13px;font-size:14px;" onclick="ejecutarCambioPlan('independiente')">Confirmar cambio a Independiente</button>
+      ${aviso}
+      <button id="plan-switch-btn" class="btn ${esUpgrade?'btn-primary':''}" style="${data.btnClass}width:100%;padding:13px;font-size:14px;" onclick="ejecutarCambioPlan('${nuevoPlan}')">
+        Confirmar cambio a ${data.nombre} ${esUpgrade?'→':''}
+      </button>
     `;
     document.getElementById('m-foot').style.display = 'none';
     document.getElementById('overlay').classList.add('open');
@@ -5179,7 +5402,7 @@ async function ejecutarCambioPlan(nuevoPlan){
     CF.plan = nuevoPlan;
     CF.tipo = nuevoPlan;
 
-    // Update UI
+    // Update UI — funciones de equipo se habilitan en planes Estudio y Corporativo
     const esEstudio = isEstudioPlan();
     document.querySelectorAll('.nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
     document.querySelectorAll('.mobile-nav-equipo').forEach(el=>{ el.style.display = esEstudio ? '' : 'none'; });
@@ -5187,7 +5410,10 @@ async function ejecutarCambioPlan(nuevoPlan){
     closeModal();
     renderAll();
 
-    if(nuevoPlan === 'estudio'){
+    if(nuevoPlan === 'corporativo'){
+      showToast('✅ ¡Plan actualizado a Corporativo! Tenés cupo para hasta 10 usuarios incluidos.');
+      showPage('equipo', null);
+    } else if(nuevoPlan === 'estudio'){
       showToast('✅ ¡Plan actualizado a Estudio! Ya podés invitar a tu equipo.');
       showPage('equipo', null);
     } else {
@@ -5197,7 +5423,8 @@ async function ejecutarCambioPlan(nuevoPlan){
 
   } catch(e){
     showToast('❌ Error al cambiar el plan: ' + (e.message || 'Intentá de nuevo.'));
-    setBtn('plan-switch-btn', nuevoPlan === 'estudio' ? 'Confirmar cambio a Plan Estudio →' : 'Confirmar cambio a Independiente', false);
+    const nombrePlan = PLAN_NOMBRES[nuevoPlan] || nuevoPlan;
+    setBtn('plan-switch-btn', `Confirmar cambio a Plan ${nombrePlan}`, false);
   }
 }
 /* ════════════════════════════════════════
@@ -5598,9 +5825,12 @@ async function renderAdminAll(){
 function renderAdminOverview(){
   const activas  = adminFirms.filter(f=>f.activo).length;
   const suspend  = adminFirms.filter(f=>!f.activo).length;
-  const plans    = {independiente:0,estudio:0,trial:0};
+  const plans    = {independiente:0,estudio:0,corporativo:0,trial:0};
   adminFirms.filter(f=>f.activo).forEach(f=>{ if(plans[f.plan]!==undefined) plans[f.plan]++; });
-  const mrr = plans.independiente*39000 + plans.estudio*49000;
+  // MRR base por plan (sin contar usuarios extra)
+  const mrr = plans.independiente*PLAN_PRICES.independiente
+            + plans.estudio*PLAN_PRICES.estudio
+            + plans.corporativo*PLAN_PRICES.corporativo;
   document.getElementById('adm-stats-overview').innerHTML=[
     {l:'Firmas activas',v:activas,s:'pagando'},
     {l:'MRR (ARS)',v:'$'+mrr.toLocaleString('es-AR'),s:'mensual recurrente'},
@@ -5614,7 +5844,7 @@ function renderAdminOverview(){
       ${planPill(f.plan)}
       <span class="plan-pill ${f.activo?'pill-on':'pill-off'}">${f.activo?'activa':'inactiva'}</span>
     </div>`).join('');
-  const pc={independiente:'var(--text-dim)',estudio:'var(--gold)',trial:'var(--green)'};
+  const pc={independiente:'var(--text-dim)',estudio:'var(--gold)',corporativo:'var(--blue)',trial:'var(--green)'};
   const total=adminFirms.length||1;
   document.getElementById('adm-plan-dist').innerHTML=Object.entries(plans).filter(([,v])=>v>0).map(([k,v])=>`
     <div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px;"><span style="color:var(--text);text-transform:capitalize;">${k}</span><span style="font-family:'DM Mono',monospace;color:var(--text-dim);">${v} firma(s)</span></div>
@@ -5643,12 +5873,19 @@ function renderAdminFirms(){
 }
 
 function renderAdminSubs(){
-  const prices={esencial:39000,crecimiento:89000,expansion:119000,trial:0};
-  const bp={independiente:0,estudio:0};
-  adminFirms.filter(f=>f.activo).forEach(f=>{if(bp[f.plan]!==undefined)bp[f.plan]++;});
+  // Precios por plan (usamos las constantes globales)
+  const prices = {
+    independiente: PLAN_PRICES.independiente,
+    estudio: PLAN_PRICES.estudio,
+    corporativo: PLAN_PRICES.corporativo,
+    trial: 0
+  };
+  const bp = {independiente:0, estudio:0, corporativo:0};
+  adminFirms.filter(f=>f.activo).forEach(f=>{ if(bp[f.plan]!==undefined) bp[f.plan]++; });
   document.getElementById('adm-plan-stats').innerHTML=[
-    {l:'Independiente ($39.000/mes)',n:bp.independiente,t:bp.independiente*39000},
-    {l:'Estudio ($49.000/mes + extras)',n:bp.estudio,t:bp.estudio*49000},
+    {l:`Independiente ($${PLAN_PRICES.independiente.toLocaleString('es-AR')}/mes)`, n:bp.independiente, t:bp.independiente*PLAN_PRICES.independiente},
+    {l:`Estudio ($${PLAN_PRICES.estudio.toLocaleString('es-AR')}/mes + extras)`,    n:bp.estudio,       t:bp.estudio*PLAN_PRICES.estudio},
+    {l:`Corporativo ($${PLAN_PRICES.corporativo.toLocaleString('es-AR')}/mes + extras)`, n:bp.corporativo, t:bp.corporativo*PLAN_PRICES.corporativo},
   ].map(x=>`<div class="adm-stat"><div class="adm-stat-lbl">${x.l}</div><div class="adm-stat-val">${x.n}</div><div class="adm-stat-sub">= $${x.t.toLocaleString('es-AR')}/mes</div></div>`).join('');
   const firma_map={};
   adminFirms.forEach(f=>firma_map[f.id]=f);
@@ -6858,8 +7095,9 @@ begin
   if v_firma_id is null then
     raise exception 'Código de invitación inválido.';
   end if;
-  if v_plan is distinct from 'estudio' then
-    raise exception 'Solo podés unirte a estudios con plan Estudio.';
+  -- Solo planes colaborativos (Estudio y Corporativo) permiten unirse vía código
+  if v_plan not in ('estudio', 'corporativo') then
+    raise exception 'Solo podés unirte a estudios con plan Estudio o Corporativo.';
   end if;
   insert into perfiles(id, nombre, apellido, email, telefono)
     values(p_uid, p_nombre, p_apellido, p_email, p_telefono)
@@ -6879,10 +7117,10 @@ begin
   insert into perfiles(id,nombre,apellido,email,matricula)
     values(v_uid,'Nombre','Apellido','email@ejemplo.com','T°XV F°42');
   insert into firmas(id,nombre,tipo,codigo_invitacion,plan,activo,owner_id)
-    values(v_firma_id,'Nombre del Estudio','independiente',upper(substr(md5(random()::text),1,6)),'crecimiento',true,v_uid);
+    values(v_firma_id,'Nombre del Estudio','estudio',upper(substr(md5(random()::text),1,6)),'estudio',true,v_uid);
   insert into miembros(firma_id,perfil_id,rol) values(v_firma_id,v_uid,'admin');
   insert into suscripciones(firma_id,plan,estado,monto_ars,vencimiento)
-    values(v_firma_id,'crecimiento','activo',89000,now()+interval '30 days');
+    values(v_firma_id,'estudio','activo',49999,now()+interval '30 days');
   insert into contadores(firma_id,ultimo_cliente,ultimo_caso) values(v_firma_id,0,0);
 end $$;
 */
@@ -6899,8 +7137,8 @@ const MP_ACCESS_TOKEN = Deno.env.get("MP_ACCESS_TOKEN")!;
 const SUPABASE_URL    = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY    = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-const PLAN_PRICES = { basic: 39000, pro: 89000, enterprise: 119000, trial: 0 };
-const PLAN_NAMES  = { basic: "Lexora Esencial", pro: "Lexora Crecimiento", enterprise: "Lexora Expansión", trial: "Trial" };
+const PLAN_PRICES = { independiente: 38999, estudio: 49999, corporativo: 89999, trial: 0 };
+const PLAN_NAMES  = { independiente: "Lexora Independiente", estudio: "Lexora Estudio", corporativo: "Lexora Corporativo", trial: "Trial" };
 
 serve(async (req) => {
   const { firma_id, plan, app_url } = await req.json();
@@ -6909,7 +7147,7 @@ serve(async (req) => {
   const { data: { user } } = await sb.auth.getUser(auth?.replace("Bearer ",""));
   if(!user) return new Response("Unauthorized", { status: 401 });
 
-  const price = PLAN_PRICES[plan] || 39000;
+  const price = PLAN_PRICES[plan] || 38999;
   const body  = {
     items: [{ title: PLAN_NAMES[plan]||"Lexora", unit_price: price, quantity: 1, currency_id: "ARS" }],
     payer: { email: user.email },
